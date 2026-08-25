@@ -6,6 +6,9 @@ drinking-game bundle. 100% on-device. No backend. No per-user cost.
 See **[SPEC.md](./SPEC.md)** for the full product spec and the reasoning behind every
 decision, and **[docs/ROADMAP.md](./docs/ROADMAP.md)** for the build order.
 
+**Starting a fresh session?** Run **`/catchup`** — it reads those two files and restores
+full project context (they are the source of truth, not chat history).
+
 ## Stack
 
 - Expo (React Native) + TypeScript — reuses the existing EAS / ship-ios pipeline.
