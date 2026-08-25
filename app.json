@@ -31,6 +31,19 @@
           "resizeMode": "contain",
           "backgroundColor": "#233A63"
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "広告の最適化のために使用します。トラッキングを許可しなくてもアプリはご利用いただけます。"
+        }
       ]
     ],
     "extra": {

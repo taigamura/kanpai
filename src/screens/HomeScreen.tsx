@@ -5,11 +5,16 @@ import { colors, spacing, font, radius } from '@/theme/theme';
 import { T } from '@/components/ui';
 import { GAMES, GameDef } from '@/data/games';
 import { useNav } from '@/navigation/Nav';
+import { useAppState } from '@/state/AppState';
+import { maybeShowInterstitial } from '@/ads/ads';
 
 export function HomeScreen() {
   const nav = useNav();
+  const { adsRemoved } = useAppState();
 
   const openGame = (g: GameDef) => {
+    // Interstitials only between games (on open), frequency-capped, and never for owners.
+    void maybeShowInterstitial(adsRemoved);
     if (g.needsRoster) nav.go({ name: 'roster', next: g.id });
     else nav.go({ name: 'game', id: g.id });
   };

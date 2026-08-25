@@ -18,10 +18,20 @@
 - 山手線: optional rhythm/beat + timer.
 
 ## Phase 3 — Monetization + telemetry
-- AdMob integration (`react-native-google-mobile-ads`), interstitial between games only.
-  - Requires: iOS/Android AdMob app IDs, config plugin, ATT prompt, privacy manifest.
-- ¥370 remove-ads 買い切り via StoreKit/RevenueCat; persist entitlement; restore purchases.
-- Apple App Analytics (no SDK) + a crash reporter.
+- ✅ AdMob wired (`react-native-google-mobile-ads`): interstitial only between games
+  (src/ads/ads.ts), frequency-capped, skipped for owners, guarded to no-op without the
+  native module. ATT requested on launch (src, App.tsx). Config plugin added to app.json.
+- ✅ ¥370 remove-ads IAP wired (`react-native-iap`, src/iap/iap.ts): purchase + restore in
+  Settings; entitlement persisted via AppState/AsyncStorage. Dev-only unlock when native
+  module absent.
+- ⚠️ NOT yet runtime-verified — needs a dev/EAS build + accounts. Before launch:
+  - Replace Google TEST ids: app.json `androidAppId`/`iosAppId` + real interstitial unit
+    ids in src/ads/ads.ts (`interstitialUnitId`).
+  - App Store Connect: create NON-CONSUMABLE IAP `app.kanpai.mvp.removeads`, price ¥370;
+    activate Paid Apps agreement; test with a sandbox account.
+  - Verify react-native-iap call signatures against the installed major version.
+  - Confirm AdMob privacy manifest / SKAdNetwork + App Privacy answers.
+- Apple App Analytics (no SDK, via App Store Connect) + a crash reporter — still to add.
 
 ## Phase 4 — Ship prep
 - ✅ App icon + favicon generated (`npm run icon` → scripts/generate-icon.mjs). PLACEHOLDER

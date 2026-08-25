@@ -1,16 +1,49 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, ScrollView, Linking } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable, ScrollView, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button, Card } from '@/components/ui';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
+import { purchaseRemoveAds, restorePurchases, iapAvailable } from '@/iap/iap';
 
 export function SettingsScreen() {
   const { customPenalties, addCustomPenalty, removeCustomPenalty, adsRemoved, setAdsRemoved } =
     useAppState();
   const nav = useNav();
   const [draft, setDraft] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const buyRemoveAds = async () => {
+    setBusy(true);
+    try {
+      if (!iapAvailable()) {
+        // Native StoreKit absent (Expo Go / dev). Allow a dev-only unlock for testing.
+        if (__DEV__) {
+          setAdsRemoved(true);
+        } else {
+          Alert.alert('購入できません', 'この端末では購入を利用できません。');
+        }
+        return;
+      }
+      const ok = await purchaseRemoveAds();
+      if (ok) setAdsRemoved(true);
+      else Alert.alert('購入が完了しませんでした', 'もう一度お試しください。');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const restore = async () => {
+    setBusy(true);
+    try {
+      const owned = await restorePurchases();
+      setAdsRemoved(owned);
+      Alert.alert(owned ? '復元しました' : '購入が見つかりません');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -85,11 +118,21 @@ export function SettingsScreen() {
               購入済み・ありがとうございます
             </T>
           ) : (
-            <Button
-              title="¥370で広告を消す"
-              onPress={() => setAdsRemoved(true) /* TODO: real StoreKit purchase */}
-              style={{ marginTop: spacing.md }}
-            />
+            <>
+              <Button
+                title={busy ? '処理中…' : '¥370で広告を消す'}
+                onPress={buyRemoveAds}
+                disabled={busy}
+                style={{ marginTop: spacing.md }}
+              />
+              <Button
+                title="購入を復元"
+                kind="ghost"
+                onPress={restore}
+                disabled={busy}
+                style={{ marginTop: spacing.sm }}
+              />
+            </>
           )}
         </Card>
 

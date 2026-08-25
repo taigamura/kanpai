@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,6 +13,23 @@ import { HomeScreen } from '@/screens/HomeScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { RosterScreen } from '@/screens/RosterScreen';
 import { GameHost } from '@/games/GameHost';
+import { initAds } from '@/ads/ads';
+
+// Request ATT (for ad personalization) then initialize ads. Both are best-effort and
+// guarded — absent native modules (Expo Go / web / tests) simply no-op.
+function useStartup() {
+  useEffect(() => {
+    (async () => {
+      try {
+        const tt = require('expo-tracking-transparency');
+        await tt.requestTrackingPermissionsAsync?.();
+      } catch {
+        /* module absent — fine */
+      }
+      await initAds();
+    })();
+  }, []);
+}
 
 function Router() {
   const { ready, ageAccepted } = useAppState();
@@ -42,6 +59,7 @@ function Router() {
 }
 
 export default function App() {
+  useStartup();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
