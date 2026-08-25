@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# native
+/ios
+/android
+
+# builds
+build-*.ipa
+*.ipa
+*.apk
+*.aab
+
+# env / secrets
+.env
+.env.*
+!.env.example
+google-services.json
+GoogleService-Info.plist
+
+# macOS
+.DS_Store
+
+# logs
+*.log
+npm-debug.*
+
+# IDE
+.vscode/
+.idea/
