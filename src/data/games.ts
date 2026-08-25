@@ -61,7 +61,7 @@ export const GAMES: GameDef[] = [
     emoji: '👑',
     needsRoster: false,
     minPlayers: 2,
-    status: 'stub',
+    status: 'playable',
   },
   {
     id: 'anketo',
@@ -70,6 +70,6 @@ export const GAMES: GameDef[] = [
     emoji: '🗳️',
     needsRoster: true,
     minPlayers: 3,
-    status: 'stub',
+    status: 'playable',
   },
 ];
