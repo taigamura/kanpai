@@ -24,11 +24,13 @@
 - Apple App Analytics (no SDK) + a crash reporter.
 
 ## Phase 4 — Ship prep
-- App icon + splash (assets/ currently empty — add icon.png / favicon.png).
+- ✅ App icon + favicon generated (`npm run icon` → scripts/generate-icon.mjs). PLACEHOLDER
+  clinking-mugs art in the brand palette; replace with a designed icon before serious launch.
+- ✅ Name verified available (see SPEC §9). Listing title: カンパイ！飲み会・宅飲みパーティーゲーム.
 - App Store: 17+ rating, alcohol reference; JP screenshots; keyword subtitle.
-- Verify カンパイ！ name availability; add distinguisher if taken.
 - Terms/EULA hosted page (replace example.com placeholder links).
 - JP copy proofread; no em dashes in user-facing text.
+- Consider a dedicated splash image (currently reuses icon.png).
 
 ## v2 (post-launch)
 - 王様ゲーム + spice tiers (マイルド / ノーマル / ハード) + 下ネタ packs = the paid upgrade.

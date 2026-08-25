@@ -106,8 +106,11 @@ content-heavy, moderation-prone anchor) is deferred to v2.
 
 - **Japanese only.** No i18n framework (matches the JP-native wedge).
 - **Name:** カンパイ！  **Subtitle:** 飲み会・宅飲みパーティーゲーム集
-  - ⚠️ Verify App Store name availability before finalizing; if カンパイ！ collides, add a
-    distinguisher (e.g. カンパイ！-飲み会ゲーム-).
+  - ✅ Name verified on JP App Store (2026-08-26): **no drinking-game named カンパイ exists.**
+    Only near-match is "カンパイ! - 飲酒量記録" (a tiny 2-rating Health & Fitness drink-*tracker*,
+    different genre); the rest are 乾杯-kanji water-reminder / wedding-speech / shop apps.
+    Home-screen name stays カンパイ！; **App Store listing title carries keywords for ASO +
+    differentiation:** `カンパイ！飲み会・宅飲みパーティーゲーム`.
 
 ---
 
