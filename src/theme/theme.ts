@@ -1,16 +1,18 @@
-// カンパイ！ theme — warm, celebratory, night-out palette.
+// カンパイ！ theme — warm twilight-blue izakaya palette (locked 2026-08-26).
+// Mirror of docs/design-mockups.html; keep the two in sync.
 export const colors = {
-  bg: '#1A1330',        // deep night purple
-  bgElevated: '#251A45',
-  card: '#2E2154',
-  primary: '#FF5A5F',   // カンパイ red (toast / celebratory)
-  primaryDark: '#D6414B',
-  accent: '#FFC94D',    // beer gold
-  text: '#FFFFFF',
-  textDim: '#B9AEDC',
-  danger: '#FF4D6D',
-  success: '#3DDC97',
-  overlay: 'rgba(0,0,0,0.6)',
+  bg: '#233A63',        // warm twilight blue (ground)
+  bgElevated: '#2B4675',
+  card: '#334F82',      // surface
+  cardRaised: '#3E5C94',
+  primary: '#FF5D66',   // 提灯 lantern red — warm pop on blue
+  primaryDark: '#E24651',
+  accent: '#F7C64E',    // beer gold
+  text: '#FCF5EA',      // foam cream
+  textDim: '#AEBFDC',   // soft blue-grey
+  danger: '#FF7078',
+  success: '#4BD6A0',
+  overlay: 'rgba(0,0,0,0.55)',
 };
 
 export const spacing = {

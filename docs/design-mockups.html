@@ -5,18 +5,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
 <style>
   :root{
-    --ground:#17111F;      /* deep aubergine-night */
-    --ground-2:#1F1626;
-    --surface:#271A2E;
-    --surface-2:#31213A;
-    --red:#FF4D57;         /* 提灯 lantern red */
-    --red-deep:#D63A45;
-    --gold:#F5C242;        /* beer gold */
-    --cream:#FBF3E7;       /* foam */
-    --dim:#A5919B;         /* muted mauve */
-    --line:rgba(251,243,231,.10);
+    --ground:#233A63;      /* warm twilight blue */
+    --ground-2:#2B4675;
+    --surface:#334F82;
+    --surface-2:#3E5C94;
+    --red:#FF5D66;         /* 提灯 lantern red — warm pop on blue */
+    --red-deep:#E24651;
+    --gold:#F7C64E;        /* beer gold */
+    --cream:#FCF5EA;       /* foam */
+    --dim:#AEBFDC;         /* soft blue-grey */
+    --line:rgba(252,245,234,.13);
     --good:#4BD6A0;
-    --danger:#FF5D6C;
+    --danger:#FF7078;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--ground);color:var(--cream);
@@ -24,8 +24,9 @@
     -webkit-font-smoothing:antialiased}
   body{
     background:
-      radial-gradient(60vw 40vw at 15% -5%, rgba(255,77,87,.16), transparent 60%),
-      radial-gradient(50vw 40vw at 100% 0%, rgba(245,194,66,.10), transparent 55%),
+      radial-gradient(60vw 40vw at 12% -5%, rgba(255,93,102,.18), transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%, rgba(247,198,78,.16), transparent 58%),
+      radial-gradient(70vw 50vw at 50% 120%, rgba(62,92,148,.45), transparent 60%),
       var(--ground);
     min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,48px) 80px;
   }
@@ -59,12 +60,12 @@
   .cap span{font-size:12.5px;color:var(--dim);line-height:1.5}
 
   /* ---- Phone frame ---- */
-  .phone{position:relative;width:100%;aspect-ratio:9/19.3;background:#0B080F;border-radius:40px;
+  .phone{position:relative;width:100%;aspect-ratio:9/19.3;background:#14233F;border-radius:40px;
     padding:9px;box-shadow:0 30px 60px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(251,243,231,.06) inset;}
   .screen{position:relative;width:100%;height:100%;border-radius:32px;overflow:hidden;
     background:var(--ground);display:flex;flex-direction:column}
   .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:34%;height:20px;
-    background:#0B080F;border-radius:0 0 14px 14px;z-index:20}
+    background:#14233F;border-radius:0 0 14px 14px;z-index:20}
   .glow{position:absolute;inset:0;pointer-events:none;
     background:radial-gradient(70% 40% at 20% 0%, rgba(255,77,87,.22), transparent 60%),
                radial-gradient(60% 40% at 100% 8%, rgba(245,194,66,.12), transparent 55%)}
@@ -122,11 +123,11 @@
     <div class="panel">
       <h3>Palette</h3>
       <div class="swatches">
-        <div class="sw" style="background:#17111F"><span>ground</span></div>
-        <div class="sw" style="background:#271A2E"><span>surface</span></div>
-        <div class="sw" style="background:#FF4D57"><span>提灯 red</span></div>
-        <div class="sw" style="background:#F5C242"><span>beer gold</span></div>
-        <div class="sw" style="background:#FBF3E7"><span>foam</span></div>
+        <div class="sw" style="background:#233A63"><span>ground</span></div>
+        <div class="sw" style="background:#334F82"><span>surface</span></div>
+        <div class="sw" style="background:#FF5D66"><span>提灯 red</span></div>
+        <div class="sw" style="background:#F7C64E"><span>beer gold</span></div>
+        <div class="sw" style="background:#FCF5EA"><span>foam</span></div>
       </div>
     </div>
     <div class="panel typespec">
