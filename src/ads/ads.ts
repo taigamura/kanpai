@@ -1,9 +1,11 @@
 // AdMob interstitials — guarded so the app still runs in Expo Go / web / tests where the
-// native module is absent. Uses Google's official TEST ad unit ids; swap for real ids
-// (and real app ids in app.json) before launch. See docs/ROADMAP.md Phase 3.
+// native module is absent. RELEASE builds use the real AdMob unit ids below; dev builds
+// always use Google's official TEST ids so you never tap a live ad (which can get the
+// account banned). App ids live in app.json. See docs/ROADMAP.md Phase 3.
 //
 // Frequency: interstitials only BETWEEN games (called on game open), capped so the first
 // couple of opens are always ad-free and ads never interrupt mid-round.
+import { Platform } from 'react-native';
 
 let Ads: any = null;
 try {
@@ -30,10 +32,17 @@ export async function initAds(): Promise<void> {
   }
 }
 
+// Real AdMob interstitial ad unit ids, per platform. Only used in release builds.
+const REAL_INTERSTITIAL: Record<string, string> = {
+  ios: 'ca-app-pub-6862698457969651/3331645387',
+  // android: add once an Android AdMob app + unit exist; falls back to the test id below.
+};
+
 function interstitialUnitId(): string | null {
   if (!Ads) return null;
-  // TODO(launch): replace with real AdMob interstitial unit ids per platform.
-  return Ads.TestIds?.INTERSTITIAL ?? null;
+  // Dev / Expo Go: always Google's TEST id so a live ad is never tapped during testing.
+  if (__DEV__) return Ads.TestIds?.INTERSTITIAL ?? null;
+  return REAL_INTERSTITIAL[Platform.OS] ?? Ads.TestIds?.INTERSTITIAL ?? null;
 }
 
 export async function maybeShowInterstitial(adsRemoved: boolean): Promise<void> {
