@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { T, Button } from '@/components/ui';
+import { T, Button, Pill } from '@/components/ui';
 import { spacing, colors, font } from '@/theme/theme';
 import { useAppState } from '@/state/AppState';
 
-// Core safeguard component: when someone loses, they choose 飲む OR a 罰ゲーム.
-// Drinking is never forced — this is the always-present alternative.
+// When someone loses, they do a 罰ゲーム. The 罰ゲーム pool is user-supplied (no built-in
+// defaults in v1), so when the group hasn't added any, we prompt them to decide one / add
+// theirs in 設定 — never an empty/undefined draw.
 export function PenaltyReveal({ loserLabel }: { loserLabel: string }) {
   const { penalties } = useAppState();
   const [penalty, setPenalty] = useState<string | null>(null);
+  const hasPenalties = penalties.length > 0;
 
   const draw = () => {
     const p = penalties[Math.floor(Math.random() * penalties.length)];
@@ -17,18 +19,19 @@ export function PenaltyReveal({ loserLabel }: { loserLabel: string }) {
 
   return (
     <View style={{ alignItems: 'center', gap: spacing.md, marginTop: spacing.lg }}>
-      <T size={font.heading} bold style={{ color: colors.danger, textAlign: 'center' }}>
+      <T display size={font.heading} style={{ color: colors.danger, textAlign: 'center' }}>
         {loserLabel}
       </T>
-      <T dim style={{ textAlign: 'center' }}>
-        1杯飲む、または罰ゲーム。選んでね（飲まなくてOK）。
-      </T>
-      {penalty ? (
-        <T size={font.heading} bold style={{ textAlign: 'center' }}>
-          罰ゲーム：{penalty}
-        </T>
+      {hasPenalties ? (
+        penalty ? (
+          <Pill>罰ゲーム：{penalty}</Pill>
+        ) : (
+          <Button title="罰ゲームを引く" kind="accent" onPress={draw} />
+        )
       ) : (
-        <Button title="罰ゲームを引く" kind="accent" onPress={draw} />
+        <T dim size={font.small} style={{ textAlign: 'center' }}>
+          みんなで罰ゲームを決めよう！オリジナルの罰ゲームは「設定」から追加できます。
+        </T>
       )}
     </View>
   );

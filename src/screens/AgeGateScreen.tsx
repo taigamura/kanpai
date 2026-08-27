@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, spacing, font } from '@/theme/theme';
+import { font, spacing } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
+import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 
 // First-launch age gate + liability disclaimer (safeguard).
@@ -10,17 +10,17 @@ import { useAppState } from '@/state/AppState';
 export function AgeGateScreen() {
   const { acceptAge } = useAppState();
   return (
-    <SafeAreaView style={styles.safe}>
+    <Screen>
       <View style={styles.body}>
-        <T size={font.title} bold style={styles.logo}>
+        <T display size={font.title} style={styles.logo}>
           カンパイ！
         </T>
         <T dim size={font.body} style={styles.sub}>
           飲み会・宅飲みパーティーゲーム集
         </T>
 
-        <T size={font.heading} bold style={styles.q}>
-          あなたは20歳以上ですか？
+        <T display size={font.heading} style={styles.q}>
+          あなたは{'\n'}20歳以上ですか？
         </T>
 
         <T dim size={font.small} style={styles.terms}>
@@ -38,16 +38,15 @@ export function AgeGateScreen() {
           style={styles.cta}
         />
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
   body: { flex: 1, padding: spacing.xl, justifyContent: 'center' },
   logo: { textAlign: 'center' },
   sub: { textAlign: 'center', marginTop: spacing.xs, marginBottom: spacing.xxl },
-  q: { textAlign: 'center', marginBottom: spacing.lg },
+  q: { textAlign: 'center', marginBottom: spacing.lg, lineHeight: 34 },
   terms: { lineHeight: 20, marginBottom: spacing.xl },
   cta: { marginBottom: spacing.md },
 });

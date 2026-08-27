@@ -30,7 +30,7 @@
       var(--ground);
     min-height:100vh;padding:clamp(20px,5vw,64px) clamp(16px,4vw,48px) 80px;
   }
-  .wrap{max-width:1200px;margin:0 auto}
+  .wrap{max-width:1240px;margin:0 auto}
 
   /* ---- Masthead ---- */
   .mast{display:flex;flex-direction:column;gap:18px;margin-bottom:44px}
@@ -51,6 +51,11 @@
   .typespec .d{font-family:"Dela Gothic One",sans-serif;font-size:30px;line-height:1.1}
   .typespec .b{font-size:16px;margin-top:8px;color:var(--dim)}
   .typespec small{display:block;margin-top:14px;font-size:11px;color:var(--dim);letter-spacing:.04em}
+
+  /* ---- Section headers between groups ---- */
+  .group{margin:54px 0 22px;display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px}
+  .group h2{font-family:"Dela Gothic One",sans-serif;font-size:20px;color:var(--cream)}
+  .group span{font-size:12.5px;color:var(--dim)}
 
   /* ---- Gallery ---- */
   .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:clamp(28px,4vw,48px);justify-items:center}
@@ -76,24 +81,28 @@
   .s-logo .bang{color:var(--red)}
   .s-sub{font-size:10.5px;color:var(--dim);margin-top:5px}
   .row{display:flex;align-items:center;justify-content:space-between}
+  .topbar{font-size:12px;font-weight:700}
+  .topbar .ti{font-family:"Dela Gothic One",sans-serif;font-size:15px}
   .gear{width:30px;height:30px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:14px}
-  .tiles{display:flex;flex-direction:column;gap:11px;margin-top:16px;overflow:hidden}
+  .tiles{display:flex;flex-direction:column;gap:9px;margin-top:14px;overflow:hidden}
   .tile{background:linear-gradient(160deg,var(--surface),var(--ground-2));border:1px solid var(--line);
-    border-radius:18px;padding:13px 14px;display:flex;gap:12px;align-items:center;position:relative}
-  .tile .em{font-size:26px}
-  .tile .tt{font-family:"Zen Kaku Gothic New";font-weight:900;font-size:15px}
-  .tile .ts{font-size:10.5px;color:var(--dim);margin-top:2px;line-height:1.4}
-  .badge{position:absolute;top:10px;right:12px;font-size:9px;font-weight:700;color:var(--gold);
+    border-radius:16px;padding:11px 13px;display:flex;gap:11px;align-items:center;position:relative}
+  .tile .em{font-size:23px}
+  .tile .tt{font-family:"Zen Kaku Gothic New";font-weight:900;font-size:14px}
+  .tile .ts{font-size:10px;color:var(--dim);margin-top:2px;line-height:1.35}
+  .badge{position:absolute;top:9px;right:11px;font-size:8.5px;font-weight:700;color:var(--gold);
     border:1px solid rgba(245,194,66,.4);border-radius:999px;padding:2px 7px}
   .btn{border-radius:999px;padding:13px;text-align:center;font-weight:900;font-size:14px}
   .btn-red{background:var(--red);color:#fff}
   .btn-gold{background:var(--gold);color:#2A1206}
   .btn-ghost{border:1px solid var(--dim);color:var(--cream)}
+  .btn-dis{background:var(--surface);color:var(--dim);opacity:.5}
+  .btn-sm{padding:10px 16px;font-size:12.5px}
   .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
   .big-em{font-size:74px;line-height:1}
   .odai-label{font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
   .odai{font-family:"Dela Gothic One",sans-serif;font-size:34px;color:var(--cream);line-height:1.12}
-  .kicker-s{font-size:11px;color:var(--dim);line-height:1.6;max-width:22ch}
+  .kicker-s{font-size:11px;color:var(--dim);line-height:1.6;max-width:24ch}
   .foot-note{font-size:9.5px;color:var(--dim);text-align:center;margin-top:auto;padding-top:10px;line-height:1.5}
   .pill{display:inline-block;font-size:10px;color:var(--gold);border:1px solid rgba(245,194,66,.35);
     border-radius:999px;padding:3px 10px}
@@ -106,17 +115,34 @@
   .terms{font-size:9.5px;color:var(--dim);line-height:1.7;text-align:left}
   .q-big{font-family:"Dela Gothic One",sans-serif;font-size:22px;line-height:1.25;text-align:center}
   .dice{font-size:46px;letter-spacing:6px}
-  .result{font-family:"Dela Gothic One";font-size:20px}
-  .legend{margin-top:56px;border-top:1px solid var(--line);padding-top:24px;color:var(--dim);font-size:13px;line-height:1.8;max-width:75ch}
+  .result{font-family:"Dela Gothic One",sans-serif;font-size:20px}
+  /* playing card */
+  .pcard{width:96px;height:132px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);
+    display:grid;place-items:center;font-family:"Dela Gothic One",sans-serif;font-size:34px;box-shadow:0 12px 24px -12px rgba(0,0,0,.6)}
+  .pcard.red{color:var(--danger)}
+  .pcard.back{background:repeating-linear-gradient(45deg,var(--ground-2),var(--ground-2) 7px,var(--surface) 7px,var(--surface) 14px);
+    color:var(--gold);font-size:30px}
+  .meta-row{display:flex;gap:20px;font-size:10.5px;color:var(--dim)}
+  /* text input mock */
+  .inp{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 15px;font-size:12px;color:var(--dim)}
+  .namechip{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);
+    border-radius:14px;padding:11px 15px;font-size:13px}
+  .namechip small{color:var(--dim);font-size:13px}
+  /* vote options / tally */
+  .vote{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 15px;font-weight:700;font-size:13px;text-align:left}
+  .tally{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:10px;padding:9px 13px;font-size:12.5px}
+  .tally b{color:var(--gold);font-weight:900}
+  .tally.win{border:1px solid rgba(247,198,78,.5)}
+  .legend{margin-top:56px;border-top:1px solid var(--line);padding-top:24px;color:var(--dim);font-size:13px;line-height:1.8;max-width:78ch}
   .legend b{color:var(--cream)}
 </style>
 
 <div class="wrap">
   <header class="mast">
-    <div class="kicker">Design direction · v1 mockups</div>
+    <div class="kicker">Design direction · v1 mockups · phase 1 sign-off</div>
     <h1 class="logo">カンパイ<span class="bang">！</span></h1>
     <p class="tag">飲み会・宅飲みパーティーゲーム集 — an offline, pass-the-phone drinking-game bundle. The look: an izakaya at night, lit by 提灯 red and beer gold. Punchy, festive, warm, never sleazy.</p>
-    <p class="note">These are static mockups to align on the visual direction (palette, type, tile style, game screens) before any real UI work. Not the built app. Say what to push further.</p>
+    <p class="note">Static mockups of <b>every v1 screen</b> to lock the visual direction before real UI work. Palette + type are already locked in theme.ts; this covers all 6 games, onboarding, roster, and settings. Not the built app. Say what to push further.</p>
   </header>
 
   <section class="tokens">
@@ -142,6 +168,8 @@
     </div>
   </section>
 
+  <!-- ================= ONBOARDING & SHELL ================= -->
+  <div class="group"><h2>導線</h2><span>Onboarding · home · shared roster</span></div>
   <section class="gallery">
 
     <!-- 1. Age gate -->
@@ -163,7 +191,7 @@
       <div class="cap"><b>① 年齢確認 + 免責</b><span>First-launch age gate & liability disclaimer. Shown once.</span></div>
     </div>
 
-    <!-- 2. Home grid -->
+    <!-- 2. Home grid (all 6 games) -->
     <div class="slot">
       <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
         <div class="sc-pad">
@@ -179,18 +207,48 @@
             <div class="tile"><span class="em">💣</span><div><div class="tt">ロシアンルーレット</div><div class="ts">スマホを回して…爆発は誰だ</div></div></div>
             <div class="tile"><span class="em">🃏</span><div><div class="tt">高低（ハイ&ロー）</div><div class="ts">次のカードは上か下か</div></div></div>
             <div class="tile"><span class="em">🎲</span><div><div class="tt">チンチロ</div><div class="ts">サイコロ3つで勝負</div></div></div>
-            <div class="tile"><span class="em">👑</span><div><div class="tt">キングスカップ</div><div class="ts">カードごとにルール発動</div></div><span class="badge">制作中</span></div>
+            <div class="tile"><span class="em">👑</span><div><div class="tt">キングスカップ</div><div class="ts">カードごとにルール発動</div></div></div>
+            <div class="tile"><span class="em">🗳️</span><div><div class="tt">匿名アンケート</div><div class="ts">誰が一番◯◯？こっそり投票</div></div></div>
           </div>
         </div>
       </div></div>
-      <div class="cap"><b>② ホーム</b><span>Game grid. Big tiles, one tap in. 制作中 badge marks fast-follow games.</span></div>
+      <div class="cap"><b>② ホーム</b><span>All 6 games. Big tiles, one tap in. 準備要らずで即スタート.</span></div>
     </div>
 
-    <!-- 3. 山手線 odai -->
+    <!-- 3. Roster -->
     <div class="slot">
       <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
         <div class="sc-pad">
-          <div class="row"><span style="font-size:12px;font-weight:700">← 戻る</span><span style="font-family:'Dela Gothic One';font-size:15px">山手線ゲーム</span><span style="width:32px"></span></div>
+          <div class="row topbar"><span>← 戻る</span><span class="ti">参加者</span><span style="width:32px"></span></div>
+          <div class="row" style="gap:8px;margin-top:16px">
+            <div class="inp">名前を入力</div>
+            <div class="btn btn-gold btn-sm" style="border-radius:999px">追加</div>
+          </div>
+          <div class="stack" style="margin-top:14px;gap:8px">
+            <div class="namechip"><span>ゆうた</span><small>✕</small></div>
+            <div class="namechip"><span>さき</span><small>✕</small></div>
+            <div class="namechip"><span>けんじ</span><small>✕</small></div>
+            <div class="namechip"><span>みお</span><small>✕</small></div>
+          </div>
+          <div class="stack" style="margin-top:auto">
+            <div class="btn btn-red">はじめる（4人）</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><b>③ 参加者登録</b><span>Entered once, remembered, editable. Only for games that need names. 3人以上 to start.</span></div>
+    </div>
+
+  </section>
+
+  <!-- ================= GAMES ================= -->
+  <div class="group"><h2>ゲーム</h2><span>All 6 v1 games — every game screen carries the 飲む-or-罰ゲーム safeguard</span></div>
+  <section class="gallery">
+
+    <!-- 4. 山手線 odai -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">山手線ゲーム</span><span style="width:32px"></span></div>
           <div class="center">
             <div class="odai-label">お題</div>
             <div class="odai">寿司のネタ</div>
@@ -203,14 +261,14 @@
           <div class="foot-note">飲みすぎ注意・体調と相談して。飲むかどうかは自由です。</div>
         </div>
       </div></div>
-      <div class="cap"><b>③ 山手線ゲーム（anchor）</b><span>Draws the お題; play is verbal. Persistent safety note at the base of every game.</span></div>
+      <div class="cap"><b>④ 山手線ゲーム（anchor）</b><span>Draws the お題; play is verbal. Persistent safety note at the base of every game.</span></div>
     </div>
 
-    <!-- 4. Roulette boom + penalty -->
+    <!-- 5. Roulette boom + penalty -->
     <div class="slot">
       <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
         <div class="sc-pad">
-          <div class="row"><span style="font-size:12px;font-weight:700">← 戻る</span><span style="font-family:'Dela Gothic One';font-size:15px">ロシアンルーレット</span><span style="width:32px"></span></div>
+          <div class="row topbar"><span>← 戻る</span><span class="ti">ロシアンルーレット</span><span style="width:32px"></span></div>
           <div class="center">
             <div class="big-em">💥</div>
             <div class="result" style="color:var(--danger)">ドカーン！</div>
@@ -221,14 +279,34 @@
           <div class="stack"><div class="btn btn-gold">罰ゲームを引く</div><div class="btn btn-ghost">もう一回</div></div>
         </div>
       </div></div>
-      <div class="cap"><b>④ 罰ゲーム reveal（safeguard）</b><span>The core rule made visible: 飲む <i>or</i> 罰ゲーム — drinking never forced.</span></div>
+      <div class="cap"><b>⑤ 罰ゲーム reveal（safeguard）</b><span>The core rule made visible: 飲む <i>or</i> 罰ゲーム — drinking never forced.</span></div>
     </div>
 
-    <!-- 5. Chinchiro -->
+    <!-- 6. High&Low -->
     <div class="slot">
       <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
         <div class="sc-pad">
-          <div class="row"><span style="font-size:12px;font-weight:700">← 戻る</span><span style="font-family:'Dela Gothic One';font-size:15px">チンチロ</span><span style="width:32px"></span></div>
+          <div class="row topbar"><span>← 戻る</span><span class="ti">高低（ハイ&ロー）</span><span style="width:32px"></span></div>
+          <div class="center">
+            <div class="odai-label" style="letter-spacing:.16em">現在のカード</div>
+            <div class="pcard red">Q♦</div>
+            <div class="kicker-s">次のカードは上か下か。<br>はずれたら 飲む or 罰ゲーム。</div>
+            <div class="row" style="gap:10px;width:100%">
+              <div class="btn btn-gold" style="flex:1">⬆️ ハイ</div>
+              <div class="btn btn-gold" style="flex:1">⬇️ ロー</div>
+            </div>
+          </div>
+          <div class="foot-note">飲みすぎ注意・体調と相談して。飲むかどうかは自由です。</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>⑥ 高低 / High&Low</b><span>Guess higher/lower on a real card face. No roster needed — jump straight in.</span></div>
+    </div>
+
+    <!-- 7. Chinchiro -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">チンチロ</span><span style="width:32px"></span></div>
           <div class="center">
             <div class="kicker-s">3つのサイコロを振って役を出そう。<br>負けた人は 飲む or 罰ゲーム。</div>
             <div class="dice">⚃ ⚄ ⚅</div>
@@ -238,14 +316,104 @@
           <div class="foot-note">飲みすぎ注意・体調と相談して。飲むかどうかは自由です。</div>
         </div>
       </div></div>
-      <div class="cap"><b>⑤ チンチロ</b><span>Tactile dice roll with haptics. Good/bad roles color-coded gold-green / red.</span></div>
+      <div class="cap"><b>⑦ チンチロ</b><span>Tactile dice roll with haptics. Good/bad roles color-coded gold-green / red.</span></div>
     </div>
 
-    <!-- 6. Settings -->
+    <!-- 8. Kings Cup -->
     <div class="slot">
       <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
         <div class="sc-pad">
-          <div class="row"><span style="font-size:12px;font-weight:700">← 戻る</span><span style="font-family:'Dela Gothic One';font-size:15px">設定</span><span style="width:32px"></span></div>
+          <div class="row topbar"><span>← 戻る</span><span class="ti">キングスカップ</span><span style="width:32px"></span></div>
+          <div class="center">
+            <div class="pcard">K♠</div>
+            <div class="result" style="color:var(--gold);font-size:18px">K・キング</div>
+            <div class="kicker-s">ルールを1つ決められる。<br>4枚目のKで全員カンパイ🍻</div>
+            <div class="meta-row"><span>残り 38 枚</span><span>K 3/4</span></div>
+          </div>
+          <div class="stack"><div class="btn btn-gold">次のカード</div></div>
+          <div class="foot-note">飲みすぎ注意・体調と相談して。飲むかどうかは自由です。</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>⑧ キングスカップ</b><span>Real 52-card deck, no repeats. Rank → rule. 4th King = 全員カンパイ. Deck + K counter shown.</span></div>
+    </div>
+
+    <!-- (spacer to keep grid tidy) -->
+    <div class="slot" style="justify-content:flex-start">
+      <div class="phone" style="opacity:.0;pointer-events:none"></div>
+    </div>
+
+  </section>
+
+  <!-- ================= 匿名アンケート — the pass-around ritual ================= -->
+  <div class="group"><h2>匿名アンケート</h2><span>The trickiest UX (SPEC §8): secret pass-around voting must be flawless — three states</span></div>
+  <section class="gallery">
+
+    <!-- 9. Handoff cover -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">匿名アンケート</span><span style="width:32px"></span></div>
+          <div class="center">
+            <div class="big-em">📱➡️</div>
+            <div class="odai" style="font-size:28px">さき さんへ</div>
+            <div class="kicker-s">スマホを さき さんに渡してください。<br>準備ができたらタップ。</div>
+          </div>
+          <div class="stack"><div class="btn btn-gold">さき です・投票する</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><b>⑨ 受け渡しカバー</b><span>Secrecy gate: the ballot only appears after the named voter taps. No one sees the last vote.</span></div>
+    </div>
+
+    <!-- 10. Ballot -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">匿名アンケート</span><span style="width:32px"></span></div>
+          <div style="margin-top:10px">
+            <div class="s-sub" style="margin:0">さき さんの投票（2/4）</div>
+            <div class="q-big" style="font-size:19px;text-align:left;margin-top:8px">誰が一番<br>お酒に強そう？</div>
+          </div>
+          <div class="stack" style="margin-top:16px;gap:9px">
+            <div class="vote">ゆうた</div>
+            <div class="vote">けんじ</div>
+            <div class="vote">みお</div>
+          </div>
+          <div class="foot-note">こっそり選んでね。タップした瞬間に次の人へ。</div>
+        </div>
+      </div></div>
+      <div class="cap"><b>⑩ 投票（ballot）</b><span>Secret per-player pick. Tap advances instantly to the next cover — the vote is never visible.</span></div>
+    </div>
+
+    <!-- 11. Reveal tally -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">匿名アンケート</span><span style="width:32px"></span></div>
+          <div class="s-sub" style="margin-top:10px">結果発表</div>
+          <div class="q-big" style="font-size:17px;margin-top:6px">誰が一番お酒に強そう？</div>
+          <div class="stack" style="margin-top:14px;gap:7px">
+            <div class="tally win"><span>けんじ</span><b>3票</b></div>
+            <div class="tally"><span>みお</span><b>1票</b></div>
+            <div class="tally"><span>ゆうた</span><b>0票</b></div>
+          </div>
+          <div class="pill" style="margin-top:14px;align-self:center">最多得票：けんじ さん！飲む or 罰ゲーム</div>
+          <div class="stack" style="margin-top:auto"><div class="btn btn-ghost">次の質問</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><b>⑪ 結果発表（tally）</b><span>Tally reveal, top-voted highlighted → 飲む or 罰ゲーム. Ties supported.</span></div>
+    </div>
+
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <div class="group"><h2>設定</h2><span>Custom penalties · honest pricing · legal</span></div>
+  <section class="gallery">
+
+    <!-- 12. Settings -->
+    <div class="slot">
+      <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+        <div class="sc-pad">
+          <div class="row topbar"><span>← 戻る</span><span class="ti">設定</span><span style="width:32px"></span></div>
           <div class="stack" style="margin-top:14px">
             <div class="card">
               <h4>オリジナル罰ゲーム</h4>
@@ -262,12 +430,12 @@
           </div>
         </div>
       </div></div>
-      <div class="cap"><b>⑥ 設定</b><span>Custom 罰ゲーム editor · ¥370 買い切り remove-ads · legal. No subscription anywhere.</span></div>
+      <div class="cap"><b>⑫ 設定</b><span>Custom 罰ゲーム editor · ¥370 買い切り remove-ads · legal. No subscription anywhere.</span></div>
     </div>
 
   </section>
 
   <p class="legend">
-    <b>What to react to:</b> the lantern-red-on-night palette, the Dela Gothic One display weight, the big rounded game tiles, and the persistent safety framing (飲む or 罰ゲーム, base-of-screen notice). <b>Easy to change:</b> palette temperature (cooler/neon vs warm izakaya), display face (heavier 祭 energy vs cleaner), tile density, and whether the mood is rowdy-loud or friendly-warm. Tell me which direction to push and I'll revise before we touch the real UI.
+    <b>What to react to:</b> the lantern-red-on-night palette, the Dela Gothic One display weight, the big rounded game tiles, the playing-card faces, and the persistent safety framing (飲む or 罰ゲーム, base-of-screen notice). <b>The one to scrutinize:</b> the 匿名アンケート pass-around ritual (⑨–⑪) — SPEC §8 says this must be flawless. <b>Easy to change:</b> palette temperature (cooler/neon vs warm izakaya), display face (heavier 祭 energy vs cleaner), tile density, and whether the mood is rowdy-loud or friendly-warm. Tell me which direction to push and I'll revise before we restyle the real UI.
   </p>
 </div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, ScrollView, Linking, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button, Card } from '@/components/ui';
+import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
 import { purchaseRemoveAds, restorePurchases, iapAvailable } from '@/iap/iap';
@@ -46,12 +46,12 @@ export function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <Screen>
       <View style={styles.header}>
         <Pressable onPress={nav.home} hitSlop={12}>
           <T bold>← 戻る</T>
         </Pressable>
-        <T size={font.heading} bold>
+        <T display size={font.heading}>
           設定
         </T>
         <View style={{ width: 48 }} />
@@ -60,7 +60,7 @@ export function SettingsScreen() {
       <ScrollView contentContainerStyle={{ padding: spacing.lg, gap: spacing.lg }}>
         {/* Custom 罰ゲーム (v1 editable content) */}
         <Card>
-          <T size={font.heading} bold>
+          <T size={font.heading} black>
             オリジナル罰ゲーム
           </T>
           <T dim size={font.small} style={{ marginTop: spacing.xs }}>
@@ -91,7 +91,7 @@ export function SettingsScreen() {
           <View style={{ marginTop: spacing.md, gap: spacing.sm }}>
             {customPenalties.length === 0 && (
               <T dim size={font.small}>
-                まだありません
+                まだありません。追加すると、負けたときに「飲む」の代わりに選べます。
               </T>
             )}
             {customPenalties.map((p) => (
@@ -107,7 +107,7 @@ export function SettingsScreen() {
 
         {/* Remove ads (¥370 買い切り) — wired to StoreKit in the IAP task */}
         <Card>
-          <T size={font.heading} bold>
+          <T size={font.heading} black>
             広告を非表示
           </T>
           <T dim size={font.small} style={{ marginTop: spacing.xs }}>
@@ -139,19 +139,18 @@ export function SettingsScreen() {
         {/* Legal */}
         <Card>
           <Pressable onPress={() => void Linking.openURL('https://example.com/kanpai/terms')}>
-            <T>利用規約・免責事項</T>
+            <T black>利用規約・免責事項</T>
           </Pressable>
           <T dim size={font.small} style={{ marginTop: spacing.sm }}>
             飲酒は20歳から・自己責任・適量を。一気飲みはやめましょう。
           </T>
         </Card>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -162,6 +161,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     backgroundColor: colors.bgElevated,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     color: colors.text,
@@ -172,6 +173,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.bgElevated,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>カンパイ！ 利用規約・プライバシーポリシー</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ground:#233A63; --surface:#334F82; --red:#FF5D66; --gold:#F7C64E;
+    --cream:#FCF5EA; --dim:#AEBFDC; --line:rgba(252,245,234,.14); --ink:#1b2c4d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;
+    line-height:1.9;-webkit-font-smoothing:antialiased;
+    padding:clamp(24px,5vw,64px) clamp(18px,5vw,32px) 96px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+  header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:8px}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:clamp(30px,6vw,46px);line-height:1}
+  .logo .bang{color:var(--red)}
+  .doc-title{font-size:15px;color:var(--dim);margin-top:12px;letter-spacing:.02em}
+  .updated{font-size:13px;color:var(--dim);margin-top:6px}
+  .draft{margin:24px 0;padding:14px 16px;border:1px solid rgba(247,198,78,.4);
+    border-radius:12px;background:rgba(247,198,78,.08);font-size:13.5px;color:var(--cream);line-height:1.7}
+  .draft b{color:var(--gold)}
+  nav.toc{margin:28px 0;padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+  nav.toc h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  nav.toc ol{list-style:none;display:grid;gap:8px}
+  nav.toc a{color:var(--cream);text-decoration:none;font-size:14px;border-bottom:1px solid transparent}
+  nav.toc a:hover,nav.toc a:focus{border-bottom-color:var(--gold);outline:none}
+  nav.toc span{color:var(--dim);margin-right:8px;font-variant-numeric:tabular-nums}
+  section{margin-top:40px;scroll-margin-top:20px}
+  h2.sec{font-family:"Dela Gothic One",sans-serif;font-size:19px;line-height:1.4;margin-bottom:14px;text-wrap:balance}
+  h2.sec span{color:var(--gold);font-family:"Zen Kaku Gothic New";font-weight:700;margin-right:10px;font-size:16px}
+  h3{font-size:15px;font-weight:700;margin:20px 0 6px;color:var(--cream)}
+  p{margin:10px 0;color:var(--cream);font-size:14.5px}
+  ul{margin:10px 0 10px 22px}
+  li{margin:6px 0;font-size:14.5px}
+  .callout{margin:16px 0;padding:14px 16px;border-left:3px solid var(--red);
+    background:rgba(255,93,102,.08);border-radius:0 10px 10px 0;font-size:14px}
+  .callout b{color:var(--red)}
+  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:20px;color:var(--dim);font-size:13px}
+  a.inl{color:var(--gold)}
+  code{background:var(--surface);padding:2px 6px;border-radius:6px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">カンパイ<span class="bang">！</span></div>
+    <div class="doc-title">利用規約・免責事項・プライバシーポリシー</div>
+    <div class="updated">最終更新日：2026年8月26日</div>
+  </header>
+
+  <div class="draft">
+    <b>お知らせ（開発者向けメモ）：</b> このページは標準的な文面をもとにしたテンプレートです。正式公開の前に、専門家（弁護士）の確認を受けることを推奨します。連絡先メールアドレス・事業者名など、括弧付きのプレースホルダーは公開前に実際の情報へ置き換えてください。
+  </div>
+
+  <nav class="toc">
+    <h2>目次</h2>
+    <ol>
+      <li><span>1.</span><a href="#about">本アプリについて</a></li>
+      <li><span>2.</span><a href="#age">年齢制限</a></li>
+      <li><span>3.</span><a href="#drinking">飲酒に関する重要なお願い</a></li>
+      <li><span>4.</span><a href="#terms">利用規約</a></li>
+      <li><span>5.</span><a href="#liability">免責事項</a></li>
+      <li><span>6.</span><a href="#purchase">課金・買い切りについて</a></li>
+      <li><span>7.</span><a href="#privacy">プライバシーポリシー</a></li>
+      <li><span>8.</span><a href="#contact">お問い合わせ</a></li>
+    </ol>
+  </nav>
+
+  <section id="about">
+    <h2 class="sec"><span>1</span>本アプリについて</h2>
+    <p>「カンパイ！」（以下「本アプリ」）は、飲み会・宅飲みなどの場で楽しむ、オフライン・一台のスマートフォンを回して遊ぶパーティーゲーム集です。本アプリはインターネット接続を必要とせず、ゲームの進行に関する情報を外部サーバーへ送信しません（広告配信に関する例外は第7章をご覧ください）。</p>
+  </section>
+
+  <section id="age">
+    <h2 class="sec"><span>2</span>年齢制限</h2>
+    <p>本アプリはお酒を伴う遊びを題材としています。日本の法律では飲酒は20歳以上と定められています。本アプリは20歳以上の方のみご利用いただけます。初回起動時に年齢確認を行います。</p>
+    <p>未成年者の飲酒は法律で禁止されています。20歳未満の方は、本アプリ内で飲酒を伴う遊びを行わないでください。</p>
+  </section>
+
+  <section id="drinking">
+    <h2 class="sec"><span>3</span>飲酒に関する重要なお願い</h2>
+    <div class="callout">
+      <b>飲む・飲まないは、常にあなたの自由です。</b> 本アプリが飲酒を強制することは一切ありません。ゲーム中の「負け」には、必ず飲酒以外の選択肢（ソフトドリンク、または罰ゲーム）が用意されています。
+    </div>
+    <ul>
+      <li>お酒は適量を守り、体調とよく相談してください。</li>
+      <li>一気飲みは絶対にやめましょう。急性アルコール中毒は命に関わります。</li>
+      <li>飲酒の強要は、いかなる場面でも行わないでください。</li>
+      <li>体調が優れないとき、妊娠中・授乳中の方、車を運転する方は飲酒をお控えください。</li>
+    </ul>
+    <p>本アプリは楽しく安全にお酒の場を過ごすための道具です。参加者みなさまの健康と安全を最優先にお楽しみください。</p>
+  </section>
+
+  <section id="terms">
+    <h2 class="sec"><span>4</span>利用規約</h2>
+    <p>本アプリをダウンロードまたは利用した時点で、利用者は本規約に同意したものとみなされます。</p>
+    <h3>4.1 ライセンス</h3>
+    <p>開発者は利用者に対し、本アプリを個人的かつ非商業的な目的で利用する、譲渡不能・非独占的な権利を許諾します。</p>
+    <h3>4.2 禁止事項</h3>
+    <p>利用者は、次の行為を行ってはなりません。</p>
+    <ul>
+      <li>本アプリの複製、改変、リバースエンジニアリング、再配布。</li>
+      <li>法令または公序良俗に反する目的での利用。</li>
+      <li>他者への飲酒の強要など、他者の健康や安全を害する利用。</li>
+    </ul>
+    <h3>4.3 規約の変更</h3>
+    <p>開発者は、必要に応じて本規約を変更することができます。変更後の規約は、本ページに掲載した時点で効力を生じます。</p>
+  </section>
+
+  <section id="liability">
+    <h2 class="sec"><span>5</span>免責事項</h2>
+    <p>本アプリは現状有姿で提供され、開発者は本アプリの完全性、正確性、有用性、特定目的への適合性について、明示または黙示を問わず、いかなる保証も行いません。</p>
+    <div class="callout">
+      <b>飲酒は自己責任です。</b> 本アプリの利用または飲酒によって生じたいかなる損害（健康被害、事故、対人トラブルを含みますがこれらに限りません）についても、開発者は一切の責任を負いません。
+    </div>
+    <p>利用者は、自らの判断と責任において本アプリを利用するものとします。</p>
+  </section>
+
+  <section id="purchase">
+    <h2 class="sec"><span>6</span>課金・買い切りについて</h2>
+    <p>本アプリは無料でダウンロードでき、広告付きで全機能をご利用いただけます。</p>
+    <ul>
+      <li>アプリ内課金「広告を非表示」は、<b>一度きりの買い切り（¥370）</b>です。月額・年額などの継続課金（サブスクリプション）は一切ありません。</li>
+      <li>購入後は、同じApple IDで「購入を復元」から復元できます。</li>
+      <li>課金の決済・返金は、Apple社の定めるポリシーに従います。返金をご希望の場合はApple社へお問い合わせください。</li>
+    </ul>
+  </section>
+
+  <section id="privacy">
+    <h2 class="sec"><span>7</span>プライバシーポリシー</h2>
+    <p>本アプリは、利用者のプライバシーを尊重します。ゲームの遊び方に関する情報（参加者名、オリジナル罰ゲーム、設定など）は、すべて利用者の端末内にのみ保存され、外部へ送信されません。</p>
+    <h3>7.1 端末内に保存される情報</h3>
+    <ul>
+      <li>参加者の名前、オリジナル罰ゲーム、各種設定、購入状態。</li>
+      <li>これらは端末内のストレージに保存され、開発者や第三者が閲覧することはできません。</li>
+    </ul>
+    <h3>7.2 広告について</h3>
+    <p>本アプリは、Google社が提供する広告サービス「Google AdMob」を利用しています。広告の配信のため、AdMobは広告識別子などの情報を取得することがあります。詳細はGoogle社のポリシーをご確認ください。</p>
+    <ul>
+      <li>Google のプライバシーポリシー：<a class="inl" href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></li>
+      <li>広告におけるデータ利用：<a class="inl" href="https://policies.google.com/technologies/ads">https://policies.google.com/technologies/ads</a></li>
+    </ul>
+    <p>iOSでは、アプリのトラッキングの許可を求めるダイアログ（App Tracking Transparency）が表示されます。トラッキングを許可しない場合でも、本アプリはそのままご利用いただけます（表示される広告が最適化されない場合があります）。「広告を非表示」を購入すると、広告は表示されなくなります。</p>
+    <h3>7.3 お子様のプライバシー</h3>
+    <p>本アプリは20歳以上の方を対象としており、お子様を対象としていません。</p>
+  </section>
+
+  <section id="contact">
+    <h2 class="sec"><span>8</span>お問い合わせ</h2>
+    <p>本アプリ、本規約、またはプライバシーに関するお問い合わせは、以下までご連絡ください。</p>
+    <p>開発者：（開発者名 / 事業者名をここに記載）<br>連絡先：（連絡先メールアドレスをここに記載）</p>
+  </section>
+
+  <footer>
+    <p>© 2026 カンパイ！ 　本ページは利用規約・免責事項・プライバシーポリシーを兼ねています。飲酒は20歳から。適量を守り、楽しくカンパイ！</p>
+  </footer>
+</div>
+</body>
+</html>

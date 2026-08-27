@@ -1,4 +1,6 @@
 // v1 game registry. Anchor = 山手線ゲーム. All offline, single-phone, pass-around.
+import type { IconName } from '@/components/Icon';
+
 export type GameId =
   | 'yamanote'
   | 'roulette'
@@ -11,10 +13,11 @@ export type GameDef = {
   id: GameId;
   title: string;
   subtitle: string;
-  emoji: string;
+  icon: IconName;
   needsRoster: boolean; // true => require player names before playing
   minPlayers: number;
   status: 'playable' | 'stub'; // scaffold marker; flip to 'playable' as each is built
+  rules: string[]; // shown by the ルール button on the home tile (no need to open the game)
 };
 
 export const GAMES: GameDef[] = [
@@ -22,54 +25,84 @@ export const GAMES: GameDef[] = [
     id: 'yamanote',
     title: '山手線ゲーム',
     subtitle: 'お題に沿って順番に答える定番',
-    emoji: '🚃',
+    icon: 'game-yamanote',
     needsRoster: false,
     minPlayers: 2,
     status: 'playable',
+    rules: [
+      'お題を1つ引き、テンポよく順番に答えていきます。',
+      '詰まる・被る・リズムを外したら負け。',
+      '負けた人は 罰ゲーム。',
+    ],
   },
   {
     id: 'roulette',
     title: 'ロシアンルーレット',
     subtitle: 'スマホを回して…爆発するのは誰だ',
-    emoji: '💣',
+    icon: 'game-roulette',
     needsRoster: false,
     minPlayers: 2,
     status: 'playable',
+    rules: [
+      'スタートしたらスマホを隣へ回していきます。',
+      'ランダムな数秒後に爆発。そのとき持っていた人が負け。',
+      '負けた人は 罰ゲーム。',
+    ],
   },
   {
     id: 'highlow',
     title: '高低（ハイ&ロー）',
     subtitle: '次のカードは上か下か',
-    emoji: '🃏',
+    icon: 'game-highlow',
     needsRoster: false,
     minPlayers: 1,
     status: 'playable',
+    rules: [
+      '表示されたカードより、次が上（ハイ）か下（ロー）かを予想。',
+      '当たれば次の人へ、外れたら負け。',
+      '負けた人は 罰ゲーム。',
+    ],
   },
   {
     id: 'chinchiro',
     title: 'チンチロ',
     subtitle: 'サイコロ3つで勝負',
-    emoji: '🎲',
+    icon: 'game-chinchiro',
     needsRoster: false,
     minPlayers: 1,
     status: 'playable',
+    rules: [
+      '順番に3つのサイコロを振り、出た役で勝負します。',
+      'シゴロ（4-5-6）やゾロ目は強い役、ヒフミ（1-2-3）や目なしは弱い役。',
+      '一番弱い役の人が 罰ゲーム。',
+    ],
   },
   {
     id: 'kingscup',
     title: 'キングスカップ',
     subtitle: 'カードごとにルールが発動',
-    emoji: '👑',
+    icon: 'game-kingscup',
     needsRoster: false,
     minPlayers: 2,
     status: 'playable',
+    rules: [
+      '中央に空のコップを1つ用意します。山札から1枚引き、出た数字のルールに従います。',
+      'K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。',
+      '4枚目のKを引いた人が中央のコップを飲みほします。',
+    ],
   },
   {
     id: 'anketo',
     title: '匿名アンケート',
     subtitle: '「誰が一番◯◯？」をこっそり投票',
-    emoji: '🗳️',
+    icon: 'game-anketo',
     needsRoster: true,
     minPlayers: 3,
     status: 'playable',
+    rules: [
+      'お題にスマホを回して、1人ずつこっそり投票します。',
+      '全員の投票が終わると集計を発表。',
+      '最多得票の人が 罰ゲーム。',
+    ],
   },
 ];

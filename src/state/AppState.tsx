@@ -13,7 +13,7 @@ type AppStateShape = {
   roster: string[];
   setRoster: (names: string[]) => void;
 
-  penalties: string[]; // defaults + custom, deduped
+  penalties: string[]; // user-added only (no built-in defaults in v1), deduped
   customPenalties: string[];
   addCustomPenalty: (text: string) => void;
   removeCustomPenalty: (text: string) => void;

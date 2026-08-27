@@ -2,15 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
+import { Icon, IconName } from '@/components/Icon';
 import { T, Button } from '@/components/ui';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
 
 // チンチロ: pass-around multiplayer. Each seat rolls 3 dice in turn; roles are scored
-// and compared; the lowest roll → 飲む or 罰ゲーム. Seat-based (no names needed).
+// and compared; the lowest roll → 罰ゲーム. Seat-based (no names needed).
 
 const d = () => 1 + Math.floor(Math.random() * 6);
-const pip = (n: number) => '⚀⚁⚂⚃⚄⚅'[n - 1];
 
 type Roll = { dice: [number, number, number]; label: string; score: number; kind: 'good' | 'normal' | 'bad' };
 
@@ -80,7 +80,7 @@ export function ChinchiroGame() {
       {phase === 'setup' && (
         <View style={styles.center}>
           <T dim style={styles.help}>
-            順番にサイコロを振って役を勝負。一番弱い人が 飲む or 罰ゲーム。
+            3つのサイコロを振って役を出そう。{'\n'}一番弱い役の人は 罰ゲーム。
           </T>
           <T size={font.small} dim>
             人数
@@ -91,7 +91,7 @@ export function ChinchiroGame() {
                 −
               </T>
             </Pressable>
-            <T size={font.title} bold style={{ minWidth: 60, textAlign: 'center' }}>
+            <T size={font.title} black style={{ minWidth: 60, textAlign: 'center' }}>
               {players}
             </T>
             <Pressable style={styles.stepBtn} onPress={() => setPlayers((p) => Math.min(8, p + 1))}>
@@ -106,8 +106,8 @@ export function ChinchiroGame() {
 
       {phase === 'handoff' && (
         <View style={styles.center}>
-          <T size={56}>🎲</T>
-          <T size={font.title} bold>
+          <Icon name="dice" size={52} color={colors.text} />
+          <T size={font.title} display>
             {seat + 1}人目
           </T>
           <T dim style={styles.help}>
@@ -122,8 +122,12 @@ export function ChinchiroGame() {
           <T dim size={font.small}>
             {seat + 1}人目の結果
           </T>
-          <T size={64}>{current.dice.map(pip).join(' ')}</T>
-          <T size={font.heading} bold style={{ color: tint(current.kind), textAlign: 'center' }}>
+          <View style={styles.diceRow}>
+            {current.dice.map((v, i) => (
+              <Icon key={i} name={`die-${v}` as IconName} size={46} color={tint(current.kind)} />
+            ))}
+          </View>
+          <T display size={20} style={{ color: tint(current.kind), textAlign: 'center' }}>
             {current.label}
           </T>
           <Button title="振り直し" kind="ghost" onPress={roll} />
@@ -147,7 +151,11 @@ export function ChinchiroGame() {
                 style={[styles.resultRow, i === loserSeat && { borderColor: colors.danger, borderWidth: 1 }]}
               >
                 <T>{i + 1}人目</T>
-                <T size={font.small}>{r.dice.map(pip).join('')}</T>
+                <View style={styles.diceRowSmall}>
+                  {r.dice.map((v, i) => (
+                    <Icon key={i} name={`die-${v}` as IconName} size={22} color={tint(r.kind)} />
+                  ))}
+                </View>
                 <T bold style={{ color: tint(r.kind) }}>
                   {r.label}
                 </T>
@@ -165,6 +173,8 @@ export function ChinchiroGame() {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
   help: { textAlign: 'center', lineHeight: 22 },
+  diceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
+  diceRowSmall: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   stepBtn: {
     width: 56,

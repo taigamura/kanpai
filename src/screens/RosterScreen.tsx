@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
+import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
 import type { GameId } from '@/data/games';
@@ -29,12 +29,12 @@ export function RosterScreen({ next }: { next: GameId }) {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <Screen>
       <View style={styles.header}>
         <Pressable onPress={nav.home} hitSlop={12}>
           <T bold>← 戻る</T>
         </Pressable>
-        <T size={font.heading} bold>
+        <T display size={font.heading}>
           参加者
         </T>
         <View style={{ width: 48 }} />
@@ -86,22 +86,23 @@ export function RosterScreen({ next }: { next: GameId }) {
           </T>
         )}
       </View>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: spacing.md,
   },
-  row: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg },
+  row: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg, marginTop: spacing.sm },
   input: {
     flex: 1,
     backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.lg,
     color: colors.text,
@@ -112,6 +113,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

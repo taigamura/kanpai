@@ -1,17 +1,8 @@
-// 罰ゲーム = the NON-alcoholic alternative. Core safeguard: the loser may choose
-// 「飲む」 OR one of these. Drinking is never forced. Keep these clean (no 下ネタ in v1),
-// light, and doable at an izakaya table.
-export const DEFAULT_PENALTIES: string[] = [
-  'モノマネを1つ披露する',
-  '一番左の人の good なところを3つ言う',
-  '変顔を10秒キープ',
-  'スマホの最新の写真をみんなに見せる',
-  '好きなタイプを正直に言う',
-  '次の1杯は相手が選んだドリンク（ノンアルOK）',
-  '10秒間、全力でカンパイの音頭をとる',
-  '隣の人と席を交換する',
-  '一発ギャグを1つ',
-  '今日の飲み会を一言でまとめる',
-  '尊敬している人の名前を叫ぶ',
-  '手拍子でリズムを作り、全員に真似してもらう',
-];
+// 罰ゲーム = the NON-alcoholic alternative activity a loser may choose instead of 飲む.
+//
+// v1 DECISION (2026-08-27): ship NO built-in 罰ゲーム. The 罰ゲーム pool is entirely
+// user-supplied — a penalty only appears once the group adds their own in 設定. This keeps
+// the app from shipping/curating penalty content (nothing for App Review to object to) and
+// makes every 罰ゲーム the group's own. Until one is added, a loss offers the 飲む option
+// only (soft drink is always OK), so the non-alcoholic out still exists via "飲まなくてOK".
+export const DEFAULT_PENALTIES: string[] = [];

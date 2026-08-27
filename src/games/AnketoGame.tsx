@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
+import { Icon } from '@/components/Icon';
 import { T, Button } from '@/components/ui';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { ANKETO_QUESTIONS } from '@/data/anketoQuestions';
@@ -9,7 +10,7 @@ import { useAppState } from '@/state/AppState';
 import { PenaltyReveal } from './PenaltyReveal';
 
 // 匿名アンケート（押したの誰だ風）: pass the phone around; each player secretly votes for
-// one person; the tally is revealed at the end. Top-voted → 飲む or 罰ゲーム.
+// one person; the tally is revealed at the end. Top-voted → 罰ゲーム.
 //
 // Secrecy is enforced by a hand-off cover screen between voters: the ballot only appears
 // after the named voter taps to reveal it, and the pick immediately advances to the next
@@ -62,7 +63,7 @@ export function AnketoGame() {
     <GameFrame title="匿名アンケート">
       {phase === 'intro' && (
         <View style={styles.center}>
-          <T size={font.heading} bold style={styles.q}>
+          <T size={font.heading} black style={styles.q}>
             {question}
           </T>
           <T dim style={styles.help}>
@@ -78,8 +79,8 @@ export function AnketoGame() {
 
       {phase === 'handoff' && (
         <View style={styles.center}>
-          <T size={56}>📱➡️</T>
-          <T size={font.title} bold>
+          <Icon name="pass-phone" size={64} color={colors.accent} />
+          <T size={font.title} display style={styles.q}>
             {voter} さんへ
           </T>
           <T dim style={styles.help}>
@@ -98,7 +99,7 @@ export function AnketoGame() {
           <T dim size={font.small}>
             {voter} さんの投票（{voterIndex + 1}/{roster.length}）
           </T>
-          <T size={font.heading} bold style={styles.q}>
+          <T size={font.heading} black style={styles.q}>
             {question}
           </T>
           <View style={styles.options}>
@@ -108,6 +109,9 @@ export function AnketoGame() {
               </Pressable>
             ))}
           </View>
+          <T dim size={font.small} style={styles.foot}>
+            こっそり選んでね。タップした瞬間に次の人へ。
+          </T>
         </View>
       )}
 
@@ -116,12 +120,15 @@ export function AnketoGame() {
           <T dim size={font.small}>
             結果発表
           </T>
-          <T size={font.heading} bold style={styles.q}>
+          <T size={font.heading} black style={styles.q}>
             {question}
           </T>
           <View style={styles.results}>
             {tally.entries.map(([name, n]) => (
-              <View key={name} style={styles.resultRow}>
+              <View
+                key={name}
+                style={[styles.resultRow, tally.winners.includes(name) && styles.resultRowWin]}
+              >
                 <T>{name}</T>
                 <T bold style={{ color: colors.accent }}>
                   {n}票
@@ -147,18 +154,27 @@ const styles = StyleSheet.create({
   options: { gap: spacing.sm },
   option: {
     backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.md,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
+  foot: { textAlign: 'center', marginTop: spacing.sm },
   results: { width: '100%', gap: spacing.sm, marginVertical: spacing.md },
   resultRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.line,
     borderRadius: radius.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
+  },
+  resultRowWin: {
+    borderColor: colors.accentLine,
   },
 });

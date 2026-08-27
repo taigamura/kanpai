@@ -1,0 +1,238 @@
+<title>カンパイ！ Beer-Glass UI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<style>
+  :root{
+    --ground:#1b2c4d;--ground-2:#233a63;--red:#FF5D66;--gold:#F7C64E;
+    --cream:#FCF5EA;--dim:#9db0d1;--line:rgba(252,245,234,.13);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:clamp(22px,4vw,52px) clamp(16px,4vw,40px) 80px;
+    background:
+      radial-gradient(60vw 40vw at 12% -5%,rgba(247,198,78,.14),transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%,rgba(255,93,102,.10),transparent 58%),
+      var(--ground)}
+  .wrap{max-width:1220px;margin:0 auto}
+  .ms{font-family:'Material Symbols Outlined';font-weight:normal;line-height:1;
+    -webkit-font-feature-settings:'liga';font-feature-settings:'liga';vertical-align:middle;display:inline-flex}
+
+  .mast{display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+  .kick{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .logo-h{font-family:"Dela Gothic One",sans-serif;font-size:clamp(34px,6vw,60px);line-height:1}
+  .logo-h .bang{color:var(--red)}
+  .lead{font-size:14.5px;color:var(--dim);max-width:66ch;line-height:1.7}
+  .note{font-size:12.5px;color:var(--dim);border-left:2px solid var(--gold);padding-left:12px;max-width:70ch;line-height:1.6}
+
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));
+    gap:clamp(28px,4vw,44px);justify-items:center;margin-top:40px}
+  .slot{display:flex;flex-direction:column;gap:14px;width:100%;max-width:292px}
+  .cap b{font-size:15px;font-weight:900;display:block}
+  .cap b .en{font-family:"Zen Kaku Gothic New";font-weight:700;color:var(--gold);font-size:12px;margin-left:8px;letter-spacing:.04em}
+  .cap span{font-size:12.5px;color:var(--dim);line-height:1.55;display:block;margin-top:3px}
+
+  /* ---------- phone ---------- */
+  .phone{position:relative;width:100%;aspect-ratio:9/19.3;border-radius:42px;padding:9px;
+    background:#0e1526;box-shadow:0 30px 60px -22px rgba(0,0,0,.75),0 0 0 1px rgba(251,243,231,.06) inset}
+  .screen{position:relative;width:100%;height:100%;border-radius:33px;overflow:hidden;
+    background:#1a1206;--ink:#3a1e06;--tbg:rgba(255,255,255,.17);--tbd:rgba(255,255,255,.42);--tink:var(--ink)}
+  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:33%;height:20px;
+    background:#0e1526;border-radius:0 0 14px 14px;z-index:20}
+  .liquid,.foam,.facets,.frost,.shine,.bubbles{position:absolute;inset:0;pointer-events:none}
+  .liquid{background:linear-gradient(180deg,var(--beer-top),var(--beer-bot))}
+  .shine{background:linear-gradient(112deg,transparent 30%,rgba(255,255,255,.13) 41%,transparent 50%,transparent 68%,rgba(255,255,255,.07) 76%,transparent 84%)}
+  /* foam head */
+  .foam{height:var(--foam-h,74px);inset:0 0 auto 0;
+    background:linear-gradient(180deg,#ffffff, var(--foam,#fbf3e0))}
+  .foam::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:20px;
+    background:radial-gradient(circle at 11px 0, var(--foam,#fbf3e0) 10px, transparent 11px) repeat-x;
+    background-size:22px 20px}
+  /* rising carbonation */
+  .bub{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);
+    box-shadow:0 0 0 .5px rgba(255,255,255,.25);animation:rise linear infinite;bottom:-8px}
+  @keyframes rise{0%{transform:translateY(0) scale(.8);opacity:0}
+    12%{opacity:.85}80%{opacity:.7}100%{transform:translateY(-560px) scale(1.15);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.bub{animation:none;opacity:.5}}
+
+  /* ---------- UI on the beer ---------- */
+  .ui{position:relative;z-index:6;display:flex;flex-direction:column;height:100%;
+    padding:32px 15px 16px;color:var(--ink)}
+  .hrow{display:flex;align-items:flex-start;justify-content:space-between}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:25px;line-height:1;color:var(--ink)}
+  .logo .bang{color:var(--red)}
+  .sub{font-size:10px;margin-top:5px;opacity:.72}
+  .gear{font-size:22px;color:var(--ink);opacity:.85}
+  .tiles{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .tile{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:15px;
+    background:var(--tbg);border:1px solid var(--tbd);color:var(--tink);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .tile .ti{font-size:23px;color:var(--tink)}
+  .tile .tt{flex:1;font-weight:900;font-size:14px}
+  .tile .chev{font-size:18px;opacity:.5}
+  .glasslabel{margin-top:auto;text-align:center;font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;opacity:.55;padding-top:10px}
+
+  /* rim highlight around the glass interior */
+  .screen::after{content:"";position:absolute;inset:0;border-radius:33px;pointer-events:none;z-index:8;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.10), inset 0 22px 30px -20px rgba(255,255,255,.5)}
+
+  /* =========================================================
+     CONCEPT 1 — 生ビール Lager: bright gold, thick lively foam
+     ========================================================= */
+  .c1{--beer-top:#F4C64F;--beer-bot:#E39A24;--foam:#FDF7E6;--foam-h:76px;--ink:#3c1f05}
+
+  /* =========================================================
+     CONCEPT 2 — ジョッキ Mug: dimpled faceted glass + handle
+     ========================================================= */
+  .c2{--beer-top:#ECB443;--beer-bot:#C6801F;--foam:#F7EBCF;--foam-h:60px;--ink:#3a1d04}
+  .c2 .facets{
+    background-image:
+      radial-gradient(circle at 32% 30%,rgba(255,255,255,.22),transparent 42%),
+      radial-gradient(circle at 70% 62%,rgba(0,0,0,.10),transparent 46%),
+      linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:52px 52px,52px 52px,52px 52px,52px 52px;
+    mix-blend-mode:soft-light;opacity:.85}
+  .c2 .handle{position:absolute;right:-3px;top:33%;width:38px;height:150px;z-index:0;
+    border:13px solid #C6801F;border-left:none;border-radius:0 44px 44px 0;
+    box-shadow:0 0 0 1px rgba(0,0,0,.15), inset -6px 0 8px -6px rgba(255,255,255,.6)}
+
+  /* =========================================================
+     CONCEPT 3 — クラフト Tulip: amber→ruby, thin gold rim, minimal foam
+     ========================================================= */
+  .c3{--beer-top:#E7A63C;--beer-bot:#A83E19;--foam:#F3E3C4;--foam-h:26px;--ink:#2a1206;
+    --tbg:rgba(255,246,230,.15);--tbd:rgba(255,246,230,.5)}
+  .c3 .screen::after,.c3.screen::after{box-shadow:inset 0 0 0 2px rgba(247,198,78,.55), inset 0 26px 34px -22px rgba(255,255,255,.4)}
+  .c3 .foam::after{background-size:16px 14px;bottom:-7px;height:14px}
+  .c3 .tiles{gap:11px;margin-top:22px}
+
+  /* =========================================================
+     CONCEPT 4 — ヘイジーIPA Hazy: cloudy orange, soft matte haze
+     ========================================================= */
+  .c4{--beer-top:#F6BC66;--beer-bot:#E5852F;--foam:#FBF1DD;--foam-h:66px;--ink:#4a2a0a}
+  .c4 .frost{background:
+      radial-gradient(60% 50% at 30% 30%,rgba(255,255,255,.22),transparent 60%),
+      radial-gradient(50% 40% at 80% 70%,rgba(255,240,210,.28),transparent 60%);
+    -webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px);mix-blend-mode:screen;opacity:.8}
+  .c4{--tbg:rgba(255,250,240,.28);--tbd:rgba(255,255,255,.55)}
+
+  /* =========================================================
+     CONCEPT 5 — キンキン Frosted: ice-cold, condensation droplets
+     ========================================================= */
+  .c5{--beer-top:#EEC556;--beer-bot:#D99B34;--foam:#F2F6FA;--foam-h:58px;--ink:#2b1a06}
+  .c5 .frost{background:linear-gradient(180deg,rgba(226,240,255,.42),rgba(210,232,255,.22));
+    mix-blend-mode:screen}
+  .c5 .drop{position:absolute;border-radius:50% 50% 55% 55%;
+    background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,.15));
+    box-shadow:inset 0 -1px 1px rgba(255,255,255,.6);z-index:7}
+
+  /* =========================================================
+     CONCEPT 6 — 黒ビール Stout: near-black nitro, tan cream head
+     ========================================================= */
+  .c6{--beer-top:#2c231d;--beer-bot:#0d0906;--foam:#E9D6AC;--foam-h:70px;--ink:#f4e6c6;
+    --tbg:rgba(255,255,255,.07);--tbd:rgba(233,214,172,.35);--tink:#f4e6c6}
+  .c6 .logo{color:#f4e6c6}
+  .c6 .gear{color:#f4e6c6}
+  .c6 .bub{background:rgba(233,214,172,.5)}
+  .c6 .screen::after{box-shadow:inset 0 0 0 2px rgba(233,214,172,.18), inset 0 22px 30px -20px rgba(233,214,172,.35)}
+
+  .legend{margin-top:54px;border-top:1px solid var(--line);padding-top:22px;color:var(--dim);
+    font-size:13px;line-height:1.8;max-width:80ch}
+  .legend b{color:var(--cream)}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="kick">Design exploration · 6 directions</div>
+    <h1 class="logo-h">ビアグラス<span class="bang"> UI</span></h1>
+    <p class="lead">Six ways to make the whole app read like the inside of a beer glass: an amber liquid ground, a foam head across the top, carbonation rising, and the game tiles floating as frosted-glass panels. Each is a different <b>kind</b> of beer + glass, not a recolor. Shown on the Home screen. Keeps the カンパイ！ type (Dela Gothic One) and vector icons.</p>
+    <p class="note">Pick one (or mix: e.g. "c1's foam + c3's rim"). Chosen direction gets built as the real theme, likely with the beer-fill as a live progress/atmosphere layer rather than static.</p>
+  </header>
+
+  <section class="gallery" id="gallery"></section>
+
+  <p class="legend">
+    <b>How this would work in the app:</b> the amber gradient + foam become the screen background token, so every screen (home, games, results) sits "inside the glass." The foam head can double as the safe-area/header band; carbonation can idle subtly and fizz up on a win or a 罰ゲーム reveal. <b>Trade-offs to weigh:</b> dark text on amber (c1–c5) is warm and legible but departs from the current cream-on-navy; the stout (c6) keeps light-on-dark like today but flips the mood premium/moody. Frosted tiles need a `backdrop-filter` fallback on older devices (already included). Tell me which to push.
+  </p>
+</div>
+
+<script>
+  var GAMES=[
+    ['train','山手線ゲーム'],
+    ['local_fire_department','ロシアンルーレット'],
+    ['casino','チンチロ'],
+    ['sports_bar','キングスカップ']
+  ];
+  function homeUI(){
+    var tiles=GAMES.map(function(g){
+      return '<div class="tile"><span class="ms ti">'+g[0]+'</span>'+
+        '<span class="tt">'+g[1]+'</span><span class="ms chev">chevron_right</span></div>';
+    }).join('');
+    return '<div class="ui">'+
+      '<div class="hrow"><div>'+
+        '<div class="logo">カンパイ<span class="bang">！</span></div>'+
+        '<div class="sub">飲み会・宅飲みゲーム集</div></div>'+
+        '<span class="ms gear">settings</span></div>'+
+      '<div class="tiles">'+tiles+'</div>'+
+      '<div class="glasslabel">one tap · 準備要らずで即スタート</div>'+
+    '</div>';
+  }
+
+  var CONCEPTS=[
+    {cls:'c1',jp:'生ビール',en:'Lager',note:'明るい黄金色 + たっぷりの泡。定番で王道の一杯。',bubbles:16,layers:''},
+    {cls:'c2',jp:'ジョッキ',en:'Mug',note:'面取りされたガラスと持ち手。ガッツリ居酒屋の生。',bubbles:10,handle:true,layers:'<div class="facets"></div>'},
+    {cls:'c3',jp:'クラフト',en:'Tulip',note:'琥珀→ルビーのグラデ、金の細いリム。上質でミニマル。',bubbles:7,layers:''},
+    {cls:'c4',jp:'ヘイジーIPA',en:'Hazy',note:'濁ったオレンジ、やわらかいマットな霞。今どき。',bubbles:6,layers:'<div class="frost"></div>'},
+    {cls:'c5',jp:'キンキン',en:'Frosted',note:'キンキンに冷えた曇りガラス + 水滴。清涼感。',bubbles:8,layers:'<div class="frost"></div>'},
+    {cls:'c6',jp:'黒ビール',en:'Stout',note:'漆黒のボディにクリームの泡。プレミアムで大人。',bubbles:9,layers:''}
+  ];
+
+  var rnd=function(a,b){return a+Math.random()*(b-a);};
+  var g=document.getElementById('gallery');
+  g.innerHTML=CONCEPTS.map(function(c){
+    return '<div class="slot"><div class="phone '+c.cls+'">'+
+      (c.handle?'<div class="handle"></div>':'')+
+      '<div class="notch"></div>'+
+      '<div class="screen '+c.cls+'">'+
+        '<div class="liquid"></div>'+
+        (c.layers||'')+
+        '<div class="bubbles"></div>'+
+        '<div class="foam"></div>'+
+        '<div class="shine"></div>'+
+        homeUI()+
+      '</div></div>'+
+      '<div class="cap"><b>'+c.jp+'<span class="en">'+c.en+'</span></b>'+
+        '<span>'+c.note+'</span></div>'+
+    '</div>';
+  }).join('');
+
+  // carbonation + condensation
+  document.querySelectorAll('.slot').forEach(function(slot,i){
+    var c=CONCEPTS[i];
+    var box=slot.querySelector('.bubbles');
+    for(var k=0;k<(c.bubbles||0);k++){
+      var b=document.createElement('div');b.className='bub';
+      var d=rnd(3,8);
+      b.style.width=d+'px';b.style.height=d+'px';
+      b.style.left=rnd(6,94)+'%';
+      b.style.animationDuration=rnd(3.5,7)+'s';
+      b.style.animationDelay=(-rnd(0,6))+'s';
+      box.appendChild(b);
+    }
+    if(c.cls==='c5'){ // condensation droplets on the frosted glass
+      var scr=slot.querySelector('.screen');
+      for(var j=0;j<14;j++){
+        var dp=document.createElement('div');dp.className='drop';
+        var s=rnd(3,7);
+        dp.style.width=s+'px';dp.style.height=(s*1.35)+'px';
+        dp.style.left=rnd(6,92)+'%';dp.style.top=rnd(10,88)+'%';
+        dp.style.opacity=rnd(.4,.85);
+        scr.appendChild(dp);
+      }
+    }
+  });
+</script>

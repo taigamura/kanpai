@@ -1,0 +1,474 @@
+<title>カンパイ！ Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<style>
+  :root{
+    --ground:#233A63;--ground-2:#2B4675;--surface:#334F82;--surface-2:#3E5C94;
+    --red:#FF5D66;--red-deep:#E24651;--gold:#F7C64E;--cream:#FCF5EA;--dim:#AEBFDC;
+    --line:rgba(252,245,234,.13);--gline:rgba(247,198,78,.4);--good:#4BD6A0;--danger:#FF7078;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:clamp(20px,4vw,44px) 16px 64px;
+    background:radial-gradient(60vw 40vw at 12% -5%,rgba(255,93,102,.14),transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%,rgba(247,198,78,.12),transparent 58%),var(--ground)}
+  .wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px}
+  .ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';-webkit-font-smoothing:antialiased;vertical-align:middle;display:inline-flex}
+
+  .mast{text-align:center;display:flex;flex-direction:column;gap:8px}
+  .kicker{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:clamp(30px,6vw,44px);line-height:1}
+  .logo .bang{color:var(--red)}
+  .lead{font-size:13.5px;color:var(--dim);max-width:52ch;line-height:1.65}
+
+  /* flow map */
+  .flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;font-size:11.5px}
+  .flow .step{padding:6px 12px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:var(--surface)}
+  .flow .step.on{color:var(--ground);background:var(--gold);border-color:var(--gold);font-weight:900}
+  .flow .arw{color:var(--dim);opacity:.6}
+
+  /* phone */
+  .phone{position:relative;width:min(340px,92vw);aspect-ratio:9/19.3;background:#14233F;border-radius:42px;
+    padding:10px;box-shadow:0 34px 70px -22px rgba(0,0,0,.75),0 0 0 1px rgba(251,243,231,.06) inset}
+  .screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:var(--ground);display:flex;flex-direction:column}
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:33%;height:22px;background:#14233F;border-radius:0 0 14px 14px;z-index:20}
+  .glow{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(70% 40% at 20% 0%,rgba(255,77,87,.20),transparent 60%),
+      radial-gradient(60% 40% at 100% 8%,rgba(245,194,66,.11),transparent 55%)}
+  .sc-pad{position:relative;z-index:2;display:flex;flex-direction:column;height:100%;padding:38px 18px 18px;overflow-y:auto}
+
+  /* atoms (mirror app) */
+  .s-logo{font-family:"Dela Gothic One",sans-serif;color:var(--cream);line-height:1}
+  .s-logo .bang{color:var(--red)}
+  .s-sub{font-size:10.5px;color:var(--dim);margin-top:5px}
+  .row{display:flex;align-items:center;justify-content:space-between}
+  .topbar{font-size:12px;font-weight:700;color:var(--cream)}
+  .topbar .ti{font-family:"Dela Gothic One",sans-serif;font-size:15px}
+  .gear{width:30px;height:30px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:14px;border:none;cursor:pointer}
+  .tiles{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 10px 10px 13px;display:flex;gap:8px;align-items:center;position:relative;text-align:left;width:100%;color:var(--cream)}
+  .tilemain{flex:1;display:flex;gap:11px;align-items:center;background:none;border:none;color:var(--cream);text-align:left;cursor:pointer;padding:0;font-family:inherit}
+  .tilemain:hover .tt{color:var(--gold)}
+  .rulebtn{width:38px;height:38px;flex:none;display:grid;place-items:center;border:none;color:var(--gold);background:none;border-radius:999px;cursor:pointer;font-family:inherit}
+  .rulebtn:hover{background:rgba(247,198,78,.12)}
+  .rulebtn svg{display:block}
+  .rmodal{position:absolute;inset:0;background:rgba(0,0,0,.58);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}
+  .rcard{background:var(--ground-2);border:1px solid var(--line);border-radius:20px;padding:18px;width:100%}
+  .rhead{display:flex;align-items:center;gap:12px}
+  .rtitle{font-family:"Dela Gothic One",sans-serif;font-size:18px}
+  .rlabel{font-size:10px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin:14px 0 8px}
+  .rrow{display:flex;gap:4px;font-size:12.5px;line-height:1.7;margin-top:4px;color:var(--cream)}
+  .rdot{color:var(--gold)}
+  .tile .em{font-size:24px}
+  .tile .tt{font-family:"Zen Kaku Gothic New";font-weight:900;font-size:14px}
+  .tile .ts{font-size:10px;color:var(--dim);margin-top:2px;line-height:1.35}
+  .badge{position:absolute;top:9px;right:11px;font-size:8.5px;font-weight:700;color:var(--gold);border:1px solid var(--gline);border-radius:999px;padding:2px 7px}
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+  .big-em{font-size:70px;line-height:1}
+  .odai-label{font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .odai{font-family:"Dela Gothic One",sans-serif;font-size:32px;color:var(--cream);line-height:1.14}
+  .kick{font-size:11px;color:var(--dim);line-height:1.6;max-width:24ch}
+  .foot{font-size:9.5px;color:var(--dim);text-align:center;margin-top:auto;padding-top:10px;line-height:1.5}
+  .qbig{font-family:"Dela Gothic One",sans-serif;font-size:21px;line-height:1.3;text-align:center}
+  .result{font-family:"Dela Gothic One",sans-serif;font-size:20px}
+  .dice{font-size:44px;letter-spacing:6px}
+  .terms{font-size:9.5px;color:var(--dim);line-height:1.7;text-align:left}
+  .stack{display:flex;flex-direction:column;gap:10px;width:100%}
+  .pill{display:inline-block;font-size:10.5px;color:var(--gold);border:1px solid var(--gline);border-radius:999px;padding:4px 12px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px;width:100%}
+  .card h4{font-size:13px;font-weight:900;margin-bottom:4px}
+  .card p{font-size:10.5px;color:var(--dim);line-height:1.5}
+  .chip{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:12px;display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+  .vote{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 15px;font-weight:700;font-size:13px;text-align:left;color:var(--cream);cursor:pointer}
+  .vote:hover{border-color:var(--gline)}
+  .tally{display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:12.5px;margin-top:7px}
+  .tally b{color:var(--gold);font-weight:900}
+  .tally.win{border-color:var(--gline)}
+  .pcard{width:96px;height:132px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;font-family:"Dela Gothic One",sans-serif;font-size:34px;box-shadow:0 12px 24px -12px rgba(0,0,0,.6);margin:0 auto}
+  .pcard.red{color:var(--danger)}
+  .inp{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 15px;font-size:12px;color:var(--dim)}
+
+  /* buttons */
+  .btn{border-radius:999px;padding:13px;text-align:center;font-weight:900;font-size:14px;border:none;cursor:pointer;width:100%;font-family:inherit}
+  .btn-red{background:var(--red);color:#fff}
+  .btn-gold{background:var(--gold);color:#2A1206}
+  .btn-ghost{background:transparent;border:1px solid var(--dim);color:var(--cream)}
+  .btnrow{display:flex;gap:10px;width:100%}
+  .btnrow .btn{flex:1}
+
+  .controls{display:flex;gap:10px;align-items:center}
+  .ctl{font-size:12.5px;color:var(--dim);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer;font-family:inherit}
+  .ctl:hover{color:var(--cream);border-color:var(--gline)}
+  .hint{font-size:12px;color:var(--dim);text-align:center;max-width:44ch;line-height:1.6}
+  .hint b{color:var(--gold)}
+</style>
+
+<div class="wrap">
+  <div class="mast">
+    <div class="kicker">Interactive prototype · current build</div>
+    <div class="logo">カンパイ<span class="bang">！</span></div>
+    <div class="lead">A tappable mirror of the app as it stands now. Tap through the real flow: 年齢確認 → ホーム → any game → 結果. This runs the actual restyled UI (fonts, glow, tiles, cards, 罰ゲーム pills).</div>
+  </div>
+
+  <div class="flow" id="flow"></div>
+
+  <div class="phone"><div class="notch"></div><div class="screen"><div class="glow"></div>
+    <div class="sc-pad" id="screen"></div>
+  </div></div>
+
+  <div class="controls">
+    <button class="ctl" id="back">← 戻る</button>
+    <button class="ctl" id="reset">最初から（リセット）</button>
+  </div>
+  <div class="hint" id="hint"></div>
+</div>
+
+<script>
+(function(){
+  // ---------- content ----------
+  var THEMES=['寿司のネタ','都道府県の名前','カクテルの名前','ラーメンの種類','ジブリ作品','コンビニの商品'];
+  var QUESTIONS=['誰が一番お酒に強そう？','誰が一番モテそう？','誰が一番寝坊しそう？','誰が一番アイドルになれそう？'];
+  var PENALTIES=['モノマネを1つ披露','変顔を10秒キープ','一発ギャグ','好きなタイプを言う','スマホの最新の写真を見せる'];
+  var ROSTER=['ゆうた','さき','けんじ','みお'];
+  var SUITS=['♠','♥','♦','♣'];
+  var RANKS={1:'A',11:'J',12:'Q',13:'K'};
+  var KRULES={2:['2・You','誰か1人を指名。その人が 罰ゲーム'],3:['3・Me','自分が 罰ゲーム'],
+    9:['9・韻','お題に韻を踏む。詰まったら 罰ゲーム'],13:['K・キング','中央のコップに、自分の飲みものを少し注ぐ']};
+  var rand=function(a){return a[Math.floor(Math.random()*a.length)];};
+  var esc=function(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});};
+  // Material Symbols icon helper (mirrors the app's semantic Icon component).
+  var ic=function(name,size,color){return '<span class="ms" style="font-size:'+(size||24)+'px'+(color?';color:'+color:'')+'">'+name+'</span>';};
+  var INFO=ic('info',24);
+
+  // ---------- state ----------
+  var S={};                 // per-game scratch
+  var stack=['agegate'];    // nav history
+  // g[1] = Material Symbol name (matches the app's semantic icons)
+  var GAMES=[
+    ['yamanote','train','山手線ゲーム','お題に沿って順番に答える定番'],
+    ['roulette','local_fire_department','ロシアンルーレット','スマホを回して…爆発は誰だ'],
+    ['highlow','playing_cards','高低（ハイ&ロー）','次のカードは上か下か'],
+    ['chinchiro','casino','チンチロ','サイコロ3つで勝負'],
+    ['kingscup','sports_bar','キングスカップ','カードごとにルール発動'],
+    ['anketo','how_to_vote','匿名アンケート','誰が一番◯◯？こっそり投票']
+  ];
+  var RULES={
+    yamanote:['お題を1つ引き、テンポよく順番に答えていきます。','詰まる・被る・リズムを外したら負け。','負けた人は 罰ゲーム。'],
+    roulette:['スタートしたらスマホを隣へ回していきます。','ランダムな数秒後に爆発。そのとき持っていた人が負け。','負けた人は 罰ゲーム。'],
+    highlow:['表示されたカードより、次が上（ハイ）か下（ロー）かを予想。','当たれば次の人へ、外れたら負け。','負けた人は 罰ゲーム。'],
+    chinchiro:['順番に3つのサイコロを振り、出た役で勝負します。','シゴロやゾロ目は強い役、ヒフミや目なしは弱い役。','一番弱い役の人が 罰ゲーム。'],
+    kingscup:['中央に空のコップを1つ用意します。山札から1枚引き、出た数字のルールに従います。','K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。','4枚目のKを引いた人が中央のコップを飲みほします。'],
+    anketo:['お題にスマホを回して、1人ずつこっそり投票します。','全員の投票が終わると集計を発表。','最多得票の人が 罰ゲーム。']
+  };
+
+  // penalty sub-block (the 飲む-or-罰ゲーム safeguard)
+  function penalty(loser){
+    var p=S._pen;
+    return '<div class="stack" style="gap:10px;align-items:center">'+
+      '<div class="result" style="color:var(--danger)">'+esc(loser)+'</div>'+
+      (p?'<div class="pill">罰ゲーム：'+esc(p)+'</div>'
+        :'<button class="btn btn-gold" data-act="drawpen">罰ゲームを引く</button>')+
+      '</div>';
+  }
+  function gameNotice(){return '<div class="foot">飲みすぎ注意・体調と相談して。飲むかどうかは自由です。</div>';}
+  function topbar(title){return '<div class="row topbar"><button class="ctl" style="padding:2px 6px;border:none;background:none" data-go="home">← 戻る</button><span class="ti">'+title+'</span><span style="width:32px"></span></div>';}
+
+  // ---------- screens ----------
+  var SCREENS={
+    agegate:function(){
+      return '<div class="center" style="justify-content:center">'+
+        '<div class="s-logo" style="font-size:42px">カンパイ<span class="bang">！</span></div>'+
+        '<div class="s-sub">飲み会・宅飲みパーティーゲーム集</div>'+
+        '<div class="qbig" style="margin-top:22px">あなたは<br>20歳以上ですか？</div>'+
+        '<p class="terms">お酒を伴う遊びを含みます。飲む・飲まないは常に自由で、アプリが飲酒を強制することはありません。適量を守り、一気飲みはやめましょう。利用によって生じた結果について開発者は責任を負いません。</p>'+
+        '</div>'+
+        '<div class="stack"><button class="btn btn-gold" data-go="home">はい（20歳以上）</button>'+
+        '<button class="btn btn-ghost" data-act="noop">利用規約を読む</button></div>';
+    },
+    home:function(){
+      var t=GAMES.map(function(g){
+        return '<div class="tile">'+
+          '<button class="tilemain" data-game="'+g[0]+'"><span class="em">'+ic(g[1],26,'var(--cream)')+'</span>'+
+          '<div style="flex:1"><div class="tt">'+g[2]+'</div><div class="ts">'+g[3]+'</div></div></button>'+
+          '<button class="rulebtn" data-rules="'+g[0]+'" aria-label="'+esc(g[2])+' のルール">'+INFO+'</button>'+
+          '</div>';
+      }).join('');
+      var modal='';
+      if(S._rules){
+        var g=GAMES.filter(function(x){return x[0]===S._rules;})[0];
+        var rl=RULES[S._rules].map(function(line){return '<div class="rrow"><span class="rdot">・</span><span>'+esc(line)+'</span></div>';}).join('');
+        modal='<div class="rmodal" data-act="rules_close"><div class="rcard" data-act="rules_stop">'+
+          '<div class="rhead">'+ic(g[1],28,'var(--cream)')+'<span class="rtitle">'+esc(g[2])+'</span></div>'+
+          '<div class="rlabel">遊び方</div>'+rl+
+          '<button class="btn btn-ghost" style="margin-top:14px" data-act="rules_close">閉じる</button>'+
+          '</div></div>';
+      }
+      return '<div class="row"><div><div class="s-logo" style="font-size:26px">カンパイ<span class="bang">！</span></div>'+
+        '<div class="s-sub">飲み会・宅飲みゲーム集</div></div>'+
+        '<button class="gear" data-go="settings">'+ic('settings',20,'var(--cream)')+'</button></div>'+
+        '<div class="tiles">'+t+'</div>'+modal;
+    },
+    settings:function(){
+      return topbar('設定')+
+        '<div class="stack" style="margin-top:14px">'+
+        '<div class="card"><h4>オリジナル罰ゲーム</h4><p>追加した罰ゲームは全ゲームに登場。飲酒の代わりに選べる内容に。</p>'+
+        '<div class="chip">変顔を10秒キープ<small style="color:var(--dim)">✕</small></div>'+
+        '<div class="chip">一発ギャグ<small style="color:var(--dim)">✕</small></div></div>'+
+        '<div class="card"><h4>広告を非表示</h4><p>買い切り（サブスクではありません）。</p>'+
+        '<button class="btn btn-red" style="margin-top:9px;font-size:13px" data-act="noop">¥370で広告を消す</button></div>'+
+        '<div class="card"><h4>利用規約・免責事項</h4><p>飲酒は20歳から・自己責任・適量を。</p></div></div>';
+    },
+
+    yamanote:function(){
+      if(!S.theme){
+        return topbar('山手線ゲーム')+'<div class="center"><div class="kick">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</div>'+
+          '<button class="btn btn-gold" data-act="y_draw">お題を引く</button></div>'+gameNotice();
+      }
+      var body=S.lost?penalty('負けた人！')
+        :'<div class="stack"><button class="btn btn-red" data-act="y_lose">負けた人が出た</button>'+
+         '<button class="btn btn-ghost" data-act="y_draw">次のお題</button></div>';
+      return topbar('山手線ゲーム')+'<div class="center"><div class="odai-label">お題</div>'+
+        '<div class="odai">'+esc(S.theme)+'</div><div class="kick">順番に答えて、詰まったり被ったら負け</div>'+
+        body+'</div>'+gameNotice();
+    },
+    roulette:function(){
+      var st=S.r||'idle',b;
+      if(st==='idle')b='<div class="kick">スタートしたらスマホを隣へ回します。爆発したら…その人の番。</div><div class="big-em">'+ic('local_fire_department',62,'var(--cream)')+'</div><button class="btn btn-gold" data-act="r_start">スタート</button>';
+      else if(st==='tick')b='<div class="big-em">'+ic('whatshot',62,'var(--gold)')+'</div><div class="result">回して！回して！</div><button class="btn btn-ghost" data-act="r_boom">（数秒後）爆発</button>';
+      else b='<div class="big-em">'+ic('bolt',62,'var(--danger)')+'</div><div class="result" style="color:var(--danger)">ドカーン！</div>'+penalty('今スマホを持っている人！')+'<button class="btn btn-ghost" data-act="r_start">もう一回</button>';
+      return topbar('ロシアンルーレット')+'<div class="center">'+b+'</div>'+gameNotice();
+    },
+    highlow:function(){
+      if(!S.cur)S.cur=1+Math.floor(Math.random()*13);
+      var face=function(n){return (RANKS[n]||n)+rand(SUITS);};
+      var curLbl=S.curFace||(S.curFace=face(S.cur));
+      var b;
+      if(!S.res){
+        b='<div class="odai-label" style="letter-spacing:.14em">現在のカード</div>'+
+          '<div class="pcard'+(/[♥♦]/.test(curLbl)?' red':'')+'">'+curLbl+'</div>'+
+          '<div class="kick">次のカードは上か下か。はずれたら 罰ゲーム。</div>'+
+          '<div class="btnrow"><button class="btn btn-gold" data-act="hl_high">'+ic('arrow_upward',16)+' ハイ</button>'+
+          '<button class="btn btn-gold" data-act="hl_low">'+ic('arrow_downward',16)+' ロー</button></div>';
+      } else {
+        b='<div class="odai-label" style="letter-spacing:.14em">次のカード</div>'+
+          '<div class="pcard'+(/[♥♦]/.test(S.nextFace)?' red':'')+'">'+S.nextFace+'</div>'+
+          (S.res==='win'?'<div class="result" style="color:var(--good)">セーフ！次の人へ</div>'
+            :penalty('はずれ！あなたの番'))+
+          '<button class="btn btn-ghost" data-act="hl_cont">続ける</button>';
+      }
+      return topbar('高低（ハイ&ロー）')+'<div class="center">'+b+'</div>'+gameNotice();
+    },
+    chinchiro:function(){
+      var b;
+      if(!S.roll){
+        b='<div class="kick">3つのサイコロを振って役を出そう。負けた人は 罰ゲーム。</div><div class="dice">'+ic('casino',48,'var(--cream)')+'</div><button class="btn btn-red" data-act="c_roll">サイコロを振る</button>';
+      } else {
+        b='<div class="kick">'+esc(S.who)+' の番</div><div class="dice">'+S.roll+'</div>'+
+          '<div class="result" style="color:'+(S.good?'var(--good)':'var(--danger)')+'">'+esc(S.role)+'</div>'+
+          '<button class="btn btn-red" data-act="c_roll">もう一回振る</button>';
+      }
+      return topbar('チンチロ')+'<div class="center">'+b+'</div>'+gameNotice();
+    },
+    kingscup:function(){
+      if(!S.kcReady){
+        return topbar('キングスカップ')+'<div class="center">'+
+          '<div class="big-em">'+ic('sports_bar',60,'var(--gold)')+'</div>'+
+          '<div class="result" style="font-size:18px">はじめる前に</div>'+
+          '<div class="kick">中央に空のコップを1つ用意してください。</div>'+
+          '<div class="stack" style="gap:7px;text-align:left">'+
+          '<div style="font-size:11px;color:var(--dim);line-height:1.7">・K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。</div>'+
+          '<div style="font-size:11px;color:var(--dim);line-height:1.7">・4枚目（最後）のKを引いた人が、そのコップを飲みほします。</div></div>'+
+          '<button class="btn btn-gold" data-act="k_setup">コップを用意した・はじめる</button>'+
+          '</div>'+gameNotice();
+      }
+      var b;
+      if(!S.card){
+        b='<div class="pcard">'+ic('playing_cards',40,'var(--gold)')+'</div><div class="kick">カードを引いて、出た役のルールに従おう。</div>'+
+          '<div class="foot" style="margin:0">残り 52 枚 · K 0/4</div>'+
+          '<button class="btn btn-gold" data-act="k_draw">カードを引く</button>';
+      } else {
+        b='<div class="pcard'+(/[♥♦]/.test(S.card)?' red':'')+'">'+S.card+'</div>'+
+          '<div class="result" style="color:var(--gold);font-size:17px">'+esc(S.rule[0])+'</div>'+
+          '<div class="kick">'+esc(S.rule[1])+'</div>'+
+          '<div class="foot" style="margin:0">残り '+S.left+' 枚 · K '+S.kings+'/4</div>'+
+          '<button class="btn btn-gold" data-act="k_draw">次のカード</button>';
+      }
+      return topbar('キングスカップ')+'<div class="center">'+b+'</div>'+gameNotice();
+    },
+
+    /* ---- 匿名アンケート: roster -> intro -> handoff -> ballot -> reveal ---- */
+    roster:function(){
+      var chips=ROSTER.map(function(n){return '<div class="chip" style="margin-top:0">'+esc(n)+'<small style="color:var(--dim)">✕</small></div>';}).join('');
+      return topbar('参加者')+
+        '<div class="row" style="gap:8px;margin-top:16px"><div class="inp">名前を入力</div><button class="btn btn-gold" style="width:auto;padding:11px 18px" data-act="noop">追加</button></div>'+
+        '<div class="stack" style="margin-top:14px;gap:8px">'+chips+'</div>'+
+        '<div class="stack" style="margin-top:auto"><button class="btn btn-red" data-act="ak_start">はじめる（'+ROSTER.length+'人）</button></div>';
+    },
+    ak_intro:function(){
+      if(!S.q)S.q=rand(QUESTIONS);
+      return topbar('匿名アンケート')+'<div class="center">'+
+        '<div class="qbig" style="font-size:18px">'+esc(S.q)+'</div>'+
+        '<div class="kick">スマホを回して、1人ずつこっそり投票します。他の人に見られないように！</div>'+
+        '<div class="s-sub">参加者：'+ROSTER.join('・')+'</div>'+
+        '<button class="btn btn-gold" data-act="ak_go">投票をはじめる</button>'+
+        '<button class="btn btn-ghost" data-act="ak_newq">別の質問にする</button></div>';
+    },
+    ak_handoff:function(){
+      var v=ROSTER[S.vi];
+      return topbar('匿名アンケート')+'<div class="center"><div class="big-em">'+ic('smartphone',58,'var(--gold)')+'</div>'+
+        '<div class="odai" style="font-size:26px">'+esc(v)+' さんへ</div>'+
+        '<div class="kick">スマホを '+esc(v)+' さんに渡してください。<br>準備ができたらタップ。</div>'+
+        '<button class="btn btn-gold" data-act="ak_ballot">'+esc(v)+' です・投票する</button></div>';
+    },
+    ak_ballot:function(){
+      var v=ROSTER[S.vi];
+      var opts=ROSTER.filter(function(n){return n!==v;}).map(function(n){
+        return '<button class="vote" data-vote="'+esc(n)+'">'+esc(n)+'</button>';}).join('');
+      return topbar('匿名アンケート')+
+        '<div style="margin-top:8px"><div class="s-sub" style="margin:0">'+esc(v)+' さんの投票（'+(S.vi+1)+'/'+ROSTER.length+'）</div>'+
+        '<div class="qbig" style="font-size:17px;text-align:left;margin-top:8px">'+esc(S.q)+'</div></div>'+
+        '<div class="stack" style="margin-top:14px;gap:9px">'+opts+'</div>'+
+        '<div class="foot">こっそり選んでね。タップした瞬間に次の人へ。</div>';
+    },
+    ak_reveal:function(){
+      var entries=Object.keys(S.votes).map(function(k){return [k,S.votes[k]];}).sort(function(a,b){return b[1]-a[1];});
+      var top=entries.length?entries[0][1]:0;
+      var winners=entries.filter(function(e){return e[1]===top&&top>0;}).map(function(e){return e[0];});
+      var rows=entries.map(function(e){return '<div class="tally'+(winners.indexOf(e[0])>=0?' win':'')+'"><span>'+esc(e[0])+'</span><b>'+e[1]+'票</b></div>';}).join('');
+      return topbar('匿名アンケート')+
+        '<div class="s-sub" style="margin-top:8px">結果発表</div>'+
+        '<div class="qbig" style="font-size:16px;margin-top:4px">'+esc(S.q)+'</div>'+
+        '<div class="stack" style="margin-top:12px;gap:0">'+rows+'</div>'+
+        '<div style="margin-top:14px">'+penalty('最多得票：'+winners.join('・')+' さん！')+'</div>'+
+        '<div class="stack" style="margin-top:auto"><button class="btn btn-ghost" data-act="ak_again">次の質問</button></div>';
+    }
+  };
+
+  // stage label for the flow map
+  function stageOf(scr){
+    if(scr==='agegate')return 0;
+    if(scr==='home'||scr==='settings')return 1;
+    if(/^ak_|^roster/.test(scr))return scr==='ak_reveal'?3:2;
+    if(['yamanote','roulette','highlow','chinchiro','kingscup'].indexOf(scr)>=0)return 2;
+    return 2;
+  }
+  var STAGES=['起動','ホーム','ゲーム','結果'];
+  function renderFlow(scr){
+    var on=stageOf(scr);
+    document.getElementById('flow').innerHTML=STAGES.map(function(s,i){
+      return '<span class="step'+(i===on?' on':'')+'">'+s+'</span>'+(i<STAGES.length-1?'<span class="arw">→</span>':'');
+    }).join('');
+  }
+  var HINTS={
+    agegate:'初回起動時の年齢確認 + 免責。「はい」でホームへ。',
+    home:'全6ゲーム。どれかタップして遊びの流れを体験して。設定は右上のギアから。',
+    settings:'オリジナル罰ゲーム編集・¥370 買い切りで広告オフ・法務。サブスクは無し。',
+    yamanote:'お題を引く → 遊ぶ → 「負けた人が出た」で 罰ゲーム が出る。',
+    roulette:'スタート → （実機ではランダムな数秒後に）爆発 → 罰ゲーム。',
+    highlow:'ハイ/ロー を予想。名前不要ですぐ遊べる。',
+    chinchiro:'サイコロを振って役で勝負。良い役は緑、悪い役は赤。',
+    kingscup:'まず中央にコップを用意（1ページの確認）。Kを引くたびに自分の飲みものを注ぎ、4枚目のKを引いた人がそれを飲む。',
+    roster:'匿名アンケートは名前が必要。登録して「はじめる」。',
+    ak_intro:'お題を確認して投票開始。',
+    ak_handoff:'秘密の受け渡しカバー。次の人に渡してからタップ = 前の票は見えない。',
+    ak_ballot:'こっそり1人に投票。タップした瞬間に次の人のカバーへ。',
+    ak_reveal:'集計発表。最多得票の人が 罰ゲーム。'
+  };
+
+  // ---------- render ----------
+  function go(scr,resetScratch){ if(resetScratch)S={}; stack.push(scr); render(); }
+  function replace(scr){ stack[stack.length-1]=scr; render(); }
+  function render(){
+    var scr=stack[stack.length-1];
+    document.getElementById('screen').innerHTML=(SCREENS[scr]||SCREENS.home)();
+    document.getElementById('screen').scrollTop=0;
+    document.getElementById('hint').innerHTML=HINTS[scr]?('<b>'+({0:'起動',1:'ホーム',2:'ゲーム',3:'結果'})[stageOf(scr)]+'</b> — '+HINTS[scr]):'';
+    renderFlow(scr);
+  }
+
+  // ---------- actions ----------
+  function drawCard(){ // returns [face, rank]
+    var r=1+Math.floor(Math.random()*13), f=(RANKS[r]||r)+rand(SUITS);
+    return [f,r];
+  }
+  document.getElementById('screen').addEventListener('click',function(e){
+    var el=e.target.closest('[data-go],[data-game],[data-act],[data-vote],[data-rules]'); if(!el)return;
+    var go2=el.getAttribute('data-go'), game=el.getAttribute('data-game'),
+        act=el.getAttribute('data-act'), vote=el.getAttribute('data-vote'),
+        rules=el.getAttribute('data-rules');
+
+    if(rules){ S._rules=rules; replace('home'); return; }
+    if(act==='rules_stop'){ return; }              // tap inside the card: keep it open
+    if(act==='rules_close'){ S._rules=null; replace('home'); return; }
+    if(go2){ go(go2,true); return; }
+    if(game){ if(game==='anketo'){go('roster',true);} else {go(game,true);} return; }
+    if(vote){
+      S.votes=S.votes||{}; S.votes[vote]=(S.votes[vote]||0)+1;
+      if(S.vi+1>=ROSTER.length){ replace('ak_reveal'); }
+      else { S.vi++; replace('ak_handoff'); }
+      return;
+    }
+    switch(act){
+      case 'noop': break;
+      // yamanote
+      case 'y_draw': S.theme=rand(THEMES); S.lost=false; S._pen=null; replace('yamanote'); break;
+      case 'y_lose': S.lost=true; S._pen=null; replace('yamanote'); break;
+      // roulette
+      case 'r_start': S.r='tick'; S._pen=null; replace('roulette'); break;
+      case 'r_boom': S.r='boom'; replace('roulette'); break;
+      // highlow
+      case 'hl_high': case 'hl_low': {
+        var d=drawCard(); S.nextFace=d[0];
+        var ok=(act==='hl_high')? d[1]>=S.cur : d[1]<=S.cur;
+        S.res=ok?'win':'lose'; S._pen=null; S._nextRank=d[1]; replace('highlow'); break;
+      }
+      case 'hl_cont': S.cur=S._nextRank; S.curFace=S.nextFace; S.res=null; S._pen=null; replace('highlow'); break;
+      // chinchiro
+      case 'c_roll': {
+        var dd=[0,0,0].map(function(){return 1+Math.floor(Math.random()*6);});
+        var pip='⚀⚁⚂⚃⚄⚅';
+        S.roll=dd.map(function(n){return pip[n-1];}).join(' ');
+        // simple role read
+        dd.sort();
+        if(dd[0]===4&&dd[1]===5&&dd[2]===6){S.role='シゴロ（4-5-6）';S.good=true;}
+        else if(dd[0]===dd[1]&&dd[1]===dd[2]){S.role='アラシ（ゾロ目）';S.good=true;}
+        else if(dd[0]===1&&dd[1]===2&&dd[2]===3){S.role='ヒフミ（1-2-3）';S.good=false;}
+        else if(dd[0]===dd[1]||dd[1]===dd[2]){var pt=(dd[0]===dd[1])?dd[2]:dd[0];S.role=pt+'の目';S.good=pt>=4;}
+        else {S.role='目なし';S.good=false;}
+        S.who=rand(ROSTER); replace('chinchiro'); break;
+      }
+      // kingscup
+      case 'k_setup': S.kcReady=true; replace('kingscup'); break;
+      case 'k_draw': {
+        S.left=(S.left==null?52:S.left)-1;
+        var kc=drawCard(); S.card=kc[0];
+        if(kc[1]===13){S.kings=(S.kings||0)+1;}
+        else if(S.kings==null)S.kings=0;
+        S.rule=KRULES[kc[1]]||[(RANKS[kc[1]]||kc[1])+'・カード','出た役のルールに従おう'];
+        if(kc[1]===13&&S.kings===4){S.rule=['最後のK！','中央のコップはあなたが飲みほします'];}
+        replace('kingscup'); break;
+      }
+      // penalty (shared)
+      case 'drawpen': S._pen=rand(PENALTIES); replace(stack[stack.length-1]); break;
+      // anketo
+      case 'ak_start': S.q=rand(QUESTIONS); S.vi=0; S.votes={}; replace('ak_intro'); break;
+      case 'ak_newq': S.q=rand(QUESTIONS); replace('ak_intro'); break;
+      case 'ak_go': S.vi=0; S.votes={}; S._pen=null; replace('ak_handoff'); break;
+      case 'ak_ballot': replace('ak_ballot'); break;
+      case 'ak_again': S.q=rand(QUESTIONS); S.vi=0; S.votes={}; S._pen=null; replace('ak_intro'); break;
+    }
+  });
+  document.getElementById('back').addEventListener('click',function(){
+    if(stack.length>1){stack.pop(); render();}
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    stack=['agegate']; S={}; render();
+  });
+
+  render();
+})();
+</script>

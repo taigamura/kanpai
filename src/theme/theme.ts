@@ -13,6 +13,10 @@ export const colors = {
   danger: '#FF7078',
   success: '#4BD6A0',
   overlay: 'rgba(0,0,0,0.55)',
+  line: 'rgba(252,245,234,0.13)',       // hairline border on surfaces
+  accentLine: 'rgba(247,198,78,0.4)',   // gold pill outline
+  glowRed: 'rgba(255,93,102,0.18)',     // top-left lantern glow
+  glowGold: 'rgba(247,198,78,0.14)',    // top-right beer glow
 };
 
 export const spacing = {
@@ -36,4 +40,15 @@ export const font = {
   heading: 24,
   body: 17,
   small: 14,
+};
+
+// Typefaces (loaded in App.tsx via @expo-google-fonts). Mirror of design-mockups.html:
+// Dela Gothic One = festival-signage display; Zen Kaku Gothic New = clean gothic body.
+// Values fall back to system fonts until useFonts resolves.
+export const fonts = {
+  display: 'DelaGothicOne_400Regular',
+  body: 'ZenKakuGothicNew_400Regular',
+  bodyMedium: 'ZenKakuGothicNew_500Medium',
+  bodyBold: 'ZenKakuGothicNew_700Bold',
+  bodyBlack: 'ZenKakuGothicNew_900Black',
 };

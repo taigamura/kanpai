@@ -1,0 +1,195 @@
+<title>カンパイ！ Lager Tilt</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<style>
+  :root{
+    --ground:#1b2c4d;--red:#FF5D66;--gold:#F7C64E;--cream:#FCF5EA;--dim:#9db0d1;
+    --beer-top:#F4C64F;--beer-bot:#E39A24;--foam:#FDF7E6;--ink:#3c1f05;
+    --tbg:rgba(255,255,255,.17);--tbd:rgba(255,255,255,.44);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:20px;
+    padding:clamp(20px,4vw,44px) 16px 60px;
+    background:radial-gradient(60vw 40vw at 15% -5%,rgba(247,198,78,.16),transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%,rgba(255,93,102,.10),transparent 58%),var(--ground)}
+  .ms{font-family:'Material Symbols Outlined';line-height:1;font-feature-settings:'liga';
+    -webkit-font-feature-settings:'liga';vertical-align:middle;display:inline-flex}
+  .mast{text-align:center;display:flex;flex-direction:column;gap:8px;max-width:52ch}
+  .kick{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .logo-h{font-family:"Dela Gothic One",sans-serif;font-size:clamp(28px,6vw,42px);line-height:1}
+  .logo-h .bang{color:var(--red)}
+  .lead{font-size:13.5px;color:var(--dim);line-height:1.65}
+
+  /* phone */
+  .phone{position:relative;width:min(330px,90vw);aspect-ratio:9/19.3;border-radius:42px;padding:10px;
+    background:#0e1526;box-shadow:0 34px 70px -22px rgba(0,0,0,.75),0 0 0 1px rgba(251,243,231,.06) inset;
+    touch-action:none}
+  /* the glass ABOVE the beer surface = white foam head (no amber up here) */
+  .screen{position:relative;width:100%;height:100%;border-radius:33px;overflow:hidden;
+    background:linear-gradient(180deg,#FFFDF8,#FBF2DD 45%,#F6E8CB 100%)}
+  .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:33%;height:20px;
+    background:#0e1526;border-radius:0 0 14px 14px;z-index:30}
+
+  /* the tilting liquid layer: rotates about screen center so the surface stays level */
+  .tilt{position:absolute;inset:0;transform-origin:50% 50%;z-index:2;pointer-events:none;will-change:transform}
+  /* amber liquid fills from the surface line DOWN only; oversized so tilt never exposes a gap */
+  .liquid{position:absolute;left:-60%;width:220%;top:var(--surface,17%);bottom:-95%;
+    background:linear-gradient(180deg,var(--beer-top),var(--beer-bot))}
+  /* bubbles live only inside the beer (clipped at the surface) */
+  .bubbles{position:absolute;left:-60%;width:220%;top:var(--surface,17%);height:100%;overflow:hidden}
+  .bub{position:absolute;bottom:0;border-radius:50%;background:rgba(255,255,255,.6);
+    box-shadow:0 0 0 .5px rgba(255,255,255,.3);animation:rise linear infinite}
+  /* frothy head sitting on the surface, scalloping into the amber */
+  .foam{position:absolute;left:-60%;width:220%;top:var(--surface,17%);height:18px;transform:translateY(-70%);
+    background:linear-gradient(180deg,#ffffff,#fff5e0)}
+  .foam::after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:16px;
+    background:radial-gradient(circle at 10px 0,#fff5e0 9px,transparent 10px) repeat-x;background-size:20px 16px}
+  @keyframes rise{0%{transform:translateY(0) scale(.8);opacity:0}
+    10%{opacity:.9}85%{opacity:.7}100%{transform:translateY(-720px) scale(1.2);opacity:0}}
+
+  .shine{position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:linear-gradient(112deg,transparent 32%,rgba(255,255,255,.12) 42%,transparent 50%)}
+  .screen::after{content:"";position:absolute;inset:0;border-radius:33px;pointer-events:none;z-index:9;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.10),inset 0 22px 30px -20px rgba(255,255,255,.5)}
+
+  /* UI (screen-locked, does not tilt) */
+  .ui{position:relative;z-index:6;display:flex;flex-direction:column;height:100%;
+    padding:32px 15px 16px;color:var(--ink)}
+  .hrow{display:flex;align-items:flex-start;justify-content:space-between}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:25px;line-height:1;color:var(--ink)}
+  .logo .bang{color:var(--red)}
+  .sub{font-size:10px;margin-top:5px;opacity:.72}
+  .gear{font-size:22px;color:var(--ink);opacity:.85}
+  .tiles{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .tile{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:15px;
+    background:var(--tbg);border:1px solid var(--tbd);color:var(--ink);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .tile .ti{font-size:23px}.tile .tt{flex:1;font-weight:900;font-size:14px}.tile .chev{font-size:18px;opacity:.5}
+  .foot{margin-top:auto;text-align:center;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;padding-top:10px}
+
+  .controls{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .enable{font-family:inherit;font-size:14px;font-weight:900;color:#2A1206;background:var(--gold);
+    border:none;border-radius:999px;padding:12px 22px;cursor:pointer}
+  .hint{font-size:12.5px;color:var(--dim);text-align:center;max-width:46ch;line-height:1.6}
+  .hint b{color:var(--gold)}
+  @media (prefers-reduced-motion:reduce){.bub{animation:none;opacity:.5}}
+</style>
+
+<div class="mast">
+  <div class="kick">生ビール Lager · live tilt</div>
+  <h1 class="logo-h">カンパイ<span class="bang">！</span></h1>
+  <p class="lead">The foam head and bubbles stay level with gravity as the phone tilts, so the beer looks real. Capped and damped so it sloshes gently, never dumps.</p>
+</div>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="screen">
+    <div class="tilt" id="tilt">
+      <div class="liquid"></div>
+      <div class="bubbles" id="bubbles"></div>
+      <div class="foam"></div>
+    </div>
+    <div class="shine"></div>
+    <div class="ui">
+      <div class="hrow">
+        <div><div class="logo">カンパイ<span class="bang">！</span></div>
+          <div class="sub">飲み会・宅飲みゲーム集</div></div>
+        <span class="ms gear">settings</span>
+      </div>
+      <div class="tiles">
+        <div class="tile"><span class="ms ti">train</span><span class="tt">山手線ゲーム</span><span class="ms chev">chevron_right</span></div>
+        <div class="tile"><span class="ms ti">local_fire_department</span><span class="tt">ロシアンルーレット</span><span class="ms chev">chevron_right</span></div>
+        <div class="tile"><span class="ms ti">casino</span><span class="tt">チンチロ</span><span class="ms chev">chevron_right</span></div>
+        <div class="tile"><span class="ms ti">sports_bar</span><span class="tt">キングスカップ</span><span class="ms chev">chevron_right</span></div>
+      </div>
+      <div class="foot">傾けてみて · tilt me</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="enable" id="enable" style="display:none">傾きセンサーをONにする</button>
+  <p class="hint" id="hint"><b>スマホ：</b>端末を左右に傾けてみて。&nbsp; <b>PC：</b>グラスの上でマウスを動かして。</p>
+</div>
+
+<script>
+(function(){
+  var CAP=20;            // max tilt degrees — kept small on purpose
+  var tiltEl=document.getElementById('tilt');
+  var phone=document.getElementById('phone');
+  var bubbles=document.getElementById('bubbles');
+  var hint=document.getElementById('hint');
+  var enable=document.getElementById('enable');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // bubbles
+  var rnd=function(a,b){return a+Math.random()*(b-a);};
+  for(var i=0;i<20;i++){
+    var b=document.createElement('div');b.className='bub';
+    var d=rnd(3,8);
+    b.style.width=d+'px';b.style.height=d+'px';
+    b.style.left=rnd(4,96)+'%';
+    b.style.animationDuration=rnd(4,7.5)+'s';
+    b.style.animationDelay=(-rnd(0,7))+'s';
+    bubbles.appendChild(b);
+  }
+
+  // spring-damped tilt for a gentle slosh
+  var target=0,cur=0,vel=0;
+  var clamp=function(v){return Math.max(-CAP,Math.min(CAP,v));};
+  function frame(){
+    var k=reduce?0.2:0.10, damp=reduce?0.6:0.80;
+    vel=(vel+(target-cur)*k)*damp;
+    cur+=vel;
+    // surface stays level => rotate liquid layer opposite to phone roll
+    tiltEl.style.transform='rotate('+cur.toFixed(2)+'deg)';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // --- desktop / pointer fallback: move across the glass to tilt ---
+  phone.addEventListener('pointermove',function(e){
+    if(usingSensor)return;
+    var r=phone.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width-0.5;   // -0.5..0.5
+    target=clamp(-x*2*CAP);                  // liquid leans opposite the "high" side
+  });
+  phone.addEventListener('pointerleave',function(){ if(!usingSensor) target=0; });
+
+  // --- device orientation (mobile) ---
+  var usingSensor=false;
+  function onOrient(e){
+    if(e.gamma==null)return;
+    usingSensor=true;
+    hint.innerHTML='<b>端末を傾けてみて。</b> 泡と液面がまっすぐ（水平）を保ちます。';
+    // gamma = left-right tilt in degrees; liquid stays level => opposite sign
+    target=clamp(-e.gamma);
+  }
+  function listen(){ window.addEventListener('deviceorientation',onOrient,true); }
+
+  // iOS 13+ needs a permission gesture; other browsers can listen immediately
+  var DOE=window.DeviceOrientationEvent;
+  if(DOE&&typeof DOE.requestPermission==='function'){
+    enable.style.display='';
+    enable.addEventListener('click',function(){
+      DOE.requestPermission().then(function(s){
+        if(s==='granted'){ listen(); enable.style.display='none'; }
+        else { hint.textContent='センサーが許可されませんでした。PCと同じくタッチで傾けられます。'; }
+      }).catch(function(){ hint.textContent='このブラウザでは傾きセンサーを使えません。マウス／タッチで傾けてみて。'; });
+    });
+    // touch-drag fallback also works without the sensor
+    phone.addEventListener('touchmove',function(e){
+      if(usingSensor)return;
+      var t=e.touches[0],r=phone.getBoundingClientRect();
+      target=clamp(-((t.clientX-r.left)/r.width-0.5)*2*CAP);
+    },{passive:true});
+  } else if(DOE){
+    listen();
+  }
+})();
+</script>

@@ -1,0 +1,207 @@
+<title>カンパイ！ Launch Checklist</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+  :root{
+    --ground:#1b2c4d;--ground-2:#233a63;--surface:#2b426e;--surface-2:#33507f;
+    --red:#FF5D66;--gold:#F7C64E;--cream:#FCF5EA;--dim:#a6b8d6;--line:rgba(252,245,234,.13);
+    --good:#4BD6A0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:clamp(24px,5vw,56px) clamp(16px,4vw,32px) 90px;
+    background:radial-gradient(60vw 40vw at 10% -5%,rgba(247,198,78,.12),transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%,rgba(255,93,102,.08),transparent 58%),var(--ground)}
+  .wrap{max-width:820px;margin:0 auto}
+  a{color:var(--gold)}
+
+  header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:8px}
+  .kick{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:clamp(30px,6vw,46px);line-height:1;margin-top:10px}
+  .logo .bang{color:var(--red)}
+  .sub{font-size:15px;color:var(--dim);margin-top:10px;line-height:1.6}
+
+  /* progress */
+  .prog{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--ground),rgba(27,44,77,.86));
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    padding:14px 0 12px;margin:18px 0 8px;display:flex;align-items:center;gap:14px}
+  .bar{flex:1;height:9px;border-radius:999px;background:var(--surface);overflow:hidden;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),#ffd873);transition:width .3s}
+  .pct{font-family:"Dela Gothic One",sans-serif;font-size:15px;min-width:52px;text-align:right}
+  .reset{font-size:12px;color:var(--dim);background:none;border:1px solid var(--line);border-radius:999px;
+    padding:6px 12px;cursor:pointer;font-family:inherit}
+  .reset:hover{color:var(--cream);border-color:var(--gold)}
+
+  .callout{margin:22px 0;padding:15px 17px;border:1px solid rgba(247,198,78,.4);border-radius:14px;
+    background:rgba(247,198,78,.08);font-size:14px;line-height:1.65}
+  .callout b{color:var(--gold)}
+  .did{margin:22px 0;padding:15px 17px;border-left:3px solid var(--good);border-radius:0 12px 12px 0;
+    background:rgba(75,214,160,.07);font-size:13.5px;line-height:1.7;color:var(--cream)}
+  .did b{color:var(--good)}
+
+  .stage{margin-top:34px}
+  .stage > h2{font-family:"Dela Gothic One",sans-serif;font-size:19px;display:flex;align-items:baseline;gap:12px}
+  .stage > h2 .n{color:var(--gold);font-family:"Zen Kaku Gothic New";font-weight:700;font-size:15px}
+  .stage > p{font-size:13px;color:var(--dim);margin:6px 0 4px;line-height:1.6}
+
+  ul.items{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:9px}
+  li.item{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+    border-radius:13px;padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+  li.item:hover{border-color:rgba(247,198,78,.4)}
+  li.item.done{opacity:.55;background:var(--ground-2)}
+  li.item.done .txt{text-decoration:line-through;text-decoration-color:var(--dim)}
+  .box{flex:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--dim);margin-top:1px;
+    display:grid;place-items:center;transition:.15s}
+  li.item.done .box{background:var(--good);border-color:var(--good)}
+  .box svg{width:13px;height:13px;stroke:#12331f;stroke-width:3.4;fill:none;opacity:0}
+  li.item.done .box svg{opacity:1}
+  .txt{flex:1;font-size:14px;line-height:1.55}
+  .txt .t{font-weight:700}
+  .txt .d{color:var(--dim);font-size:12.5px;margin-top:3px;display:block;line-height:1.55}
+  .txt code{background:var(--ground);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#ffe6a0}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .tag{font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:999px;padding:2px 9px;border:1px solid var(--line)}
+  .tag.acct{color:#8fd0ff;border-color:rgba(143,208,255,.4)}
+  .tag.mac{color:#ffb0b6;border-color:rgba(255,176,182,.4)}
+  .tag.claude{color:var(--gold);border-color:rgba(247,198,78,.4)}
+  .tag.legal{color:#d6b8ff;border-color:rgba(214,184,255,.4)}
+  .foot{margin-top:44px;border-top:1px solid var(--line);padding-top:18px;color:var(--dim);font-size:12.5px;line-height:1.7}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kick">Manual steps · you drive these</div>
+    <h1 class="logo">カンパイ<span class="bang">！</span> ローンチ手順</h1>
+    <p class="sub">Everything left that needs your accounts, a device, hosting, or a legal call. Tap a row to check it off (saved in this browser). Tags: <span class="tag acct">account</span> <span class="tag mac">build/device</span> <span class="tag legal">legal</span> <span class="tag claude">Claude can do</span></p>
+  </header>
+
+  <div class="prog">
+    <div class="bar"><i id="fill"></i></div>
+    <div class="pct" id="pct">0%</div>
+    <button class="reset" id="reset">reset</button>
+  </div>
+
+  <div class="did">
+    <b>Already done (code complete, verified — tsc clean, tests pass):</b> full design restyle + fonts, all 6 games, secret-vote flow, 罰ゲーム-only penalties (no built-in defaults), per-game rules with ⓘ icon, emoji→vector-icon system, KingsCup center-cup + setup, in-app crash net, AdMob + IAP wiring, and the authored terms/privacy page. All of it is <b>uncommitted on <code style="color:var(--good)">main</code></b>.
+  </div>
+
+  <div class="callout">
+    <b>One design decision first:</b> the beer-glass "Lager + tilt" look is mocked but <b>not in the app</b> (the app is still the warm-navy theme). If you want it, tell me <b>"build the Lager theme into the app"</b> and I'll wire it before you take screenshots (Stage 7). If not, skip this and ship the current look.
+  </div>
+
+  <div class="stage" id="stages"></div>
+
+  <p class="foot">This checklist lives in <code style="background:var(--ground);padding:1px 5px;border-radius:5px">docs/launch-checklist.html</code>. Progress is stored only in this browser. Anything tagged <span class="tag claude" style="font-size:10px">Claude can do</span> — just give me the value (an ID, a URL) and I'll make the edit.</p>
+</div>
+
+<script>
+  var STAGES=[
+    {n:'0', title:'Save the session’s work', desc:'Nothing is committed yet.',
+     items:[
+      {t:'Commit everything on a branch', d:'Run it yourself, or just tell me “commit it” and I’ll branch + commit. e.g. <code>git checkout -b feat/design-penalties && git add -A && git commit</code>', tags:['claude']},
+     ]},
+    {n:'1', title:'Accounts & prerequisites', desc:'You’re on WSL/Linux — no local Xcode. Use EAS cloud builds; a physical iPhone + TestFlight covers testing (a Mac is optional, only for the local simulator).',
+     items:[
+      {t:'Apple Developer Program enrolled', d:'$99/yr at developer.apple.com. Required to build/submit to the App Store.', tags:['acct']},
+      {t:'Google AdMob account', d:'admob.google.com — for the interstitial ads + remove-ads value prop.', tags:['acct']},
+      {t:'Install EAS CLI & log in', d:'<code>npm i -g eas-cli</code> then <code>eas login</code>.', tags:['acct']},
+     ]},
+    {n:'2', title:'First real build (see it on a device)', desc:'Confirms the restyle/icons/fonts on hardware — I verified types/tests/bundle, not pixels.',
+     items:[
+      {t:'Configure EAS project id', d:'<code>eas build:configure</code> sets <code>extra.eas.projectId</code> in app.json (currently empty).', tags:['mac']},
+      {t:'Build a dev/preview iOS build', d:'<code>eas build -p ios --profile preview</code> → install via TestFlight or direct on your iPhone.', tags:['mac']},
+      {t:'Verify on device', d:'Fonts (Dela Gothic One), glow background, vector icons, all 6 games, the ATT prompt, ads no-op, and the dev IAP unlock.', tags:['mac']},
+     ]},
+    {n:'3', title:'AdMob — real ad IDs', desc:'The app currently ships Google TEST ids.',
+     items:[
+      {t:'Create an AdMob iOS app', d:'Copy the real App ID (<code>ca-app-pub-…~…</code>).', tags:['acct']},
+      {t:'Create an Interstitial ad unit', d:'Copy its unit ID (<code>ca-app-pub-…/…</code>).', tags:['acct']},
+      {t:'Swap the TEST ids into the code', d:'app.json <code>iosAppId</code> + src/ads/ads.ts <code>interstitialUnitId</code>. Give me both IDs and I’ll edit.', tags:['claude']},
+      {t:'App Privacy / SKAdNetwork answers', d:'Follow AdMob’s iOS setup for the privacy manifest + SKAdNetwork ids.', tags:['acct']},
+     ]},
+    {n:'4', title:'Remove-ads IAP (¥370)', desc:'Code is wired in src/iap/iap.ts — this is config + testing.',
+     items:[
+      {t:'Sign the Paid Apps agreement', d:'App Store Connect → Agreements; complete banking + tax. Blocks ALL paid features until done.', tags:['acct','legal']},
+      {t:'Create the Non-Consumable IAP', d:'Product ID <code>app.kanpai.mvp.removeads</code>, price ¥370, with a display name + description.', tags:['acct']},
+      {t:'Create a Sandbox tester', d:'Users and Access → Sandbox → add a test Apple ID.', tags:['acct']},
+      {t:'Test Buy + Restore on a build', d:'Confirm the entitlement persists. Verify react-native-iap call signatures against the installed v16.', tags:['mac']},
+     ]},
+    {n:'5', title:'Legal page', desc:'The app links to example.com placeholders today.',
+     items:[
+      {t:'Host docs/terms.html publicly', d:'GitHub Pages / Netlify / any static host. Get the public URL.', tags:['acct']},
+      {t:'Fill the placeholders in terms.html', d:'開発者名 and 連絡先メール. Tell me the values and I’ll edit, or edit directly.', tags:['claude']},
+      {t:'Point the app at the hosted URL', d:'Give me the URL → I replace the two example.com links in AgeGateScreen.tsx + SettingsScreen.tsx.', tags:['claude']},
+      {t:'Lawyer review of the EULA', d:'Standard-practice wording, but get a real review before scale (SPEC §5).', tags:['legal']},
+     ]},
+    {n:'6', title:'Icon & assets', desc:'',
+     items:[
+      {t:'Replace the placeholder app icon', d:'assets/icon.png is placeholder clinking-mugs art. Supply designed 1024×1024 art.', tags:[]},
+      {t:'(Optional) dedicated splash image', d:'Currently reuses icon.png.', tags:[]},
+     ]},
+    {n:'7', title:'App Store listing', desc:'',
+     items:[
+      {t:'Create the app record', d:'App Store Connect → new app, bundle <code>app.kanpai.mvp</code>, name カンパイ！', tags:['acct']},
+      {t:'Listing title/subtitle (ASO)', d:'カンパイ！飲み会・宅飲みパーティーゲーム (keywords for search).', tags:['acct']},
+      {t:'Age rating → 17+', d:'Questionnaire: Alcohol/Tobacco/Drug references → lands at 17+ (unavoidable for an alcohol app).', tags:['acct']},
+      {t:'App Privacy answers', d:'Declare AdMob data collection (advertising id, etc.).', tags:['acct']},
+      {t:'JP screenshots', d:'Capture all required sizes from the built app.', tags:['mac']},
+      {t:'Description, keywords, support URL', d:'Support URL = your hosted terms/privacy page.', tags:['acct']},
+     ]},
+    {n:'8', title:'Ship', desc:'',
+     items:[
+      {t:'Production build + submit', d:'<code>eas build -p ios --profile production</code> then <code>eas submit -p ios</code>.', tags:['mac']},
+      {t:'Submit for review', d:'Answer any App Review questions (17+ alcohol reference is standard, non-blocking if the safeguards are shown).', tags:['acct']},
+     ]},
+  ];
+
+  var CHECK='<svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg>';
+  var root=document.getElementById('stages');
+  var store={};
+  try{ store=JSON.parse(localStorage.getItem('kanpai_launch')||'{}')||{}; }catch(e){ store={}; }
+
+  var total=0, html='';
+  STAGES.forEach(function(s,si){
+    html+='<div class="stage"><h2><span class="n">STAGE '+s.n+'</span>'+s.title+'</h2>'+
+      (s.desc?'<p>'+s.desc+'</p>':'')+'<ul class="items">';
+    s.items.forEach(function(it,ii){
+      var id='s'+si+'i'+ii; total++;
+      var done=store[id]?' done':'';
+      var tags=(it.tags||[]).map(function(t){
+        var lbl={acct:'account',mac:'build/device',claude:'Claude can do',legal:'legal'}[t]||t;
+        return '<span class="tag '+t+'">'+lbl+'</span>';
+      }).join('');
+      html+='<li class="item'+done+'" data-id="'+id+'">'+
+        '<span class="box">'+CHECK+'</span>'+
+        '<span class="txt"><span class="t">'+it.t+'</span>'+
+        (it.d?'<span class="d">'+it.d+'</span>':'')+
+        (tags?'<span class="tags">'+tags+'</span>':'')+'</span></li>';
+    });
+    html+='</ul></div>';
+  });
+  root.outerHTML=html;
+
+  var fill=document.getElementById('fill'), pct=document.getElementById('pct');
+  function save(){ try{ localStorage.setItem('kanpai_launch',JSON.stringify(store)); }catch(e){} }
+  function refresh(){
+    var done=Object.keys(store).filter(function(k){return store[k];}).length;
+    var p=total?Math.round(done/total*100):0;
+    fill.style.width=p+'%'; pct.textContent=p+'%';
+  }
+  document.addEventListener('click',function(e){
+    var li=e.target.closest('li.item'); if(!li)return;
+    var id=li.getAttribute('data-id');
+    store[id]=!store[id];
+    li.classList.toggle('done',!!store[id]);
+    save(); refresh();
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    store={}; save();
+    document.querySelectorAll('li.item').forEach(function(li){li.classList.remove('done');});
+    refresh();
+  });
+  refresh();
+</script>

@@ -3,6 +3,13 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts, DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one';
+import {
+  ZenKakuGothicNew_400Regular,
+  ZenKakuGothicNew_500Medium,
+  ZenKakuGothicNew_700Bold,
+  ZenKakuGothicNew_900Black,
+} from '@expo-google-fonts/zen-kaku-gothic-new';
 
 import { colors } from '@/theme/theme';
 import { AppStateProvider, useAppState } from '@/state/AppState';
@@ -13,6 +20,7 @@ import { HomeScreen } from '@/screens/HomeScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { RosterScreen } from '@/screens/RosterScreen';
 import { GameHost } from '@/games/GameHost';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { initAds } from '@/ads/ads';
 
 // Request ATT (for ad personalization) then initialize ads. Both are best-effort and
@@ -60,13 +68,29 @@ function Router() {
 
 export default function App() {
   useStartup();
+  const [fontsLoaded] = useFonts({
+    DelaGothicOne_400Regular,
+    ZenKakuGothicNew_400Regular,
+    ZenKakuGothicNew_500Medium,
+    ZenKakuGothicNew_700Bold,
+    ZenKakuGothicNew_900Black,
+  });
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AppStateProvider>
           <NavProvider>
             <StatusBar style="light" />
-            <Router />
+            <ErrorBoundary>
+              <Router />
+            </ErrorBoundary>
           </NavProvider>
         </AppStateProvider>
       </SafeAreaProvider>

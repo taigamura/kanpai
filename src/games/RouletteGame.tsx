@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
+import { Icon } from '@/components/Icon';
 import { T, Button } from '@/components/ui';
 import { spacing, font, colors } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
 
 // ロシアンルーレット / 爆弾パス: hold the phone, pass it around. It "explodes" on a
-// random person after a random interval. Whoever holds it → 飲む or 罰ゲーム.
+// random person after a random interval. Whoever holds it → 罰ゲーム.
 export function RouletteGame() {
   const [state, setState] = useState<'idle' | 'ticking' | 'boom'>('idle');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -35,22 +36,22 @@ export function RouletteGame() {
             <T dim style={{ textAlign: 'center' }}>
               スタートしたらスマホを隣へ回していきます。爆発したら…その人の番。
             </T>
-            <T size={72}>💣</T>
+            <Icon name="bomb" size={68} color={colors.text} />
             <Button title="スタート" kind="accent" onPress={start} />
           </>
         )}
         {state === 'ticking' && (
           <>
-            <T size={72}>🧨</T>
-            <T size={font.heading} bold style={{ textAlign: 'center' }}>
+            <Icon name="fuse" size={68} color={colors.accent} />
+            <T black size={font.heading} style={{ textAlign: 'center' }}>
               回して！回して！
             </T>
           </>
         )}
         {state === 'boom' && (
           <>
-            <T size={72}>💥</T>
-            <T size={font.title} bold style={{ color: colors.danger }}>
+            <Icon name="boom" size={72} color={colors.danger} />
+            <T display size={font.title} style={{ color: colors.danger }}>
               ドカーン！
             </T>
             <PenaltyReveal loserLabel="今スマホを持っている人！" />
