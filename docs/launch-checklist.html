@@ -87,7 +87,8 @@
 
   <div class="did">
     <b>Done (code):</b> full design restyle + fonts, all 6 games, secret-vote flow, 罰ゲーム-only penalties, per-game rules (ⓘ), emoji→vector-icon system, KingsCup center-cup + setup, crash net, AdMob + IAP wiring, terms/privacy page. <b>Committed &amp; pushed</b> to github.com/taigamura/kanpai.<br>
-    <b>Done (ship pipeline):</b> EAS project linked (<code>@taigamura/kanpai</code>), <code>eas.json</code> submit config wired with the shared ASC key, <code>.claude/ship.json</code> ready, and the repo cloned + deps installed + EAS logged-in on the Mac build server (taigamuras-MBP). The <code>/ship-ios</code> skill (commit → push → build on the Mac over SSH → submit from WSL) is ready to run.
+    <b>Done (ship pipeline):</b> EAS project linked (<code>@taigamura/kanpai</code>), Mac build server cloned + deps + EAS-logged-in, <code>.claude/ship.json</code> + <code>eas.json</code> fully wired (incl. ascAppId <code>6805814337</code>). Fixed the Xcode-26 build blocker via a patch-package patch to expo-modules-jsi's RuntimeScheduler.<br>
+    <b>Done (build &amp; submit):</b> ✅ production iOS build succeeded on the Mac (<code>build-1787821052093.ipa</code>) and was <b>submitted to App Store Connect / TestFlight</b> (ASC app "カンパイ！飲み会パーティーゲーム集", Apple ID 6805814337). Future releases: just say <b>"ship it"</b>.
   </div>
 
   <div class="callout">
@@ -111,10 +112,11 @@
       {t:'Google AdMob account', d:'admob.google.com — for the interstitial ads + remove-ads value prop.', tags:['acct']},
       {t:'EAS project linked ✓ (done)', d:'Created @taigamura/kanpai via eas init on the Mac; projectId is committed in app.json.', tags:['claude']},
      ]},
-    {n:'2', title:'First iOS build (mint credentials)', desc:'The very first production build for a NEW bundle (app.kanpai.mvp) must create an iOS distribution provisioning profile, which needs the Mac login keychain unlocked. Per the /ship-ios notes, this first one should be run by you in a TTY on the Mac; after that /ship-ios runs unattended.',
+    {n:'2', title:'First iOS build ✓ (done)', desc:'Credentials are minted (distribution cert reused, provisioning profile created) and the Xcode-26 RuntimeScheduler blocker is patched. Future builds run unattended via /ship-ios.',
      items:[
-      {t:'Unlock the Mac login keychain & run the first build', d:'On the Mac: <code>security unlock-keychain ~/Library/Keychains/login.keychain-db</code>, then in ~/dev/kanpai run the ship.json build command (<code>eas build -p ios --local --profile production</code>). Approve credential creation when prompted.', tags:['mac']},
-      {t:'Verify the app on device/TestFlight', d:'Install the .ipa (or via TestFlight after first submit): fonts, glow, vector icons, all 6 games, ATT prompt, ads, dev IAP. I verified types/tests/bundle, not pixels.', tags:['mac']},
+      {t:'Production build succeeded ✓', d:'build-1787821052093.ipa built on the Mac; RuntimeScheduler error fixed via patch-package.', tags:['claude']},
+      {t:'TestFlight: answer export compliance', d:'When Apple finishes processing (~5-10 min, email), TestFlight may ask about encryption. app.json already sets <code>ITSAppUsesNonExemptEncryption: false</code>, so it should auto-pass; confirm if prompted.', tags:['acct']},
+      {t:'Install via TestFlight & verify on device', d:'Fonts (Dela Gothic One), glow, vector icons, all 6 games, ATT prompt, ads, dev IAP. I verified types/tests/bundle, not pixels.', tags:['mac']},
      ]},
     {n:'3', title:'AdMob — real ad IDs', desc:'The app currently ships Google TEST ids.',
      items:[
@@ -151,10 +153,10 @@
       {t:'JP screenshots', d:'Capture all required sizes from the built app.', tags:['mac']},
       {t:'Description, keywords, support URL', d:'Support URL = your hosted terms/privacy page.', tags:['acct']},
      ]},
-    {n:'8', title:'Ship', desc:'Once the ASC app + ascAppId exist and the first build has minted credentials, this is one command.',
+    {n:'8', title:'Release', desc:'The binary is already on TestFlight (first submit done). This stage is the public release, not the upload.',
      items:[
-      {t:'Run /ship-ios (or say “ship it”)', d:'Commits → pushes → builds on the Mac over SSH → copies the .ipa back → <code>eas submit</code> from WSL. Uploads the binary to TestFlight/ASC.', tags:['claude']},
-      {t:'Submit for review in App Store Connect', d:'Uploading the binary is not submitting for review — move it to review in ASC. Answer any App Review questions (17+ alcohol reference is standard).', tags:['acct']},
+      {t:'First TestFlight submit ✓ (done)', d:'Binary uploaded to ASC via eas submit. Re-shipping an update later = just say “ship it” (/ship-ios runs the whole flow).', tags:['claude']},
+      {t:'Submit the version for App Store review', d:'In App Store Connect, attach the build to a version and Submit for Review (this is separate from the TestFlight upload). Answer any App Review questions — 17+ alcohol reference is standard.', tags:['acct']},
      ]},
   ];
 
