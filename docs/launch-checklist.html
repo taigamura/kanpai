@@ -86,7 +86,8 @@
   </div>
 
   <div class="did">
-    <b>Already done (code complete, verified — tsc clean, tests pass):</b> full design restyle + fonts, all 6 games, secret-vote flow, 罰ゲーム-only penalties (no built-in defaults), per-game rules with ⓘ icon, emoji→vector-icon system, KingsCup center-cup + setup, in-app crash net, AdMob + IAP wiring, and the authored terms/privacy page. All of it is <b>uncommitted on <code style="color:var(--good)">main</code></b>.
+    <b>Done (code):</b> full design restyle + fonts, all 6 games, secret-vote flow, 罰ゲーム-only penalties, per-game rules (ⓘ), emoji→vector-icon system, KingsCup center-cup + setup, crash net, AdMob + IAP wiring, terms/privacy page. <b>Committed &amp; pushed</b> to github.com/taigamura/kanpai.<br>
+    <b>Done (ship pipeline):</b> EAS project linked (<code>@taigamura/kanpai</code>), <code>eas.json</code> submit config wired with the shared ASC key, <code>.claude/ship.json</code> ready, and the repo cloned + deps installed + EAS logged-in on the Mac build server (taigamuras-MBP). The <code>/ship-ios</code> skill (commit → push → build on the Mac over SSH → submit from WSL) is ready to run.
   </div>
 
   <div class="callout">
@@ -104,17 +105,16 @@
      items:[
       {t:'Commit everything on a branch', d:'Run it yourself, or just tell me “commit it” and I’ll branch + commit. e.g. <code>git checkout -b feat/design-penalties && git add -A && git commit</code>', tags:['claude']},
      ]},
-    {n:'1', title:'Accounts & prerequisites', desc:'You’re on WSL/Linux — no local Xcode. Use EAS cloud builds; a physical iPhone + TestFlight covers testing (a Mac is optional, only for the local simulator).',
+    {n:'1', title:'Accounts & prerequisites', desc:'iOS builds run on your Mac build server (taigamuras-MBP) over SSH via /ship-ios — not EAS cloud. The Mac is already cloned, deps-installed, and EAS-logged-in.',
      items:[
-      {t:'Apple Developer Program enrolled', d:'$99/yr at developer.apple.com. Required to build/submit to the App Store.', tags:['acct']},
+      {t:'Apple Developer Program enrolled', d:'$99/yr at developer.apple.com. Required to build/submit. (Assumed already active — you ship nibble + simple-bookkeeping.)', tags:['acct']},
       {t:'Google AdMob account', d:'admob.google.com — for the interstitial ads + remove-ads value prop.', tags:['acct']},
-      {t:'Install EAS CLI & log in', d:'<code>npm i -g eas-cli</code> then <code>eas login</code>.', tags:['acct']},
+      {t:'EAS project linked ✓ (done)', d:'Created @taigamura/kanpai via eas init on the Mac; projectId is committed in app.json.', tags:['claude']},
      ]},
-    {n:'2', title:'First real build (see it on a device)', desc:'Confirms the restyle/icons/fonts on hardware — I verified types/tests/bundle, not pixels.',
+    {n:'2', title:'First iOS build (mint credentials)', desc:'The very first production build for a NEW bundle (app.kanpai.mvp) must create an iOS distribution provisioning profile, which needs the Mac login keychain unlocked. Per the /ship-ios notes, this first one should be run by you in a TTY on the Mac; after that /ship-ios runs unattended.',
      items:[
-      {t:'Configure EAS project id', d:'<code>eas build:configure</code> sets <code>extra.eas.projectId</code> in app.json (currently empty).', tags:['mac']},
-      {t:'Build a dev/preview iOS build', d:'<code>eas build -p ios --profile preview</code> → install via TestFlight or direct on your iPhone.', tags:['mac']},
-      {t:'Verify on device', d:'Fonts (Dela Gothic One), glow background, vector icons, all 6 games, the ATT prompt, ads no-op, and the dev IAP unlock.', tags:['mac']},
+      {t:'Unlock the Mac login keychain & run the first build', d:'On the Mac: <code>security unlock-keychain ~/Library/Keychains/login.keychain-db</code>, then in ~/dev/kanpai run the ship.json build command (<code>eas build -p ios --local --profile production</code>). Approve credential creation when prompted.', tags:['mac']},
+      {t:'Verify the app on device/TestFlight', d:'Install the .ipa (or via TestFlight after first submit): fonts, glow, vector icons, all 6 games, ATT prompt, ads, dev IAP. I verified types/tests/bundle, not pixels.', tags:['mac']},
      ]},
     {n:'3', title:'AdMob — real ad IDs', desc:'The app currently ships Google TEST ids.',
      items:[
@@ -151,10 +151,10 @@
       {t:'JP screenshots', d:'Capture all required sizes from the built app.', tags:['mac']},
       {t:'Description, keywords, support URL', d:'Support URL = your hosted terms/privacy page.', tags:['acct']},
      ]},
-    {n:'8', title:'Ship', desc:'',
+    {n:'8', title:'Ship', desc:'Once the ASC app + ascAppId exist and the first build has minted credentials, this is one command.',
      items:[
-      {t:'Production build + submit', d:'<code>eas build -p ios --profile production</code> then <code>eas submit -p ios</code>.', tags:['mac']},
-      {t:'Submit for review', d:'Answer any App Review questions (17+ alcohol reference is standard, non-blocking if the safeguards are shown).', tags:['acct']},
+      {t:'Run /ship-ios (or say “ship it”)', d:'Commits → pushes → builds on the Mac over SSH → copies the .ipa back → <code>eas submit</code> from WSL. Uploads the binary to TestFlight/ASC.', tags:['claude']},
+      {t:'Submit for review in App Store Connect', d:'Uploading the binary is not submitting for review — move it to review in ASC. Answer any App Review questions (17+ alcohol reference is standard).', tags:['acct']},
      ]},
   ];
 
