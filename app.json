@@ -16,7 +16,10 @@
       }
     },
     "android": {
-      "package": "app.kanpai.mvp"
+      "package": "app.kanpai.mvp",
+      "permissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -48,7 +51,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "ea0d603a-8163-42b9-a1b4-0e93e41d95b5"
       }
     }
   }
