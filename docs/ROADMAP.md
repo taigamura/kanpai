@@ -1,5 +1,10 @@
 # カンパイ！ Build Roadmap
 
+> **Taking over a session?** Read **[docs/STATE.md](./STATE.md)** first — it has the current
+> status (live on TestFlight), all ids/config, the ship pipeline, the Xcode-26 build fix, and
+> what's left before public launch.
+
+
 ## Phase 0 — Scaffold ✅ (this commit)
 - Expo + TS project matching the nibble/EAS conventions.
 - App shell: providers, minimal router, age gate, home grid, roster, settings.
