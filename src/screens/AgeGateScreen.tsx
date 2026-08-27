@@ -34,7 +34,7 @@ export function AgeGateScreen() {
         <Button
           title="利用規約を読む"
           kind="ghost"
-          onPress={() => void Linking.openURL('https://example.com/kanpai/terms')}
+          onPress={() => void Linking.openURL('https://taigamura.github.io/kanpai/terms.html')}
           style={styles.cta}
         />
       </View>

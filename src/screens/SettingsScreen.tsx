@@ -138,7 +138,7 @@ export function SettingsScreen() {
 
         {/* Legal */}
         <Card>
-          <Pressable onPress={() => void Linking.openURL('https://example.com/kanpai/terms')}>
+          <Pressable onPress={() => void Linking.openURL('https://taigamura.github.io/kanpai/terms.html')}>
             <T black>利用規約・免責事項</T>
           </Pressable>
           <T dim size={font.small} style={{ marginTop: spacing.sm }}>
