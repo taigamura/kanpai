@@ -80,6 +80,18 @@ Mocked in `docs/refine-mockups.html` (signed off), then wired in:
 
 Verified: `tsc --noEmit` clean, `jest` 5/5. Not yet runtime-tested on device — ship + check on TF.
 
+## UI pop pass — BUILT (2026-08-28, part 3, from TestFlight feedback) — NOT shipped yet
+Four small consistency/legibility fixes. `tsc` clean + jest 5/5. Party-direction mockups in
+`docs/party-mockups.html` (home shelf w/ per-game color, big お題 headline, full-bleed 罰ゲーム flood).
+1. **Uniform black ！.** `LoadingScreen` bang was `colors.primary` (red) while the home logotype's ！
+   is ink — boot now uses `colors.text` so the two match (no red flash on load).
+2. **Calm popups everywhere.** `TopicsModal` (みんなのお題) + `GameRequestModal` were still entering
+   with the bouncy `enterPop()` (ZoomIn.springify). Both now use the no-overshoot `PopIn` keyframe,
+   matching the Home rules modal. `enterPop` stays for in-content reveals (お題/roll/penalty), not modals.
+3. **Type scale bumped one notch** in `theme/theme.ts` `font`: small 14→15, body 17→19, heading 24→28,
+   title 34→40. Every screen sizes off these tokens, so game text now reads big app-wide. Also
+   `GameFrame` per-screen title font.body→font.heading. Watch for any tight layouts on next TF build.
+
 ## UX polish + audio + game-requests — BUILT (2026-08-28, part 2)
 From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tested on device.
 1. **Loading → home is seamless.** `LoadingScreen` now renders the real `BeerGround` underneath

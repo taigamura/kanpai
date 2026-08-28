@@ -47,11 +47,14 @@ export const radius = {
   pill: 999,
 };
 
+// Type scale bumped up one notch across the board (2026-08-28) so game screens read big and
+// bold from across a table — a party app, not a productivity app. Everything sizes off these
+// tokens, so raising them here enlarges every screen uniformly without touching call sites.
 export const font = {
-  title: 34,
-  heading: 24,
-  body: 17,
-  small: 14,
+  title: 40, // hero お題 / result numbers
+  heading: 28, // section + game titles, modal heads
+  body: 19, // default body copy, buttons, instructions
+  small: 15, // captions, labels, vote counts
 };
 
 // Typefaces (loaded in App.tsx via @expo-google-fonts). Mirror of design-mockups.html:

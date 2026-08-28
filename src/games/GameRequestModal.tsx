@@ -3,7 +3,7 @@ import { Modal, View, StyleSheet, Pressable, TextInput, Keyboard } from 'react-n
 import Animated from 'react-native-reanimated';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
-import { enterPop } from '@/components/motion';
+import { PopIn } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { submitGameRequest } from '@/services/requests';
 
@@ -32,7 +32,7 @@ export function GameRequestModal({ visible, onClose }: { visible: boolean; onClo
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
       <Pressable style={styles.backdrop} onPress={close}>
-        <Animated.View entering={enterPop()} style={styles.wrap}>
+        <Animated.View entering={PopIn} style={styles.wrap}>
           <Pressable style={styles.card} onPress={() => {}}>
             {sent ? (
               <View style={styles.thanks}>

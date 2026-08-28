@@ -16,7 +16,7 @@ export function GameFrame({ title, children }: { title: string; children: React.
             ← 戻る
           </T>
         </Pressable>
-        <T size={font.body} display>
+        <T size={font.heading} display>
           {title}
         </T>
         <View style={{ width: 48 }} />
