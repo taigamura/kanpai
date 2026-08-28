@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
+import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
+import { PressableScale } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { GAMES, GameDef } from '@/data/games';
@@ -23,7 +25,7 @@ export function HomeScreen() {
 
   return (
     <Screen edges={['top']}>
-      <View style={styles.header}>
+      <Animated.View entering={FadeIn.duration(500)} style={styles.header}>
         <View>
           <T display size={font.title}>
             カンパイ！
@@ -32,16 +34,23 @@ export function HomeScreen() {
             飲み会・宅飲みパーティーゲーム集
           </T>
         </View>
-        <Pressable onPress={() => nav.go({ name: 'settings' })} hitSlop={12}>
+        <PressableScale onPress={() => nav.go({ name: 'settings' })} scaleTo={0.85} hitSlop={12}>
           <Icon name="settings" size={24} color={colors.text} />
-        </Pressable>
-      </View>
+        </PressableScale>
+      </Animated.View>
 
       <ScrollView contentContainerStyle={styles.grid}>
-        {GAMES.map((g) => (
-          <View key={g.id} style={styles.tile}>
+        {GAMES.map((g, i) => (
+          <Animated.View
+            key={g.id}
+            entering={FadeInDown.delay(i * 55)
+              .duration(420)
+              .springify()
+              .damping(15)}
+            style={styles.tile}
+          >
             {/* Left: main tap target opens the game */}
-            <Pressable style={styles.tileMain} onPress={() => openGame(g)}>
+            <PressableScale style={styles.tileMain} onPress={() => openGame(g)}>
               <Icon name={g.icon} size={34} color={colors.text} />
               <View style={styles.tileText}>
                 <T size={font.heading} black>
@@ -51,17 +60,18 @@ export function HomeScreen() {
                   {g.subtitle}
                 </T>
               </View>
-            </Pressable>
+            </PressableScale>
             {/* Right: separate tap target shows the rules without launching the game */}
-            <Pressable
+            <PressableScale
               style={styles.rulesBtn}
+              scaleTo={0.8}
               onPress={() => setRulesFor(g)}
               hitSlop={10}
               accessibilityRole="button"
               accessibilityLabel={`${g.title} のルール`}
             >
               <Icon name="info" size={26} color={colors.accent} />
-            </Pressable>
+            </PressableScale>
             {g.status === 'stub' && (
               <View style={styles.badge}>
                 <T size={11} bold style={{ color: colors.accent }}>
@@ -69,7 +79,7 @@ export function HomeScreen() {
                 </T>
               </View>
             )}
-          </View>
+          </Animated.View>
         ))}
       </ScrollView>
 
@@ -81,8 +91,12 @@ export function HomeScreen() {
       >
         <Pressable style={styles.backdrop} onPress={() => setRulesFor(null)}>
           {/* Inner press is swallowed so tapping the card doesn't close the modal */}
-          <Pressable style={styles.modalCard} onPress={() => {}}>
-            <View style={styles.modalHead}>
+          <Animated.View
+            entering={ZoomIn.duration(260).springify().damping(16)}
+            style={styles.modalWrap}
+          >
+            <Pressable style={styles.modalCard} onPress={() => {}}>
+              <View style={styles.modalHead}>
               {rulesFor && <Icon name={rulesFor.icon} size={30} color={colors.text} />}
               <T size={font.heading} display style={styles.modalTitle}>
                 {rulesFor?.title}
@@ -99,13 +113,14 @@ export function HomeScreen() {
                 </View>
               ))}
             </View>
-            <Button
-              title="閉じる"
-              kind="ghost"
-              onPress={() => setRulesFor(null)}
-              style={styles.modalClose}
-            />
-          </Pressable>
+              <Button
+                title="閉じる"
+                kind="ghost"
+                onPress={() => setRulesFor(null)}
+                style={styles.modalClose}
+              />
+            </Pressable>
+          </Animated.View>
         </Pressable>
       </Modal>
     </Screen>
@@ -159,6 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.lg,
   },
+  modalWrap: { width: '100%', maxWidth: 420 },
   modalCard: {
     width: '100%',
     maxWidth: 420,

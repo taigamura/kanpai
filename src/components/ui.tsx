@@ -8,9 +8,16 @@ import {
   ViewProps,
   StyleSheet,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { colors, radius, spacing, font, fonts } from '@/theme/theme';
 import { Icon, IconName } from './Icon';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 // Text primitive. Defaults to the Zen Kaku Gothic New body face; `display` swaps to the
 // Dela Gothic One signage face (logos, お題, headline numbers). `bold`/`black` map to the
@@ -86,7 +93,7 @@ export function PlayingCard({
       ]}
     >
       {back ? (
-        <Icon name="crown" size={dims.fontSize} color={colors.accent} />
+        <Icon name="crown" size={dims.fontSize} color={colors.accentBright} />
       ) : (
         <Text
           style={{
@@ -108,28 +115,39 @@ export function Button(
   const { title, kind = 'primary', icon, onPress, style, disabled, ...rest } = props;
   const bg =
     kind === 'primary' ? colors.primary : kind === 'accent' ? colors.accent : 'transparent';
-  const fg = kind === 'accent' ? colors.bg : colors.text;
+  // Colored buttons (red/caramel) carry cream type; the ghost button is ink on the beer.
+  const fg = kind === 'ghost' ? colors.text : colors.cream;
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   return (
-    <Pressable
+    <AnimatedPressable
       {...rest}
       disabled={disabled}
+      onPressIn={() => {
+        if (disabled) return;
+        scale.value = withSpring(0.94, { damping: 18, stiffness: 500, mass: 0.6 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 11, stiffness: 240, mass: 0.7 });
+      }}
       onPress={(e) => {
         if (disabled) return;
         void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         onPress?.(e);
       }}
-      style={({ pressed }) => [
+      style={[
         styles.btn,
-        { backgroundColor: bg, opacity: pressed ? 0.85 : 1 },
+        { backgroundColor: bg },
         kind === 'ghost' && styles.ghost,
         style as object,
+        animatedStyle,
       ]}
     >
       <View style={styles.btnInner}>
         {icon && <Icon name={icon} size={18} color={fg} />}
         <Text style={[styles.btnText, { color: fg }]}>{title}</Text>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -168,7 +186,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   pcardBack: {
-    backgroundColor: colors.bgElevated,
+    backgroundColor: colors.cardBack,
   },
   btn: {
     borderRadius: radius.pill,
