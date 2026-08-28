@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   logo: { fontFamily: fonts.display, fontSize: 40, color: colors.text },
-  bang: { fontFamily: fonts.display, fontSize: 40, color: colors.primary },
+  // Same ink as the home logotype's ！ — the boot ！ and home ！ read identically (no red flash).
+  bang: { fontFamily: fonts.display, fontSize: 40, color: colors.text },
   sub: { fontFamily: fonts.body, fontSize: 11, letterSpacing: 2, color: colors.textDim },
 });
