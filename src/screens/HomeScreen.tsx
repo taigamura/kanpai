@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
-import { PressableScale, PopIn } from '@/components/motion';
+import { PressableScale, PopIn, enterItem } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { GAMES, GameDef } from '@/data/games';
 import { useNav } from '@/navigation/Nav';
 import { useAppState } from '@/state/AppState';
 import { maybeShowInterstitial } from '@/ads/ads';
+import { GameRequestModal } from '@/games/GameRequestModal';
 
 export function HomeScreen() {
   const nav = useNav();
   const { adsRemoved } = useAppState();
   const [rulesFor, setRulesFor] = useState<GameDef | null>(null);
+  const [requestOpen, setRequestOpen] = useState(false);
 
   const openGame = (g: GameDef) => {
     // Interstitials only between games (on open), frequency-capped, and never for owners.
@@ -41,14 +43,7 @@ export function HomeScreen() {
 
       <ScrollView contentContainerStyle={styles.grid}>
         {GAMES.map((g, i) => (
-          <Animated.View
-            key={g.id}
-            entering={FadeInDown.delay(i * 55)
-              .duration(420)
-              .springify()
-              .damping(15)}
-            style={styles.tile}
-          >
+          <Animated.View key={g.id} entering={enterItem(i)} style={styles.tile}>
             {/* Left: main tap target opens the game */}
             <PressableScale style={styles.tileMain} onPress={() => openGame(g)}>
               <Icon name={g.icon} size={34} color={colors.text} />
@@ -81,7 +76,24 @@ export function HomeScreen() {
             )}
           </Animated.View>
         ))}
+
+        {/* Suggestion box: let players ask for more games. */}
+        <Animated.View entering={enterItem(GAMES.length)}>
+          <PressableScale style={styles.requestTile} scaleTo={0.97} onPress={() => setRequestOpen(true)}>
+            <Icon name="add" size={26} color={colors.accent} />
+            <View style={{ flex: 1 }}>
+              <T bold style={{ color: colors.accent }}>
+                ゲームをリクエスト
+              </T>
+              <T dim size={font.small} style={{ marginTop: 2 }}>
+                遊びたいゲームをリクエストする
+              </T>
+            </View>
+          </PressableScale>
+        </Animated.View>
       </ScrollView>
+
+      <GameRequestModal visible={requestOpen} onClose={() => setRequestOpen(false)} />
 
       <Modal
         visible={rulesFor != null}
@@ -153,6 +165,17 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  requestTile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.accentLine,
+    borderStyle: 'dashed',
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
   },
   badge: {
     position: 'absolute',

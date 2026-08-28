@@ -96,7 +96,9 @@ export default function App() {
     return () => clearTimeout(id);
   }, []);
 
-  if (!fontsLoaded || !minSplash) return <LoadingScreen />;
+  // While the app fonts are still loading, show the pour without the logotype so it never flashes
+  // in a fallback system face; once fonts are in, the logo renders in the real display font.
+  if (!fontsLoaded || !minSplash) return <LoadingScreen showLogo={fontsLoaded} />;
 
   return (
     // Amber root as the ultimate fallback ground behind the fixed beer glass.

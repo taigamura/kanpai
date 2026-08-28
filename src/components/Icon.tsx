@@ -25,6 +25,10 @@ export type IconName =
   | 'bulb'
   | 'back'
   | 'close'
+  | 'add'
+  | 'request'
+  | 'send'
+  | 'check'
   // in-game states / affordances
   | 'bomb'
   | 'fuse'
@@ -60,6 +64,10 @@ const GLYPHS: Record<IconName, Glyph> = {
   bulb: { fam: 'ion', name: 'bulb-outline' },
   back: { fam: 'ion', name: 'chevron-back' },
   close: { fam: 'ion', name: 'close' },
+  add: { fam: 'ion', name: 'add-circle-outline' },
+  request: { fam: 'mci', name: 'gamepad-variant-outline' },
+  send: { fam: 'ion', name: 'paper-plane' },
+  check: { fam: 'ion', name: 'checkmark-circle' },
 
   bomb: { fam: 'mci', name: 'bomb' },
   fuse: { fam: 'ion', name: 'flame' },

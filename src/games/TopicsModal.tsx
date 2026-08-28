@@ -8,10 +8,10 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import Animated, { ZoomIn, FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
-import { PressableScale } from '@/components/motion';
+import { PressableScale, enterItem, enterPop } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { useAppState } from '@/state/AppState';
 import {
@@ -65,7 +65,7 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
-        <Animated.View entering={ZoomIn.duration(240).springify().damping(16)} style={styles.wrap}>
+        <Animated.View entering={enterPop()} style={styles.wrap}>
           <Pressable style={styles.card} onPress={() => {}}>
             <View style={styles.head}>
               <Icon name="game-yamanote" size={24} color={colors.text} />
@@ -129,11 +129,7 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
                 community.map((c, i) => {
                   const on = voted.has(c.text);
                   return (
-                    <Animated.View
-                      key={c.text}
-                      entering={FadeInDown.delay(i * 35).springify().damping(15)}
-                      style={styles.voteRow}
-                    >
+                    <Animated.View key={c.text} entering={enterItem(i)} style={styles.voteRow}>
                       <T style={{ flex: 1 }}>{c.text}</T>
                       <PressableScale
                         style={[styles.voteBtn, on && styles.voteBtnOn]}

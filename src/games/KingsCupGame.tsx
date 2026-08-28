@@ -5,8 +5,8 @@ import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
 import { T, Button, PlayingCard } from '@/components/ui';
-import { FlipIn } from '@/components/motion';
-import { spacing, font, colors } from '@/theme/theme';
+import { FlipIn, Pulse } from '@/components/motion';
+import { spacing, font, colors, radius } from '@/theme/theme';
 
 // キングスカップ: draw from a real 52-card deck (no repeats until reshuffled). Each rank
 // triggers a rule. THE CENTER CUP: a Kが出るたび、引いた人は自分の飲みものを中央のコップに
@@ -56,6 +56,8 @@ export function KingsCupGame() {
   const rule = rank ? RULES[rank] : null;
   const isKing = rank === 13;
   const isFourthKing = isKing && kings === 4;
+  // Three Kings are out → exactly one is still in the deck. Whoever draws it drinks the cup.
+  const oneKingLeft = kings === 3;
 
   // The round ends the moment the 4th K is drawn (that player drinks the center cup).
   const restart = () => {
@@ -109,6 +111,17 @@ export function KingsCupGame() {
   return (
     <GameFrame title="キングスカップ">
       <View style={styles.play}>
+        {oneKingLeft && !isFourthKing && (
+          <Pulse min={0.97} max={1.05} duration={520}>
+            <View style={styles.warning}>
+              <Icon name="crown" size={18} color={colors.cream} />
+              <T bold size={font.small} style={{ color: colors.cream }}>
+                最後のK 残り1枚！引いた人がコップを飲みほす
+              </T>
+            </View>
+          </Pulse>
+        )}
+
         <FlipIn trigger={card}>
           {card ? (
             <PlayingCard label={`${RANK_LABEL[rank] ?? rank}${suit}`} red={suit === '♥' || suit === '♦'} size="lg" />
@@ -178,6 +191,15 @@ export function KingsCupGame() {
 
 const styles = StyleSheet.create({
   play: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
+  warning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.danger,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
   ruleBlock: { alignItems: 'center', gap: spacing.sm },
   meta: { flexDirection: 'row', gap: spacing.lg, marginTop: spacing.xs },
   setup: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },

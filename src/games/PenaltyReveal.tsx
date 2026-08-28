@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import Animated, { BounceIn, ZoomIn } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
+import { enterBoom, enterPop } from '@/components/motion';
 import { T, Button, Pill } from '@/components/ui';
 import { spacing, colors, font } from '@/theme/theme';
 import { useAppState } from '@/state/AppState';
@@ -20,14 +21,14 @@ export function PenaltyReveal({ loserLabel }: { loserLabel: string }) {
 
   return (
     <View style={{ alignItems: 'center', gap: spacing.md, marginTop: spacing.lg }}>
-      <Animated.View entering={BounceIn.duration(650)}>
+      <Animated.View entering={enterBoom()}>
         <T display size={font.heading} style={{ color: colors.danger, textAlign: 'center' }}>
           {loserLabel}
         </T>
       </Animated.View>
       {hasPenalties ? (
         penalty ? (
-          <Animated.View entering={ZoomIn.springify().damping(10)}>
+          <Animated.View entering={enterPop()}>
             <Pill>罰ゲーム：{penalty}</Pill>
           </Animated.View>
         ) : (

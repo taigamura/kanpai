@@ -11,6 +11,9 @@ import Animated, {
   cancelAnimation,
   Easing,
   Keyframe,
+  FadeInDown,
+  ZoomIn,
+  BounceIn,
   type AnimatedStyle,
 } from 'react-native-reanimated';
 
@@ -28,6 +31,25 @@ export const PopIn = new Keyframe({
 export const SPRING = { damping: 14, stiffness: 320, mass: 0.7 } as const;
 const PRESS_IN = { damping: 18, stiffness: 500, mass: 0.6 } as const;
 const PRESS_OUT = { damping: 12, stiffness: 260, mass: 0.7 } as const;
+
+// ── Canonical entrances ──────────────────────────────────────────────────────
+// One set of entrance builders the whole app shares, so every "bounce" reads the same instead
+// of each screen inventing its own damping/duration. Use these instead of hand-tuning
+// FadeInDown/ZoomIn/BounceIn at the call site.
+//   • enterItem(i)  — staggered list rows / chips (home tiles, result rows, hint pills).
+//   • enterPop(d)   — a single element popping in (お題 titles, roll labels, small reveals).
+//   • enterBoom(d)  — the big celebratory/loser reveal (loser label, explosion word).
+// Each call returns a FRESH builder (the .delay/.springify calls mutate + return), so they are
+// safe to use inside .map without sharing state.
+export const STAGGER_MS = 60; // one stagger step between successive list items
+
+export const enterItem = (i = 0) =>
+  FadeInDown.delay(i * STAGGER_MS).duration(360).springify().damping(15).stiffness(180);
+
+export const enterPop = (delay = 0) =>
+  ZoomIn.delay(delay).springify().damping(13).stiffness(180);
+
+export const enterBoom = (delay = 0) => BounceIn.delay(delay).duration(560);
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

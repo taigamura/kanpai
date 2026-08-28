@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated, { ZoomIn, FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon, IconName } from '@/components/Icon';
 import { T, Button } from '@/components/ui';
-import { TumbleDie, PressableScale } from '@/components/motion';
+import { TumbleDie, PressableScale, Pulse, enterItem, enterPop } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
 
@@ -30,7 +30,7 @@ function evaluate(dice: [number, number, number]): Roll {
   return { dice, label: '目なし（ションベン）', score: -1, kind: 'bad' };
 }
 
-type Phase = 'setup' | 'handoff' | 'rolled' | 'reveal';
+type Phase = 'setup' | 'handoff' | 'rolling' | 'rolled' | 'reveal';
 
 export function ChinchiroGame() {
   const [players, setPlayers] = useState(3);
@@ -39,6 +39,17 @@ export function ChinchiroGame() {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [current, setCurrent] = useState<Roll | null>(null);
   const [rollSeq, setRollSeq] = useState(0); // bumps each roll so the dice re-tumble
+  const [spin, setSpin] = useState<[number, number, number]>([1, 1, 1]); // cycling faces while rolling
+  const spinRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearSpin = () => {
+    if (spinRef.current) {
+      clearInterval(spinRef.current);
+      spinRef.current = null;
+    }
+  };
+  // Stop the spinner if the screen unmounts mid-roll.
+  useEffect(() => clearSpin, []);
 
   const loserSeat = useMemo(() => {
     if (rolls.length !== players) return -1;
@@ -56,7 +67,18 @@ export function ChinchiroGame() {
     setPhase('handoff');
   };
 
-  const roll = () => {
+  // Roll & stop: pressing 振る spins the dice (faces cycle); pressing ストップ freezes them on
+  // the real result. Feels like actually throwing the dice instead of an instant reveal.
+  const startRoll = () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    clearSpin();
+    setCurrent(null);
+    setPhase('rolling');
+    spinRef.current = setInterval(() => setSpin([d(), d(), d()]), 70);
+  };
+
+  const stopRoll = () => {
+    clearSpin();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setCurrent(evaluate([d(), d(), d()]));
     setRollSeq((n) => n + 1);
@@ -117,7 +139,26 @@ export function ChinchiroGame() {
           <T dim style={styles.help}>
             スマホを {seat + 1} 人目に渡してください。
           </T>
-          <Button title="サイコロを振る" kind="accent" onPress={roll} />
+          <Button title="サイコロを振る" kind="accent" onPress={startRoll} />
+        </View>
+      )}
+
+      {phase === 'rolling' && (
+        <View style={styles.center}>
+          <T dim size={font.small}>
+            {seat + 1}人目
+          </T>
+          <Pulse min={0.96} max={1.06} duration={140}>
+            <View style={styles.diceRow}>
+              {spin.map((v, i) => (
+                <Icon key={i} name={`die-${v}` as IconName} size={64} color={colors.text} />
+              ))}
+            </View>
+          </Pulse>
+          <T display size={20} dim style={{ textAlign: 'center' }}>
+            コロコロ…
+          </T>
+          <Button title="ストップ！" kind="accent" onPress={stopRoll} />
         </View>
       )}
 
@@ -133,12 +174,12 @@ export function ChinchiroGame() {
               </TumbleDie>
             ))}
           </View>
-          <Animated.View key={rollSeq} entering={ZoomIn.delay(320).springify().damping(11)}>
+          <Animated.View key={rollSeq} entering={enterPop(320)}>
             <T display size={20} style={{ color: tint(current.kind), textAlign: 'center' }}>
               {current.label}
             </T>
           </Animated.View>
-          <Button title="振り直し" kind="ghost" onPress={roll} />
+          <Button title="振り直し" kind="ghost" onPress={startRoll} />
           <Button
             title={seat + 1 >= players ? '結果を見る' : '次の人へ'}
             kind="accent"
@@ -156,7 +197,7 @@ export function ChinchiroGame() {
             {rolls.map((r, i) => (
               <Animated.View
                 key={i}
-                entering={FadeInDown.delay(i * 80).springify().damping(15)}
+                entering={enterItem(i)}
                 style={[styles.resultRow, i === loserSeat && { borderColor: colors.danger, borderWidth: 1 }]}
               >
                 <T>{i + 1}人目</T>

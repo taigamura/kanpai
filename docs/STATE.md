@@ -40,6 +40,15 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
    If expo-modules-jsi bumps version, regenerate the patch (nibble-app 57.0.4 lacks the annotations).
 2. **IAP is react-native-iap v16 (openiap):** `fetchProducts` (not `getProducts`), `requestPurchase` is
    **event-based** (result via `purchaseUpdatedListener`), and `finishTransaction` is mandatory. src/iap/iap.ts is already correct for v16 — don't "simplify" it back to the old API.
+3. **Audio = expo-audio (NEW native module, 2026-08-28 part 2).** Added for ロシアンルーレット
+   (tension bed + explosion SFX). `src/audio/sound.ts` is guarded like ads/iap (absent module → no-op).
+   Assets in `assets/audio/*.m4a` are **synthesized with ffmpeg** (royalty-free, no licensing). The
+   app.json plugin is configured playback-only: `microphonePermission:false`, `recordAudioAndroid:false`,
+   `enableBackgroundPlayback:false` — do NOT let it re-add mic / background-audio perms (App Review risk).
+   Needs a native rebuild (it's a new module) — ship it.
+4. **Re-run `supabase/schema.sql`** in the Supabase SQL editor before the game-request box works:
+   it adds the `game_requests` table + `submit_game_request` RPC. Until then the request modal still
+   thanks the user (best-effort) but nothing is logged.
 
 ## Product decisions locked this session
 - **Penalties:** no built-in 罰ゲーム — user-added only. Every loss = **罰ゲーム** (no 飲む, no ノンアルOK wording)
@@ -70,6 +79,30 @@ Mocked in `docs/refine-mockups.html` (signed off), then wired in:
    bubbles, logo) replaces the bare spinner in `App.tsx`; held ≥1.9s so the pour always shows.
 
 Verified: `tsc --noEmit` clean, `jest` 5/5. Not yet runtime-tested on device — ship + check on TF.
+
+## UX polish + audio + game-requests — BUILT (2026-08-28, part 2)
+From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tested on device.
+1. **Loading → home is seamless.** `LoadingScreen` now renders the real `BeerGround` underneath
+   and drains a cream foam cover upward, so the pour ends exactly on the home glass (foam head +
+   carbonation), then cross-fades in. No more cut to a different-looking glass.
+2. **Loading logotype font fixed.** The カンパイ！ logo is hidden until app fonts load
+   (`showLogo={fontsLoaded}` from `App.tsx`), so it never flashes in a fallback system face.
+3. **Uniform bounce.** Canonical entrance builders in `motion.tsx` — `enterItem(i)` (list stagger),
+   `enterPop(delay)` (single pop), `enterBoom(delay)` (big reveal) — now used everywhere (home tiles,
+   Chinchiro, Yamanote, TopicsModal, PenaltyReveal). One damping/stiffness across the app.
+4. **Yamanote fixed.** The お題 no longer does a 3D card-flip (it's not a card) — it uses the shared
+   `enterPop`, matching the rest of the app.
+5. **Chinchiro roll & stop.** 振る now spins the dice (faces cycle) and a ストップ！ button freezes
+   them on the real result — a real throw instead of an instant reveal. New `rolling` phase.
+6. **ロシアンルーレット juiced.** On スタート the bomb inflates (grows + heartbeat + rattle) while a
+   tension bed speeds up (`playbackRate` ramp); on detonation: big on-screen boom + full-screen flash +
+   `Vibration.vibrate` pattern + explosion SFX + error haptic. Audio via `src/audio/sound.ts`.
+7. **KingsCup last-King warning.** When 3 Ks are out (1 left), a pulsing red banner warns that the
+   next K drinks the center cup. (Copy avoids 一気飲み per SPEC §5.)
+8. **"ゲームをリクエスト" box (home).** Dashed tile under the game list opens a free-text suggestion
+   form (`src/games/GameRequestModal.tsx`); submits to Supabase `game_requests` via
+   `src/services/requests.ts` (guarded, best-effort). New privacy stream folded into User Content —
+   `docs/app-privacy.md` + `docs/terms.html` (§7.4) updated.
 
 ## Motion pass — BUILT (2026-08-28)
 - App-wide animation layer on Reanimated 4 (worklets plugin + New Arch, already wired). Shared

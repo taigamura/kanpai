@@ -18,7 +18,9 @@ Then declare the following data types. For each, ASC asks three things:
 (a) **Linked to the user's identity?** (b) **Used to track?** (c) **Purposes.**
 
 ### 1. User Content  →  "Other User Content"
-- **What:** the 山手線 お題 text a user types and submits/shares (free-text they author).
+- **What:** free text a user types and submits: the 山手線 お題 they share, AND the
+  "ゲームをリクエスト" suggestion-box text (the game/feature they ask for) from the home screen.
+  Both go to the same Supabase project (`topics` / `game_requests` tables).
 - **Collected?** Yes.
 - **Linked to identity?** **No.** (No account, name, email, or device identity is
   attached — only an anonymous app-generated id, see #2.)
@@ -29,9 +31,9 @@ Then declare the following data types. For each, ASC asks three things:
 
 ### 2. Identifiers  →  "User ID"
 - **What:** an anonymous, app-generated random install id (e.g. `k_lz9f_ab12cd34`).
-  It exists only to de-duplicate votes/submissions. It is **not** the device IDFA/IDFV,
-  and is **not** tied to any account or personal detail.
-- **Collected?** Yes (sent only when the user submits or upvotes an お題).
+  It exists only to de-duplicate votes/submissions and label requests. It is **not** the
+  device IDFA/IDFV, and is **not** tied to any account or personal detail.
+- **Collected?** Yes (sent only when the user submits/upvotes an お題 or sends a game request).
 - **Linked to identity?** **No.**
 - **Used for tracking?** **No.**
 - **Purposes:** **App Functionality** (one-vote-per-install / prevent duplicates).

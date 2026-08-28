@@ -47,6 +47,15 @@
         {
           "userTrackingPermission": "広告の最適化のために使用します。トラッキングを許可しなくてもアプリはご利用いただけます。"
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
+        }
       ]
     ],
     "extra": {

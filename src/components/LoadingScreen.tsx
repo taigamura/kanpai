@@ -8,95 +8,66 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '@/theme/theme';
+import { BeerGround } from './Screen';
 
 const { height: H } = Dimensions.get('window');
 
-// A fixed set of bubbles rising inside the filling liquid.
-const BOOT_BUBBLES = [
-  { left: '14%', size: 6, delay: 200, dur: 1400 },
-  { left: '28%', size: 4, delay: 600, dur: 1200 },
-  { left: '42%', size: 7, delay: 100, dur: 1500 },
-  { left: '58%', size: 4, delay: 800, dur: 1100 },
-  { left: '72%', size: 6, delay: 400, dur: 1350 },
-  { left: '86%', size: 3, delay: 1000, dur: 1000 },
-] as const;
-
-function BootBubble({ left, size, delay, dur }: (typeof BOOT_BUBBLES)[number]) {
-  const p = useSharedValue(0);
-  useEffect(() => {
-    p.value = withTiming(1, { duration: dur, easing: Easing.out(Easing.quad) });
-  }, [p, dur]);
-  const style = useAnimatedStyle(() => ({
-    opacity: p.value < 0.85 ? 0.7 : 0.7 * (1 - (p.value - 0.85) / 0.15),
-    transform: [{ translateY: -p.value * H * 0.5 }],
-  }));
-  return (
-    <Animated.View
-      style={[
-        styles.bubble,
-        { left, width: size, height: size, borderRadius: size / 2 },
-        style,
-      ]}
-    />
-  );
-}
-
-// Boot screen: the glass pours from empty. Amber rises bottom-to-top with a foam head riding the
-// surface and carbonation climbing, the カンパイ！ logo waiting in the glass. Shown while fonts /
-// ads / stored state initialize, then home cross-fades in.
-export function LoadingScreen() {
+// Boot screen: the glass fills. We render the REAL home glass (BeerGround) underneath and drain
+// a cream foam cover upward off the top, so the beer + foam head + carbonation revealed at the
+// end are exactly what the home screen shows — the pour resolves seamlessly into home instead of
+// cutting to a different-looking glass.
+//
+// `showLogo` is false only during the very first frames before the app fonts finish loading, so
+// the カンパイ！ logotype never renders in a fallback system face that doesn't match the app.
+export function LoadingScreen({ showLogo = true }: { showLogo?: boolean }) {
   const fill = useSharedValue(0);
   useEffect(() => {
     fill.value = withTiming(1, { duration: 1700, easing: Easing.bezier(0.4, 0.15, 0.2, 1) });
   }, [fill]);
 
-  const liquidStyle = useAnimatedStyle(() => ({ height: fill.value * H }));
+  // The cream cover shrinks from full height to 0; its bottom edge is the rising beer surface.
+  const coverStyle = useAnimatedStyle(() => ({ height: (1 - fill.value) * H }));
 
   return (
     <View style={styles.root}>
-      {/* empty glass — foam-cream gradient like the top of the pour */}
-      <LinearGradient colors={['#FFFDF8', '#FBF2DD', '#F6E8CB']} style={StyleSheet.absoluteFill} />
+      {/* the actual home glass — this is the end state of the pour */}
+      <BeerGround />
 
-      {/* the liquid, growing up from the bottom */}
-      <Animated.View style={[styles.liquid, liquidStyle]}>
+      {/* cream foam cover, receding upward to reveal the beer rising from the bottom */}
+      <Animated.View style={[styles.cover, coverStyle]}>
         <LinearGradient
-          colors={[colors.beerTop, colors.beerBot]}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
+          colors={['#FFFDF8', '#FBF2DD', '#F6E8CB']}
           style={StyleSheet.absoluteFill}
         />
-        {/* foam head riding the rising surface */}
-        <View style={styles.foam} />
-        {/* carbonation */}
-        {BOOT_BUBBLES.map((b, i) => (
-          <BootBubble key={i} {...b} />
-        ))}
+        {/* foam line riding the surface at the cover's bottom edge */}
+        <View style={styles.surface} />
       </Animated.View>
 
-      {/* logo sits in the glass the whole time */}
-      <View style={styles.center} pointerEvents="none">
-        <Animated.Text style={styles.logo}>
-          カンパイ<Animated.Text style={styles.bang}>！</Animated.Text>
-        </Animated.Text>
-        <Animated.Text style={styles.sub}>飲み会・宅飲みパーティーゲーム集</Animated.Text>
-      </View>
+      {showLogo && (
+        <View style={styles.center} pointerEvents="none">
+          <Animated.Text style={styles.logo}>
+            カンパイ<Animated.Text style={styles.bang}>！</Animated.Text>
+          </Animated.Text>
+          <Animated.Text style={styles.sub}>飲み会・宅飲みパーティーゲーム集</Animated.Text>
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#FBF2DD', overflow: 'hidden' },
-  liquid: { position: 'absolute', left: 0, right: 0, bottom: 0, overflow: 'hidden' },
-  foam: {
+  root: { flex: 1, backgroundColor: colors.bg, overflow: 'hidden' },
+  cover: { position: 'absolute', top: 0, left: 0, right: 0, overflow: 'hidden' },
+  // Foam line riding the surface: anchored just past the cover's bottom edge so only a thin band
+  // shows (and it clips away cleanly as the cover drains to zero at the end of the pour).
+  surface: {
     position: 'absolute',
-    top: -7,
-    left: 0,
-    right: 0,
-    height: 14,
+    bottom: -6,
+    left: -20,
+    right: -20,
+    height: 12,
     backgroundColor: colors.foam,
-    borderRadius: 6,
   },
-  bubble: { position: 'absolute', bottom: 8, backgroundColor: 'rgba(255,255,255,0.7)' },
   center: {
     position: 'absolute',
     top: 0,
