@@ -58,10 +58,35 @@ begin
 end;
 $$;
 
--- Lock down direct table access; the app only reads `topics` and calls the two RPCs.
+-- "Add more games" suggestion box (home screen). Free-text requests + anonymous install id,
+-- write-only from the app via the RPC below; read them in the Supabase dashboard.
+create table if not exists public.game_requests (
+  id bigint generated always as identity primary key,
+  install_id text not null,
+  text text not null,
+  created_at timestamptz not null default now()
+);
+
+create or replace function public.submit_game_request(p_text text, p_install text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  p_text := btrim(p_text);
+  if p_text is null or length(p_text) = 0 or length(p_text) > 300 then
+    return;
+  end if;
+  insert into public.game_requests (install_id, text) values (p_install, p_text);
+end;
+$$;
+
+-- Lock down direct table access; the app only reads `topics` and calls the RPCs.
 alter table public.topics enable row level security;
 alter table public.topic_votes enable row level security;
 alter table public.topic_submissions enable row level security;
+alter table public.game_requests enable row level security;
 
 drop policy if exists "read topics" on public.topics;
 create policy "read topics" on public.topics for select to anon using (true);
@@ -70,3 +95,4 @@ grant usage on schema public to anon;
 grant select on public.topics to anon;
 grant execute on function public.submit_topic(text, text) to anon;
 grant execute on function public.vote_topic(text, text) to anon;
+grant execute on function public.submit_game_request(text, text) to anon;

@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { GameFrame } from '@/components/GameFrame';
 import { T, Button, Pill } from '@/components/ui';
-import { FlipIn } from '@/components/motion';
+import { enterItem, enterPop } from '@/components/motion';
 import { spacing, font, colors } from '@/theme/theme';
 import { YAMANOTE_THEMES, YAMANOTE_HINTS } from '@/data/yamanoteThemes';
 import { useAppState } from '@/state/AppState';
@@ -57,18 +57,18 @@ export function YamanoteGame() {
             >
               お題
             </T>
-            <FlipIn trigger={theme}>
+            <Animated.View key={theme} entering={enterPop()}>
               <T display size={font.title} style={{ textAlign: 'center' }}>
                 {theme}
               </T>
-            </FlipIn>
+            </Animated.View>
 
             {/* ヒント: reveals a few example answers to un-stick the table. Built-in お題 only. */}
             {hints && hints.length > 0 && (
               showHint ? (
                 <View style={styles.hintBox}>
                   {hints.map((ex, i) => (
-                    <Animated.View key={ex} entering={FadeInDown.delay(i * 80).springify().damping(15)}>
+                    <Animated.View key={ex} entering={enterItem(i)}>
                       <Pill>{ex}</Pill>
                     </Animated.View>
                   ))}
