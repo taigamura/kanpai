@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import Animated, { ZoomIn, FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
 import { T, Button, PlayingCard } from '@/components/ui';
+import { FlipIn } from '@/components/motion';
 import { spacing, font, colors } from '@/theme/theme';
 
 // キングスカップ: draw from a real 52-card deck (no repeats until reshuffled). Each rank
@@ -102,45 +104,49 @@ export function KingsCupGame() {
   return (
     <GameFrame title="キングスカップ">
       <View style={styles.play}>
-        {card ? (
-          <PlayingCard label={`${RANK_LABEL[rank] ?? rank}${suit}`} red={suit === '♥' || suit === '♦'} size="lg" />
-        ) : (
-          <PlayingCard back size="lg" />
-        )}
+        <FlipIn trigger={card}>
+          {card ? (
+            <PlayingCard label={`${RANK_LABEL[rank] ?? rank}${suit}`} red={suit === '♥' || suit === '♦'} size="lg" />
+          ) : (
+            <PlayingCard back size="lg" />
+          )}
+        </FlipIn>
 
-        {isFourthKing ? (
-          <>
-            <T size={font.title} display style={{ color: colors.accent, textAlign: 'center' }}>
-              最後のK！
-            </T>
-            <T size={font.heading} black style={{ textAlign: 'center' }}>
-              中央のコップはあなたが飲みほします。
-            </T>
-            <Icon name="beer" size={48} color={colors.accent} />
-          </>
-        ) : isKing ? (
-          <>
-            <T size={font.heading} display style={{ color: colors.accent, textAlign: 'center' }}>
-              {rule?.name}
-            </T>
-            <T style={{ textAlign: 'center' }}>
-              中央のコップに、自分の飲みものを少し注ごう。
-            </T>
-          </>
-        ) : rule ? (
-          <>
-            <T size={font.heading} display style={{ color: colors.accent, textAlign: 'center' }}>
-              {rule.name}
-            </T>
+        <Animated.View key={card ?? 'empty'} entering={FadeInUp.duration(340)} style={styles.ruleBlock}>
+          {isFourthKing ? (
+            <>
+              <T size={font.title} display style={{ color: colors.accent, textAlign: 'center' }}>
+                最後のK！
+              </T>
+              <T size={font.heading} black style={{ textAlign: 'center' }}>
+                中央のコップはあなたが飲みほします。
+              </T>
+              <Icon name="beer" size={48} color={colors.accent} />
+            </>
+          ) : isKing ? (
+            <>
+              <T size={font.heading} display style={{ color: colors.accent, textAlign: 'center' }}>
+                {rule?.name}
+              </T>
+              <T style={{ textAlign: 'center' }}>
+                中央のコップに、自分の飲みものを少し注ごう。
+              </T>
+            </>
+          ) : rule ? (
+            <>
+              <T size={font.heading} display style={{ color: colors.accent, textAlign: 'center' }}>
+                {rule.name}
+              </T>
+              <T dim style={{ textAlign: 'center' }}>
+                {rule.rule}
+              </T>
+            </>
+          ) : (
             <T dim style={{ textAlign: 'center' }}>
-              {rule.rule}
+              カードを引いて、出た役のルールに従おう。
             </T>
-          </>
-        ) : (
-          <T dim style={{ textAlign: 'center' }}>
-            カードを引いて、出た役のルールに従おう。
-          </T>
-        )}
+          )}
+        </Animated.View>
 
         <View style={styles.meta}>
           <T dim size={font.small}>
@@ -163,6 +169,7 @@ export function KingsCupGame() {
 
 const styles = StyleSheet.create({
   play: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
+  ruleBlock: { alignItems: 'center', gap: spacing.sm },
   meta: { flexDirection: 'row', gap: spacing.lg, marginTop: spacing.xs },
   setup: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
   center8: { textAlign: 'center' },

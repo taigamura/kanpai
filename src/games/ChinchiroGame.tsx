@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import Animated, { ZoomIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon, IconName } from '@/components/Icon';
 import { T, Button } from '@/components/ui';
+import { TumbleDie, PressableScale } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
 
@@ -36,6 +38,7 @@ export function ChinchiroGame() {
   const [seat, setSeat] = useState(0);
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [current, setCurrent] = useState<Roll | null>(null);
+  const [rollSeq, setRollSeq] = useState(0); // bumps each roll so the dice re-tumble
 
   const loserSeat = useMemo(() => {
     if (rolls.length !== players) return -1;
@@ -56,6 +59,7 @@ export function ChinchiroGame() {
   const roll = () => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setCurrent(evaluate([d(), d(), d()]));
+    setRollSeq((n) => n + 1);
     setPhase('rolled');
   };
 
@@ -86,19 +90,19 @@ export function ChinchiroGame() {
             人数
           </T>
           <View style={styles.stepper}>
-            <Pressable style={styles.stepBtn} onPress={() => setPlayers((p) => Math.max(2, p - 1))}>
+            <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setPlayers((p) => Math.max(2, p - 1))}>
               <T size={26} bold>
                 −
               </T>
-            </Pressable>
+            </PressableScale>
             <T size={font.title} black style={{ minWidth: 60, textAlign: 'center' }}>
               {players}
             </T>
-            <Pressable style={styles.stepBtn} onPress={() => setPlayers((p) => Math.min(8, p + 1))}>
+            <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setPlayers((p) => Math.min(8, p + 1))}>
               <T size={26} bold>
                 ＋
               </T>
-            </Pressable>
+            </PressableScale>
           </View>
           <Button title="はじめる" kind="accent" onPress={startGame} />
         </View>
@@ -124,12 +128,16 @@ export function ChinchiroGame() {
           </T>
           <View style={styles.diceRow}>
             {current.dice.map((v, i) => (
-              <Icon key={i} name={`die-${v}` as IconName} size={46} color={tint(current.kind)} />
+              <TumbleDie key={i} nonce={rollSeq} delay={i * 90}>
+                <Icon name={`die-${v}` as IconName} size={46} color={tint(current.kind)} />
+              </TumbleDie>
             ))}
           </View>
-          <T display size={20} style={{ color: tint(current.kind), textAlign: 'center' }}>
-            {current.label}
-          </T>
+          <Animated.View key={rollSeq} entering={ZoomIn.delay(320).springify().damping(11)}>
+            <T display size={20} style={{ color: tint(current.kind), textAlign: 'center' }}>
+              {current.label}
+            </T>
+          </Animated.View>
           <Button title="振り直し" kind="ghost" onPress={roll} />
           <Button
             title={seat + 1 >= players ? '結果を見る' : '次の人へ'}
@@ -146,20 +154,21 @@ export function ChinchiroGame() {
           </T>
           <View style={styles.results}>
             {rolls.map((r, i) => (
-              <View
+              <Animated.View
                 key={i}
+                entering={FadeInDown.delay(i * 80).springify().damping(15)}
                 style={[styles.resultRow, i === loserSeat && { borderColor: colors.danger, borderWidth: 1 }]}
               >
                 <T>{i + 1}人目</T>
                 <View style={styles.diceRowSmall}>
-                  {r.dice.map((v, i) => (
-                    <Icon key={i} name={`die-${v}` as IconName} size={22} color={tint(r.kind)} />
+                  {r.dice.map((v, j) => (
+                    <Icon key={j} name={`die-${v}` as IconName} size={22} color={tint(r.kind)} />
                   ))}
                 </View>
                 <T bold style={{ color: tint(r.kind) }}>
                   {r.label}
                 </T>
-              </View>
+              </Animated.View>
             ))}
           </View>
           <PenaltyReveal loserLabel={`一番弱いのは ${loserSeat + 1}人目！`} />

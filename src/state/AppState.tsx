@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { KEYS, loadJSON, saveJSON } from './storage';
 import { DEFAULT_PENALTIES } from '@/data/penalties';
+import { submitTopic } from '@/services/topics';
 
 // Single app-wide store: age gate, shared player roster, custom 罰ゲーム, ads entitlement.
 // Deliberately tiny — everything is on-device convenience state.
@@ -18,6 +19,10 @@ type AppStateShape = {
   addCustomPenalty: (text: string) => void;
   removeCustomPenalty: (text: string) => void;
 
+  customTopics: string[]; // user-added 山手線 お題 (also shared when sync is on)
+  addCustomTopic: (text: string) => void;
+  removeCustomTopic: (text: string) => void;
+
   adsRemoved: boolean;
   setAdsRemoved: (v: boolean) => void;
 };
@@ -29,19 +34,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [ageAccepted, setAgeAccepted] = useState(false);
   const [roster, setRosterState] = useState<string[]>([]);
   const [customPenalties, setCustomPenalties] = useState<string[]>([]);
+  const [customTopics, setCustomTopics] = useState<string[]>([]);
   const [adsRemoved, setAdsRemovedState] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [age, r, cp, ads] = await Promise.all([
+      const [age, r, cp, ct, ads] = await Promise.all([
         loadJSON<boolean>(KEYS.ageAccepted, false),
         loadJSON<string[]>(KEYS.roster, []),
         loadJSON<string[]>(KEYS.customPenalties, []),
+        loadJSON<string[]>(KEYS.customTopics, []),
         loadJSON<boolean>(KEYS.adsRemoved, false),
       ]);
       setAgeAccepted(age);
       setRosterState(r);
       setCustomPenalties(cp);
+      setCustomTopics(ct);
       setAdsRemovedState(ads);
       setReady(true);
     })();
@@ -76,6 +84,27 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const addCustomTopic = useCallback((text: string) => {
+    const t = text.trim();
+    if (!t) return;
+    setCustomTopics((prev) => {
+      if (prev.includes(t)) return prev;
+      const next = [...prev, t];
+      void saveJSON(KEYS.customTopics, next);
+      return next;
+    });
+    // Share it too (no-op unless a backend is configured). Best-effort, never blocks the UI.
+    void submitTopic(t);
+  }, []);
+
+  const removeCustomTopic = useCallback((text: string) => {
+    setCustomTopics((prev) => {
+      const next = prev.filter((p) => p !== text);
+      void saveJSON(KEYS.customTopics, next);
+      return next;
+    });
+  }, []);
+
   const setAdsRemoved = useCallback((v: boolean) => {
     setAdsRemovedState(v);
     void saveJSON(KEYS.adsRemoved, v);
@@ -95,6 +124,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         customPenalties,
         addCustomPenalty,
         removeCustomPenalty,
+        customTopics,
+        addCustomTopic,
+        removeCustomTopic,
         adsRemoved,
         setAdsRemoved,
       }}

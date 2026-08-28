@@ -6,6 +6,9 @@ export const KEYS = {
   roster: 'kanpai.roster.v1',
   customPenalties: 'kanpai.customPenalties.v1',
   adsRemoved: 'kanpai.adsRemoved.v1',
+  customTopics: 'kanpai.customTopics.v1', // user-added 山手線 お題 (also shared when sync is on)
+  installId: 'kanpai.installId.v1', // anonymous per-install id for shared topics + votes
+  topicVotes: 'kanpai.topicVotes.v1', // お題 this install has upvoted (dedupes votes)
 } as const;
 
 export async function loadJSON<T>(key: string, fallback: T): Promise<T> {

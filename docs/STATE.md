@@ -47,11 +47,51 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Per-game rules** via an ⓘ icon on each home tile (modal).
 - **20歳以上 age gate kept** (app still references alcohol → 17+ rating + gate stay).
 
-## Design status — OPEN DECISION
-- Live theme = warm twilight-blue izakaya (locked, `src/theme/theme.ts`, mirrored in `docs/design-mockups.html`).
-- **Beer-glass "Lager + tilt" UI is mocked but NOT built into the app.** User said Lager "is good."
-  Mocks: `docs/beer-glass-ui.html` (6 concepts) and `docs/lager-tilt.html` (interactive Lager whose foam/bubbles
-  stay level as the phone tilts). If chosen, wire as the real theme (background tokens + tilt layer) BEFORE store screenshots.
+## Motion pass — BUILT (2026-08-28)
+- App-wide animation layer on Reanimated 4 (worklets plugin + New Arch, already wired). Shared
+  primitives in `src/components/motion.tsx`: `PressableScale` (spring press), `FlipIn` (3D card
+  flip), `TumbleDie` (dice tumble), `Pulse` (looping scale), plus re-exported entering presets.
+  - Page transitions: `App.tsx` Router wraps each screen in `Animated.View` with direction-aware
+    slide (deeper = SlideInRight, home = SlideInLeft) keyed on route.
+  - Buttons spring on press (`ui.tsx`). Home tiles stagger in + press-scale; rules modal pops (ZoomIn).
+  - Games: 高低/キングスカップ card flips; チンチロ dice tumble + result pop + reveal stagger;
+    山手線 お題 flip; ルーレット fuse Pulse + BounceIn boom; PenaltyReveal BounceIn/ZoomIn.
+
+## 山手線 shared お題 + voting — CLIENT BUILT, SHARING OFF (2026-08-28)
+- **What ships:** users can add their own 山手線 お題 (persisted, merged into the draw pool) via
+  a new お題 modal (`src/games/TopicsModal.tsx`, opened from the 山手線 intro). Works fully offline.
+- **Sharing/voting/analytics are DORMANT.** `src/services/topicsConfig.ts` holds `{url:'',key:''}`;
+  while `url` is empty, `syncEnabled()` is false → **nothing leaves the device, no install id is
+  even generated**, and the modal shows "共有・投票は近日公開". So this build's privacy posture is
+  UNCHANGED (still zero data collected) and it is App-Store-safe like prior builds.
+- **To turn ON shared お題 + upvotes + developer analytics (needs a backend + a data-collection
+  decision):**
+  1. Stand up 3 REST endpoints on any host (Supabase / Cloudflare Worker / Firebase Functions):
+     - `GET  {url}/topics`  → `[{ text, votes }]` ranked, top first
+     - `POST {url}/topics`  ← `{ installId, text }`  (submit a shared お題)
+     - `POST {url}/votes`   ← `{ installId, text }`  (one upvote per install)
+     Key is sent as both `apikey` and `Authorization: Bearer <key>`. `installId` is an anonymous
+     per-install string (no account/PII). The votes aggregate IS the developer analytics.
+  2. Fill `url`/`key` in `src/services/topicsConfig.ts`.
+  3. **Privacy work becomes REQUIRED before that build ships:** update App Privacy labels (declare
+     the submitted-text + anonymous-id "User Content"/"Identifiers" collection) and add a line to
+     `docs/terms.html`. Then reship.
+- Client wiring: `src/services/topics.ts` (guarded fetch), `AppState.customTopics` (+add/remove;
+  add also best-effort `submitTopic`), storage keys `customTopics`/`installId`/`topicVotes`.
+
+## Design status — LAGER THEME BUILT (2026-08-28)
+- **Theme = 生ビール Lager beer-glass (LOCKED, built).** Replaced the twilight-blue izakaya palette.
+  Whole app now reads as the inside of a lager glass: amber liquid ground + cream foam head across
+  the top + rising carbonation + diagonal glass shine (`src/components/Screen.tsx`), dark roasted-malt
+  ink type on frosted-glass panels. Palette flipped in `src/theme/theme.ts` (mirror of
+  `docs/lager-tilt.html` / `docs/beer-glass-ui.html` concept 1). StatusBar → `dark` for the light foam top.
+  - Decoupled tokens added: `cardBack` (dark card back), `accentBright` (gold crown on dark), `cream`
+    (button foreground), `beerTop/beerBot/foam`. `accent` is now deep caramel (legible dark-on-light).
+- **Tilt layer NOT built** (deferred): the live foam/bubble-stays-level-on-tilt gimmick from
+  `docs/lager-tilt.html` needs `expo-sensors` (DeviceMotion) = a new native module + rebuild. The static
+  beer-glass ground ships the Lager look now; add tilt as a follow-up if desired before store screenshots.
+- Other locked tweaks this session: **山手線 timer removed** (verbal game, no countdown); **per-game
+  responsible-drinking caution removed from GameFrame footer** (age-gate + Settings legal notices kept).
 
 ## Remaining to launch (manual unless noted "Claude can do")
 1. **IAP:** create non-consumable `app.kanpai.mvp.removeads` @ ¥370 in ASC; finish **banking** so the

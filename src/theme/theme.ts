@@ -1,22 +1,34 @@
-// カンパイ！ theme — warm twilight-blue izakaya palette (locked 2026-08-26).
-// Mirror of docs/design-mockups.html; keep the two in sync.
+// カンパイ！ theme — 生ビール Lager beer-glass palette (locked 2026-08-28).
+// The whole app reads as the inside of a lager glass: cream foam head across the top,
+// amber liquid ground, rising carbonation, dark roasted-malt ink type.
+// Mirror of docs/lager-tilt.html + docs/beer-glass-ui.html concept 1 (c1); keep in sync.
 export const colors = {
-  bg: '#233A63',        // warm twilight blue (ground)
-  bgElevated: '#2B4675',
-  card: '#334F82',      // surface
-  cardRaised: '#3E5C94',
-  primary: '#FF5D66',   // 提灯 lantern red — warm pop on blue
+  bg: '#E39A24',        // amber liquid (base ground)
+  bgElevated: '#FBF3E0', // opaque warm-cream surface (modals, inputs, chips)
+  card: 'rgba(255,255,255,0.17)', // frosted-glass panel floating on the beer
+  cardRaised: '#FDF7E6', // playing-card face (foam white)
+  cardBack: '#4A2A0A',   // playing-card back (dark roasted malt)
+
+  beerTop: '#F4C64F',   // liquid gradient — top
+  beerBot: '#E39A24',   // liquid gradient — bottom
+  foam: '#FDF7E6',      // foam head cream
+
+  primary: '#FF5D66',   // カンパイ！ red — the ！ and primary buttons
   primaryDark: '#E24651',
-  accent: '#F7C64E',    // beer gold
-  text: '#FCF5EA',      // foam cream
-  textDim: '#AEBFDC',   // soft blue-grey
-  danger: '#FF7078',
-  success: '#4BD6A0',
-  overlay: 'rgba(0,0,0,0.55)',
-  line: 'rgba(252,245,234,0.13)',       // hairline border on surfaces
-  accentLine: 'rgba(247,198,78,0.4)',   // gold pill outline
-  glowRed: 'rgba(255,93,102,0.18)',     // top-left lantern glow
-  glowGold: 'rgba(247,198,78,0.14)',    // top-right beer glow
+  accent: '#A85A0C',    // deep caramel malt — labels, pills, accent buttons on the light ground
+  accentBright: '#F7C64E', // bright beer gold — only on dark surfaces (card-back crown)
+
+  text: '#3C1F05',      // roasted-malt ink (primary type)
+  textDim: '#5F3E17',   // dim ink
+  cream: '#FCF5EA',     // light foreground on colored buttons (red / caramel)
+
+  danger: '#E23B44',    // loser / hearts red (deepened for the light ground)
+  success: '#12805A',   // confirmations (deepened for the light ground)
+  overlay: 'rgba(0,0,0,0.5)',
+  line: 'rgba(60,31,5,0.16)',           // ink hairline on panels / cards
+  accentLine: 'rgba(168,90,12,0.45)',   // caramel pill / badge outline
+  glowRed: 'rgba(255,93,102,0.10)',     // retained token (unused by the beer-glass ground)
+  glowGold: 'rgba(247,198,78,0.16)',
 };
 
 export const spacing = {

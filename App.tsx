@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import Animated, { SlideInRight, SlideInLeft } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -39,9 +40,14 @@ function useStartup() {
   }, []);
 }
 
+// Home is depth 0; every other screen is depth 1. Navigating deeper slides in from the
+// right, returning home slides in from the left — a clear sense of place on each transition.
+const ROUTE_DEPTH: Record<string, number> = { home: 0, settings: 1, roster: 1, game: 1 };
+
 function Router() {
   const { ready, ageAccepted } = useAppState();
   const { route } = useNav();
+  const prevDepth = useRef(0);
 
   if (!ready) {
     return (
@@ -52,18 +58,32 @@ function Router() {
   }
   if (!ageAccepted) return <AgeGateScreen />;
 
-  switch (route.name) {
-    case 'home':
-      return <HomeScreen />;
-    case 'settings':
-      return <SettingsScreen />;
-    case 'roster':
-      return <RosterScreen next={route.next} />;
-    case 'game':
-      return <GameHost id={route.id} />;
-    default:
-      return <HomeScreen />;
-  }
+  const screen = (() => {
+    switch (route.name) {
+      case 'home':
+        return <HomeScreen />;
+      case 'settings':
+        return <SettingsScreen />;
+      case 'roster':
+        return <RosterScreen next={route.next} />;
+      case 'game':
+        return <GameHost id={route.id} />;
+      default:
+        return <HomeScreen />;
+    }
+  })();
+
+  const depth = ROUTE_DEPTH[route.name] ?? 1;
+  const forward = depth >= prevDepth.current;
+  prevDepth.current = depth;
+  const key = route.name + ('id' in route ? route.id : 'next' in route ? route.next : '');
+  const entering = (forward ? SlideInRight : SlideInLeft).duration(300);
+
+  return (
+    <Animated.View key={key} entering={entering} style={styles.flex}>
+      {screen}
+    </Animated.View>
+  );
 }
 
 export default function App() {
@@ -87,7 +107,7 @@ export default function App() {
       <SafeAreaProvider>
         <AppStateProvider>
           <NavProvider>
-            <StatusBar style="light" />
+            <StatusBar style="dark" />
             <ErrorBoundary>
               <Router />
             </ErrorBoundary>
@@ -99,5 +119,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   center: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
 });

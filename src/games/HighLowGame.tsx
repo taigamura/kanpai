@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 import { GameFrame } from '@/components/GameFrame';
 import { T, Button, PlayingCard } from '@/components/ui';
+import { FlipIn } from '@/components/motion';
 import { spacing, font, colors } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
 
@@ -37,7 +39,9 @@ export function HighLowGame() {
         >
           現在のカード
         </T>
-        <PlayingCard label={rank(current)} red size="lg" />
+        <FlipIn trigger={current}>
+          <PlayingCard label={rank(current)} red size="lg" />
+        </FlipIn>
         <T dim style={{ textAlign: 'center' }}>
           次のカードは上か下か。{'\n'}はずれたら 罰ゲーム。
         </T>
@@ -53,11 +57,15 @@ export function HighLowGame() {
           </View>
         ) : (
           <>
-            <PlayingCard label={next != null ? rank(next) : ''} red size="md" />
+            <FlipIn trigger={next}>
+              <PlayingCard label={next != null ? rank(next) : ''} red size="md" />
+            </FlipIn>
             {result === 'win' ? (
-              <T display size={font.heading} style={{ color: colors.success }}>
-                セーフ！次の人へ
-              </T>
+              <Animated.View entering={ZoomIn.springify().damping(12)}>
+                <T display size={font.heading} style={{ color: colors.success }}>
+                  セーフ！次の人へ
+                </T>
+              </Animated.View>
             ) : (
               <PenaltyReveal loserLabel="はずれ！あなたの番" />
             )}
