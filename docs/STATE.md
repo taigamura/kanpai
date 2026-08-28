@@ -49,6 +49,28 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Per-game rules** via an ⓘ icon on each home tile (modal).
 - **20歳以上 age gate kept** (app still references alcohol → 17+ rating + gate stay).
 
+## Refinement pass — BUILT (2026-08-28, from TestFlight feedback)
+Mocked in `docs/refine-mockups.html` (signed off), then wired in:
+1. **Tilt = liquid, not twitchy.** `Screen.tsx useTiltStyle` now drives the angle through an
+   underdamped spring on a `useFrameCallback` loop (STIFFNESS 70 / DAMPING 9 → one slosh-overshoot
+   then settle), cap dropped to ~7° (`TILT_CAP` 0.12 rad), plus a slow idle sway so it reads wet at
+   rest. No sensor → only idle sway.
+2. **Transitions don't move the glass.** The beer ground was extracted into `BeerGround` and is now
+   rendered ONCE in `App.tsx`, fixed behind everything; `Screen` is transparent. The router
+   cross-fades content (`FadeIn`/`FadeOut`) instead of sliding — chosen option A (cross-fade
+   everywhere). `ROUTE_DEPTH`/slide logic removed.
+3. **Popup calmer.** New `PopIn` Keyframe in `motion.tsx` (scale 0.92→1 + fade, 200ms, no
+   overshoot) replaces the bouncy `ZoomIn().springify()` on the Home rules modal.
+4. **山手線 ヒント.** `YAMANOTE_HINTS` (examples per built-in お題) in `yamanoteThemes.ts`; a ヒント
+   button on the お題 screen fades in the examples as Pills. Custom/community お題 have no hint →
+   button hidden. New `bulb` icon.
+5. **Bigger dice & cards.** PlayingCard lg 120×164→150×206 (font 44→56) + deeper shadow
+   (`ui.tsx`); チンチロ roll dice 46→64.
+6. **Beer-fill boot screen.** New `LoadingScreen.tsx` (amber fills bottom-to-top, foam head,
+   bubbles, logo) replaces the bare spinner in `App.tsx`; held ≥1.9s so the pour always shows.
+
+Verified: `tsc --noEmit` clean, `jest` 5/5. Not yet runtime-tested on device — ship + check on TF.
+
 ## Motion pass — BUILT (2026-08-28)
 - App-wide animation layer on Reanimated 4 (worklets plugin + New Arch, already wired). Shared
   primitives in `src/components/motion.tsx`: `PressableScale` (spring press), `FlipIn` (3D card

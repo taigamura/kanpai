@@ -10,8 +10,16 @@ import Animated, {
   withDelay,
   cancelAnimation,
   Easing,
+  Keyframe,
   type AnimatedStyle,
 } from 'react-native-reanimated';
+
+// Gentle popup entrance: a quick scale-from-92% + fade, no overshoot. Replaces the old bouncy
+// ZoomIn().springify() on modals so the rules popup settles straight to 100% instead of wobbling.
+export const PopIn = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 0.92 }] },
+  100: { opacity: 1, transform: [{ scale: 1 }], easing: Easing.out(Easing.quad) },
+}).duration(200);
 
 // Shared motion primitives for カンパイ！. All spring/timing values live here so the whole
 // app moves with one consistent feel: quick, springy, a little playful (party energy),

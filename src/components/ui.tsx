@@ -83,7 +83,7 @@ export function PlayingCard({
   size?: 'lg' | 'md';
 }) {
   const dims =
-    size === 'lg' ? { width: 120, height: 164, fontSize: 44 } : { width: 96, height: 132, fontSize: 34 };
+    size === 'lg' ? { width: 150, height: 206, fontSize: 56 } : { width: 120, height: 164, fontSize: 44 };
   return (
     <View
       style={[
@@ -180,10 +180,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
+    shadowOpacity: 0.55,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 14 },
+    elevation: 12,
   },
   pcardBack: {
     backgroundColor: colors.cardBack,
