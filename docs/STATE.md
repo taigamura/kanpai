@@ -3,10 +3,12 @@
 _Last updated 2026-08-28. Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 ## TL;DR
-The app is **built and live on TestFlight (internal testing)** — installed and running on
-device (iPhone 16 Pro). **Not yet public.** The full ship pipeline works end to end; say
-**"ship it"** to build + submit a new build. What remains before public release is App Store
-Connect / listing work + one open design decision.
+The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
+pipeline works end to end; say **"ship it"** to build + submit a new build. Latest shipped build
+(2026-08-28) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the shared 山手線
+お題 feature LIVE on Supabase (data collection now ON), and the KingsCup/transition fixes.
+**Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
+(screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
 
 ## Identifiers (all already committed in-repo)
 - **Repo:** github.com/taigamura/kanpai (PUBLIC), branch `main`.

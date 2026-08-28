@@ -1,7 +1,11 @@
 # カンパイ！ — Product Spec (v1)
 
 > 飲み会・宅飲みパーティーゲーム集 — an offline, single-phone (pass-around) Japanese drinking-game bundle.
-> 100% on-device. Zero server. Zero per-user cost.
+> Offline single-phone gameplay. One optional cloud feature (shared 山手線 お題) on Supabase.
+>
+> **Update (2026-08-28):** the original "100% on-device, zero server" thesis now has ONE
+> deliberate exception — shared/upvotable 山手線 お題 on a Supabase backend (see §7, §10). All
+> gameplay is still offline single-phone; the cloud touches only the お題 sharing feature.
 
 This spec is the resolved output of a grilling session (2026-08-25). Every decision below was
 made deliberately; the "Why" lines exist so future-me doesn't relitigate them.
@@ -88,11 +92,16 @@ content-heavy, moderation-prone anchor) is deferred to v2.
 ## 7. Tech
 
 - **Expo (React Native) + TypeScript.** Reuses the existing EAS / ship-ios pipeline.
-- **100% on-device.** No backend, no network except the ad SDK. AsyncStorage for roster,
-  custom 罰ゲーム, settings, IAP entitlement.
+- **On-device by default.** AsyncStorage for roster, custom 罰ゲーム, settings, IAP entitlement.
+  Network is used only by (a) the ad SDK and (b) the optional shared 山手線 お題 feature.
+- **Backend (shipped 2026-08-28): Supabase**, for shared/upvotable 山手線 お題 only. Users can add
+  their own お題 (works offline) and, when they add/vote, the text + an anonymous install id go to
+  Supabase (PostgREST read + `submit_topic`/`vote_topic` RPCs; RLS; see `supabase/schema.sql`).
+  Toggle in `src/services/topicsConfig.ts` (blank = fully on-device). Guarded like ads/iap.
 - Ads: `react-native-google-mobile-ads`. IAP: RevenueCat or Expo StoreKit (TBD in build).
-- **Analytics:** Apple App Store Connect App Analytics + a crash reporter only. No extra
-  tracking SDK beyond what AdMob requires. Clean privacy labels.
+- **Analytics:** Apple App Store Connect App Analytics + the Supabase お題 vote/submission aggregate.
+  No extra tracking SDK beyond AdMob. **Privacy labels now declare data collection** (お題 text =
+  User Content, install id = Identifiers) — see `docs/app-privacy.md`.
 - **ATT:** AdMob triggers an App Tracking Transparency prompt + privacy-manifest work.
 
 ## 8. Shared UX
@@ -120,7 +129,9 @@ content-heavy, moderation-prone anchor) is deferred to v2.
 - Per-scene tone switcher (合コン / 宅飲み / 会社 / カップル / 女子会).
 - Full content editors (お題 / rules / 山手線 themes) — v1 ships custom 罰ゲーム only.
 - i18n / English.
-- Any online/multiplayer/sync — permanently out; the offline thesis is the whole moat.
+- Any online/multiplayer/sync for GAMEPLAY — permanently out; the offline single-phone thesis is
+  the moat. (EXCEPTION, added 2026-08-28: shared/upvotable 山手線 お題 on Supabase — a content-sharing
+  layer, not multiplayer gameplay. The games themselves remain offline single-phone.)
 
 ## 11. Definition of done (v1)
 
