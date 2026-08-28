@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import Animated, { SlideInRight, SlideInLeft } from 'react-native-reanimated';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -22,6 +22,8 @@ import { SettingsScreen } from '@/screens/SettingsScreen';
 import { RosterScreen } from '@/screens/RosterScreen';
 import { GameHost } from '@/games/GameHost';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BeerGround } from '@/components/Screen';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { initAds } from '@/ads/ads';
 
 // Request ATT (for ad personalization) then initialize ads. Both are best-effort and
@@ -40,22 +42,11 @@ function useStartup() {
   }, []);
 }
 
-// Home is depth 0; every other screen is depth 1. Navigating deeper slides in from the
-// right, returning home slides in from the left — a clear sense of place on each transition.
-const ROUTE_DEPTH: Record<string, number> = { home: 0, settings: 1, roster: 1, game: 1 };
-
 function Router() {
   const { ready, ageAccepted } = useAppState();
   const { route } = useNav();
-  const prevDepth = useRef(0);
 
-  if (!ready) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
+  if (!ready) return <LoadingScreen />;
   if (!ageAccepted) return <AgeGateScreen />;
 
   const screen = (() => {
@@ -73,14 +64,16 @@ function Router() {
     }
   })();
 
-  const depth = ROUTE_DEPTH[route.name] ?? 1;
-  const forward = depth >= prevDepth.current;
-  prevDepth.current = depth;
+  // The beer glass (BeerGround) is fixed behind every screen, so navigating only cross-fades the
+  // content — pages feel like they resolve in place on the same glass, no sliding background.
   const key = route.name + ('id' in route ? route.id : 'next' in route ? route.next : '');
-  const entering = (forward ? SlideInRight : SlideInLeft).duration(300);
-
   return (
-    <Animated.View key={key} entering={entering} style={styles.flex}>
+    <Animated.View
+      key={key}
+      entering={FadeIn.duration(240)}
+      exiting={FadeOut.duration(160)}
+      style={styles.fill}
+    >
       {screen}
     </Animated.View>
   );
@@ -95,20 +88,25 @@ export default function App() {
     ZenKakuGothicNew_700Bold,
     ZenKakuGothicNew_900Black,
   });
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
-    );
-  }
+  // Hold the pour for at least its full run so the boot animation is always seen, even when
+  // fonts resolve instantly from the bundle.
+  const [minSplash, setMinSplash] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setMinSplash(true), 1900);
+    return () => clearTimeout(id);
+  }, []);
+
+  if (!fontsLoaded || !minSplash) return <LoadingScreen />;
+
   return (
-    // Amber root so a sliding page transition never exposes a black gap behind the panel.
+    // Amber root as the ultimate fallback ground behind the fixed beer glass.
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <AppStateProvider>
           <NavProvider>
             <StatusBar style="dark" />
+            {/* the lager glass, rendered once and fixed — every screen cross-fades over it */}
+            <BeerGround />
             <ErrorBoundary>
               <Router />
             </ErrorBoundary>
@@ -121,6 +119,5 @@ export default function App() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
-  flex: { flex: 1, backgroundColor: colors.bg },
-  center: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+  fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
 });

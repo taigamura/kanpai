@@ -129,7 +129,7 @@ export function ChinchiroGame() {
           <View style={styles.diceRow}>
             {current.dice.map((v, i) => (
               <TumbleDie key={i} nonce={rollSeq} delay={i * 90}>
-                <Icon name={`die-${v}` as IconName} size={46} color={tint(current.kind)} />
+                <Icon name={`die-${v}` as IconName} size={64} color={tint(current.kind)} />
               </TumbleDie>
             ))}
           </View>

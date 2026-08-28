@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
-import Animated, { FadeIn, FadeInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button } from '@/components/ui';
-import { PressableScale } from '@/components/motion';
+import { PressableScale, PopIn } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { GAMES, GameDef } from '@/data/games';
@@ -91,10 +91,7 @@ export function HomeScreen() {
       >
         <Pressable style={styles.backdrop} onPress={() => setRulesFor(null)}>
           {/* Inner press is swallowed so tapping the card doesn't close the modal */}
-          <Animated.View
-            entering={ZoomIn.duration(260).springify().damping(16)}
-            style={styles.modalWrap}
-          >
+          <Animated.View entering={PopIn} style={styles.modalWrap}>
             <Pressable style={styles.modalCard} onPress={() => {}}>
               <View style={styles.modalHead}>
               {rulesFor && <Icon name={rulesFor.icon} size={30} color={colors.text} />}

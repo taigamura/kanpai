@@ -22,6 +22,7 @@ export type IconName =
   // UI chrome
   | 'settings'
   | 'info'
+  | 'bulb'
   | 'back'
   | 'close'
   // in-game states / affordances
@@ -56,6 +57,7 @@ const GLYPHS: Record<IconName, Glyph> = {
 
   settings: { fam: 'ion', name: 'settings-outline' },
   info: { fam: 'ion', name: 'information-circle-outline' },
+  bulb: { fam: 'ion', name: 'bulb-outline' },
   back: { fam: 'ion', name: 'chevron-back' },
   close: { fam: 'ion', name: 'close' },
 

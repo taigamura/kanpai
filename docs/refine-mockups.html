@@ -1,0 +1,508 @@
+<title>カンパイ！ Refinements</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<style>
+  :root{
+    --ground:#1b2c4d;--red:#FF5D66;--gold:#F7C64E;--cream:#FCF5EA;--dim:#9db0d1;
+    --beer-top:#F4C64F;--beer-bot:#E39A24;--foam:#FDF7E6;--ink:#3c1f05;--ink-dim:#5F3E17;
+    --caramel:#A85A0C;--tbg:rgba(255,255,255,.17);--tbd:rgba(255,255,255,.40);
+    --danger:#E23B44;--card-back:#4A2A0A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--ground);color:var(--cream);
+    font-family:"Zen Kaku Gothic New",-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding:clamp(24px,4vw,48px) 16px 80px;
+    background:radial-gradient(60vw 40vw at 15% -5%,rgba(247,198,78,.14),transparent 60%),
+      radial-gradient(55vw 42vw at 100% 0%,rgba(255,93,102,.09),transparent 58%),var(--ground)}
+  .ms{font-family:'Material Symbols Outlined';line-height:1;font-feature-settings:'liga';
+    -webkit-font-feature-settings:'liga';vertical-align:middle;display:inline-flex}
+  .wrap{max-width:1080px;margin:0 auto}
+
+  .page-head{text-align:center;display:flex;flex-direction:column;gap:10px;max-width:60ch;margin:0 auto 8px}
+  .kick{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:700}
+  .logo-h{font-family:"Dela Gothic One",sans-serif;font-size:clamp(30px,6vw,46px);line-height:1}
+  .logo-h .bang{color:var(--red)}
+  .lead{font-size:14px;color:var(--dim);line-height:1.7}
+
+  section{margin-top:56px;border-top:1px solid rgba(255,255,255,.09);padding-top:34px}
+  .s-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .s-num{font-family:"Dela Gothic One",sans-serif;color:var(--gold);font-size:22px}
+  .s-title{font-family:"Dela Gothic One",sans-serif;font-size:22px}
+  .s-desc{font-size:13.5px;color:var(--dim);line-height:1.7;max-width:70ch;margin:4px 0 22px}
+  .s-desc b{color:var(--cream);font-weight:700}
+  .s-desc .old{color:#e58b93}
+  .s-desc .new{color:var(--gold)}
+
+  .stage{display:flex;gap:34px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+  .col{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .col .label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+  .col .label.old{color:#e58b93}.col .label.new{color:var(--gold)}
+  .caption{font-size:12px;color:var(--dim);text-align:center;max-width:30ch;line-height:1.55}
+
+  /* phone shell */
+  .phone{position:relative;width:270px;aspect-ratio:9/19.3;border-radius:38px;padding:9px;
+    background:#0e1526;box-shadow:0 30px 60px -22px rgba(0,0,0,.7),0 0 0 1px rgba(251,243,231,.06) inset;
+    touch-action:none;flex:none}
+  .phone.sm{width:230px}
+  .screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;
+    background:linear-gradient(180deg,#FFFDF8,#FBF2DD 45%,#F6E8CB 100%)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:32%;height:18px;
+    background:#0e1526;border-radius:0 0 12px 12px;z-index:40}
+  .screen::after{content:"";position:absolute;inset:0;border-radius:30px;pointer-events:none;z-index:30;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.10),inset 0 20px 28px -20px rgba(255,255,255,.5)}
+
+  /* beer layers */
+  .tilt{position:absolute;inset:0;transform-origin:50% 50%;z-index:2;pointer-events:none;will-change:transform}
+  .liquid{position:absolute;left:-60%;width:220%;top:var(--surface,16%);bottom:-95%;
+    background:linear-gradient(180deg,var(--beer-top),var(--beer-bot))}
+  .bubbles{position:absolute;left:-60%;width:220%;top:var(--surface,16%);height:100%;overflow:hidden}
+  .bub{position:absolute;bottom:0;border-radius:50%;background:rgba(255,255,255,.6);
+    box-shadow:0 0 0 .5px rgba(255,255,255,.3);animation:rise linear infinite}
+  .foam{position:absolute;left:-60%;width:220%;top:var(--surface,16%);height:16px;transform:translateY(-70%);
+    background:linear-gradient(180deg,#ffffff,#fff5e0)}
+  .foam::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:14px;
+    background:radial-gradient(circle at 9px 0,#fff5e0 8px,transparent 9px) repeat-x;background-size:18px 14px}
+  @keyframes rise{0%{transform:translateY(0) scale(.8);opacity:0}
+    10%{opacity:.9}85%{opacity:.7}100%{transform:translateY(-640px) scale(1.2);opacity:0}}
+  .shine{position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:linear-gradient(112deg,transparent 32%,rgba(255,255,255,.12) 42%,transparent 50%)}
+
+  /* on-screen UI */
+  .ui{position:relative;z-index:6;display:flex;flex-direction:column;height:100%;
+    padding:30px 13px 14px;color:var(--ink)}
+  .hrow{display:flex;align-items:flex-start;justify-content:space-between}
+  .logo{font-family:"Dela Gothic One",sans-serif;font-size:22px;line-height:1;color:var(--ink)}
+  .logo .bang{color:var(--red)}
+  .sub{font-size:9px;margin-top:5px;color:var(--ink-dim)}
+  .gear{font-size:20px;color:var(--ink);opacity:.85}
+  .tiles{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+  .tile{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:14px;
+    background:var(--tbg);border:1px solid var(--tbd);color:var(--ink);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .tile .ti{font-size:21px}.tile .tt{flex:1;font-weight:900;font-size:13px}
+  .tile .info{font-size:19px;color:var(--caramel)}
+  .foot{margin-top:auto;text-align:center;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);opacity:.7;padding-top:8px}
+
+  /* generic controls */
+  .btn{font-family:inherit;font-weight:900;font-size:13px;color:#2A1206;background:var(--gold);
+    border:none;border-radius:999px;padding:11px 20px;cursor:pointer;transition:transform .1s}
+  .btn:active{transform:scale(.95)}
+  .btn.red{background:var(--red);color:var(--cream)}
+  .btn.ghost{background:transparent;border:1px solid var(--dim);color:var(--cream)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+  /* in-screen game frame */
+  .gframe{display:flex;flex-direction:column;height:100%}
+  .gbar{display:flex;align-items:center;gap:8px;padding-bottom:6px}
+  .gbar .x{font-size:20px;color:var(--ink)}
+  .gbar .gt{font-family:"Dela Gothic One",sans-serif;font-size:15px;color:var(--ink)}
+  .gbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+  .odai-kick{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--caramel);font-weight:700}
+  .odai{font-family:"Dela Gothic One",sans-serif;font-size:30px;color:var(--ink);line-height:1.15}
+  .sbtn{font-family:inherit;font-weight:900;font-size:13px;border-radius:999px;padding:10px 18px;cursor:pointer;border:none}
+  .sbtn.accent{background:var(--caramel);color:var(--cream)}
+  .sbtn.red{background:var(--red);color:var(--cream)}
+  .sbtn.ghost{background:transparent;border:1px solid var(--ink-dim);color:var(--ink)}
+
+  /* playing card + dice */
+  .pcard{border-radius:16px;background:#FDF7E6;border:1px solid rgba(60,31,5,.16);
+    display:flex;align-items:center;justify-content:center;font-family:"Dela Gothic One",sans-serif;color:var(--ink);
+    box-shadow:0 10px 22px -6px rgba(0,0,0,.5)}
+  .pcard.red{color:var(--danger)}
+  .die{color:var(--ink)}
+  .sizetag{font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* hint chips */
+  .hintbox{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:210px}
+  .chip{background:rgba(168,90,12,.14);border:1px solid rgba(168,90,12,.4);color:var(--caramel);
+    font-weight:700;font-size:12px;border-radius:999px;padding:5px 11px;
+    opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+  .chip.in{opacity:1;transform:none}
+
+  /* modal (info popup) */
+  .backdrop{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.5);display:none;
+    align-items:center;justify-content:center;padding:16px}
+  .backdrop.show{display:flex}
+  .modal{width:100%;background:#FBF3E0;border:1px solid rgba(60,31,5,.16);border-radius:22px;padding:16px;color:var(--ink)}
+  .modal .mh{display:flex;align-items:center;gap:8px}
+  .modal .mt{font-family:"Dela Gothic One",sans-serif;font-size:16px}
+  .modal .ml{font-size:10px;letter-spacing:.1em;color:var(--ink-dim);margin-top:10px}
+  .modal .rule{font-size:11.5px;line-height:1.7;display:flex;gap:4px;margin-top:4px}
+  .modal .rule .d{color:var(--caramel)}
+  @keyframes bouncyIn{0%{opacity:0;transform:scale(.4)}55%{opacity:1;transform:scale(1.14)}
+    72%{transform:scale(.94)}86%{transform:scale(1.05)}100%{transform:scale(1)}}
+  @keyframes gentleIn{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+  .modal.bouncy{animation:bouncyIn .5s cubic-bezier(.3,1.3,.5,1) both}
+  .modal.gentle{animation:gentleIn .22s cubic-bezier(.2,.7,.3,1) both}
+
+  /* loading fill */
+  .load{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#FFFDF8,#FBF2DD)}
+  .load-liquid{position:absolute;left:0;right:0;bottom:0;height:0%;
+    background:linear-gradient(180deg,var(--beer-top),var(--beer-bot));transition:height 2s cubic-bezier(.4,.15,.2,1)}
+  .load-foam{position:absolute;left:-10%;width:120%;height:14px;transform:translateY(-60%);
+    background:linear-gradient(180deg,#fff,#fff5e0)}
+  .load-foam::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:12px;
+    background:radial-gradient(circle at 8px 0,#fff5e0 7px,transparent 8px) repeat-x;background-size:16px 12px}
+  .load-logo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:5}
+  .load-logo .lg{font-family:"Dela Gothic One",sans-serif;font-size:34px;color:var(--ink);
+    mix-blend-mode:multiply;opacity:.92}
+  .load-logo .lg .bang{color:var(--red)}
+  .load-logo .lsub{font-size:9px;letter-spacing:.16em;color:var(--ink-dim)}
+
+  .note{margin-top:16px;font-size:12px;color:var(--dim);text-align:center}
+  .foot-cta{margin-top:64px;text-align:center;font-size:13.5px;color:var(--dim);line-height:1.8;
+    border-top:1px solid rgba(255,255,255,.09);padding-top:28px}
+  .foot-cta b{color:var(--gold)}
+  @media (prefers-reduced-motion:reduce){.bub{animation:none;opacity:.5}}
+</style>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="kick">TestFlight feedback · refinement pass</div>
+    <h1 class="logo-h">カンパイ<span class="bang">！</span> 磨き込み</h1>
+    <p class="lead">Six mockups from your notes. Feel each one, then say <b style="color:var(--gold)">go</b> and I wire them into the app. Nothing here is in the build yet.</p>
+  </div>
+
+  <!-- 1. TILT -->
+  <section>
+    <div class="s-head"><span class="s-num">1</span><span class="s-title">傾き — liquid, not twitchy</span></div>
+    <p class="s-desc">The current tilt tracks the sensor almost 1:1 and snaps, so it feels twitchy and glassy.
+      Refined: <b>heavier inertia</b> (the surface lags, then <b>slosh-overshoots and settles</b> like real liquid),
+      a <span class="new">smaller cap (~7°)</span>, and a slow idle sway so it always looks wet. No physics engine, just damping + a settle spring.
+      <br>Tilt your phone left/right, or drag across the glass on desktop.</p>
+    <div class="stage">
+      <div class="col">
+        <span class="label old">現状 · twitchy</span>
+        <div class="phone sm" data-tilt="old">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="ui"><div class="hrow"><div><div class="logo">カンパイ<span class="bang">！</span></div><div class="sub">飲み会ゲーム集</div></div><span class="ms gear">settings</span></div><div class="foot">傾けてみて</div></div>
+          </div>
+        </div>
+        <div class="caption">Follows fast, snaps to stop, big throw.</div>
+      </div>
+      <div class="col">
+        <span class="label new">磨き後 · liquid</span>
+        <div class="phone sm" data-tilt="new">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="ui"><div class="hrow"><div><div class="logo">カンパイ<span class="bang">！</span></div><div class="sub">飲み会ゲーム集</div></div><span class="ms gear">settings</span></div><div class="foot">傾けてみて</div></div>
+          </div>
+        </div>
+        <div class="caption">Lags, sloshes past, settles. Gentle idle sway.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TRANSITIONS -->
+  <section>
+    <div class="s-head"><span class="s-num">2</span><span class="s-title">画面遷移 — the glass stays put</span></div>
+    <p class="s-desc">Today the whole screen (beer and all) slides, so the glass visibly jumps between pages.
+      Refined: <b>the beer background is fixed</b>; only the content moves. Two options to pick from:
+      <span class="new">A) content cross-fades in place</span> (as if the same page) or
+      <span class="new">B) a carbonation surge fills up from the bottom</span> like a fresh pour, then the new screen settles.
+      Tap 開く / 戻る to replay.</p>
+    <div class="stage">
+      <div class="col">
+        <span class="label old">現状</span>
+        <div class="phone sm" id="tr-old">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="tr-slidewrap"></div>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="TR.old()">遷移する</button>
+        <div class="caption">Background slides too → the glass jumps.</div>
+      </div>
+      <div class="col">
+        <span class="label new">A · cross-fade</span>
+        <div class="phone sm" id="tr-fade">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="tr-fadewrap"></div>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="TR.fade()">遷移する</button>
+        <div class="caption">Beer fixed; content fades. Calm, "same page".</div>
+      </div>
+      <div class="col">
+        <span class="label new">B · beer fill</span>
+        <div class="phone sm" id="tr-fill">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="tr-fillwrap"></div>
+            <div class="tr-surge"></div>
+          </div>
+        </div>
+        <button class="btn" onclick="TR.fill()">遷移する</button>
+        <div class="caption">Bubbles surge up from the bottom, then settle. Playful.</div>
+      </div>
+    </div>
+    <p class="note">My pick: <b style="color:var(--gold)">B (beer fill)</b> for launching a game, <b style="color:var(--gold)">A (cross-fade)</b> for back/settings. Tell me if you want one everywhere.</p>
+  </section>
+
+  <!-- 3. INFO POPUP -->
+  <section>
+    <div class="s-head"><span class="s-num">3</span><span class="s-title">ⓘ ポップアップ — less bounce</span></div>
+    <p class="s-desc">The rules popup currently springs with a big overshoot (<span class="old">ZoomIn + springify, damping 16</span>) so it wobbles.
+      Refined: a <b>quick scale-from-92% + fade, ~220ms, no overshoot</b>. Present, not bouncy. Tap to compare.</p>
+    <div class="stage">
+      <div class="col">
+        <span class="label old">現状 · bouncy</span>
+        <div class="phone sm" id="pop-old">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="ui"><div class="hrow"><div><div class="logo">ルール</div><div class="sub">tap ⓘ below</div></div></div>
+              <div class="tiles"><div class="tile"><span class="ms ti">train</span><span class="tt">山手線ゲーム</span><span class="ms info" onclick="POP.open('old')">info</span></div></div></div>
+            <div class="backdrop" data-pop="old" onclick="POP.close('old',event)">
+              <div class="modal bouncy"><div class="mh"><span class="ms" style="font-size:22px">train</span><span class="mt">山手線ゲーム</span></div>
+                <div class="ml">遊び方</div>
+                <div class="rule"><span class="d">・</span><span>お題を引いて順番に答える。</span></div>
+                <div class="rule"><span class="d">・</span><span>詰まる・被る・リズムを外すと負け。</span></div>
+                <div class="rule"><span class="d">・</span><span>負けた人は 罰ゲーム。</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">Overshoots to 114%, wobbles back.</div>
+      </div>
+      <div class="col">
+        <span class="label new">磨き後 · calm</span>
+        <div class="phone sm" id="pop-new">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="ui"><div class="hrow"><div><div class="logo">ルール</div><div class="sub">tap ⓘ below</div></div></div>
+              <div class="tiles"><div class="tile"><span class="ms ti">train</span><span class="tt">山手線ゲーム</span><span class="ms info" onclick="POP.open('new')">info</span></div></div></div>
+            <div class="backdrop" data-pop="new" onclick="POP.close('new',event)">
+              <div class="modal gentle"><div class="mh"><span class="ms" style="font-size:22px">train</span><span class="mt">山手線ゲーム</span></div>
+                <div class="ml">遊び方</div>
+                <div class="rule"><span class="d">・</span><span>お題を引いて順番に答える。</span></div>
+                <div class="rule"><span class="d">・</span><span>詰まる・被る・リズムを外すと負け。</span></div>
+                <div class="rule"><span class="d">・</span><span>負けた人は 罰ゲーム。</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="caption">Settles straight to 100%. No wobble.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. YAMANOTE HINT -->
+  <section>
+    <div class="s-head"><span class="s-num">4</span><span class="s-title">山手線 — ヒント (例)</span></div>
+    <p class="s-desc">Add a <b>ヒント</b> button under the お題. Tap it and a few example answers fade in as chips, so a stuck table gets un-stuck and new players understand the category instantly.
+      Each built-in お題 gets 3–4 curated examples. Tap 引く then ヒント.</p>
+    <div class="stage">
+      <div class="col">
+        <div class="phone" id="ym">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="tilt"><div class="liquid"></div><div class="bubbles"></div><div class="foam"></div></div>
+            <div class="shine"></div>
+            <div class="ui"><div class="gframe">
+              <div class="gbar"><span class="ms x">close</span><span class="gt">山手線ゲーム</span></div>
+              <div class="gbody">
+                <span class="odai-kick">お題</span>
+                <div class="odai" id="ym-odai">コンビニで買えるもの</div>
+                <div class="hintbox" id="ym-hints"></div>
+                <div class="row" style="flex-direction:column;width:100%">
+                  <button class="sbtn ghost" onclick="YM.hint()"><span class="ms" style="font-size:15px;vertical-align:-3px">lightbulb</span> ヒント（例）</button>
+                  <button class="sbtn red" onclick="YM.next()">負けた人が出た</button>
+                  <button class="sbtn accent" onclick="YM.draw()">次のお題</button>
+                </div>
+              </div>
+            </div></div>
+          </div>
+        </div>
+        <div class="caption">ヒント reveals examples for the current お題 only. Optional, never auto-shown.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. BIGGER DICE & CARDS -->
+  <section>
+    <div class="s-head"><span class="s-num">5</span><span class="s-title">サイコロ & カード — POP bigger</span></div>
+    <p class="s-desc">The dice and playing cards are the hero of each reveal, but they sit small on the screen.
+      Bump them up: <span class="old">card 120×164 → </span><span class="new">150×206</span>, and
+      <span class="old">dice 46 → </span><span class="new">64</span>, with a touch more shadow so they lift off the beer.</p>
+    <div class="stage">
+      <div class="col">
+        <span class="label old">現状</span>
+        <div class="pcard red" style="width:100px;height:137px;font-size:38px">Q<span style="font-size:.6em">♥</span></div>
+        <div class="sizetag">120 × 164</div>
+        <div class="row" style="margin-top:10px">
+          <span class="ms die" style="font-size:38px">looks_4</span>
+          <span class="ms die" style="font-size:38px">looks_5</span>
+          <span class="ms die" style="font-size:38px">looks_6</span>
+        </div>
+        <div class="sizetag">dice 46</div>
+      </div>
+      <div class="col">
+        <span class="label new">磨き後</span>
+        <div class="pcard red" style="width:125px;height:172px;font-size:50px;box-shadow:0 16px 34px -8px rgba(0,0,0,.55)">Q<span style="font-size:.6em">♥</span></div>
+        <div class="sizetag" style="color:var(--gold)">150 × 206</div>
+        <div class="row" style="margin-top:10px">
+          <span class="ms die" style="font-size:54px">looks_4</span>
+          <span class="ms die" style="font-size:54px">looks_5</span>
+          <span class="ms die" style="font-size:54px">looks_6</span>
+        </div>
+        <div class="sizetag" style="color:var(--gold)">dice 64</div>
+      </div>
+    </div>
+    <p class="note">(Preview shrunk to fit side by side; ratio is the real change. I'll verify it fits the smallest supported screen, iPhone SE.)</p>
+  </section>
+
+  <!-- 6. LOADING SCREEN -->
+  <section>
+    <div class="s-head"><span class="s-num">6</span><span class="s-title">起動 — beer fills up</span></div>
+    <p class="s-desc">Replace the bare spinner on launch with a <b>pour</b>: the amber fills the screen bottom-to-top with a foam head riding the surface and bubbles rising, the カンパイ！ logo sitting in the glass. Runs while fonts / ads / state initialize, then hands off to home. Tap 注ぐ to replay.</p>
+    <div class="stage">
+      <div class="col">
+        <div class="phone" id="ld">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="load">
+              <div class="load-liquid" id="ld-liquid"><div class="load-foam"></div><div class="bubbles" id="ld-bubbles" style="left:0;width:100%;top:0;height:100%"></div></div>
+              <div class="load-logo"><div class="lg">カンパイ<span class="bang">！</span></div><div class="lsub">飲み会・宅飲みゲーム集</div></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn" onclick="LD.pour()">注ぐ (replay)</button>
+        <div class="caption">~2s fill. If startup is faster, it holds full for a beat then fades to home.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot-cta">
+    Feel good? Say <b>go</b> and I'll implement all six (or name the ones you want).<br>
+    Want the transition to be A everywhere, B everywhere, or A+B split? Any dice/card size tweak? Tell me before go.
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var rnd=function(a,b){return a+Math.random()*(b-a);};
+
+  // seed bubbles into every .bubbles container
+  document.querySelectorAll('.bubbles').forEach(function(bx){
+    var n=bx.id==='ld-bubbles'?16:14;
+    for(var i=0;i<n;i++){var b=document.createElement('div');b.className='bub';var d=rnd(3,7);
+      b.style.width=d+'px';b.style.height=d+'px';b.style.left=rnd(4,96)+'%';
+      b.style.animationDuration=rnd(4,7)+'s';b.style.animationDelay=(-rnd(0,7))+'s';bx.appendChild(b);}
+  });
+
+  // ---- 1. TILT: two springs, old = stiff/fast, new = heavy/laggy with slosh + idle sway ----
+  function makeTilt(phone,mode){
+    var el=phone.querySelector('.tilt');
+    var CAP=mode==='new'?7:14;
+    var target=0,cur=0,vel=0,using=false,t0=performance.now();
+    var clamp=function(v){return Math.max(-CAP,Math.min(CAP,v));};
+    function frame(now){
+      var k,damp;
+      if(mode==='new'){k=0.045;damp=0.90;}       // heavy, laggy, sloshy (low k = lag, high damp = long settle)
+      else{k=0.28;damp=0.55;}                     // stiff, snappy, twitchy
+      // gentle idle sway only on the refined one, only when not actively driven
+      var idle=(mode==='new'&&!using)?Math.sin((now-t0)/1400)*1.1:0;
+      vel=(vel+((target+idle)-cur)*k)*damp;cur+=vel;
+      el.style.transform='rotate('+cur.toFixed(3)+'deg)';
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    phone.addEventListener('pointermove',function(e){if(using)return;var r=phone.getBoundingClientRect();
+      target=clamp(-((e.clientX-r.left)/r.width-0.5)*2*CAP);});
+    phone.addEventListener('pointerleave',function(){if(!using)target=0;});
+    function orient(e){if(e.gamma==null)return;using=true;target=clamp(-e.gamma);}
+    var DOE=window.DeviceOrientationEvent;
+    if(DOE&&typeof DOE.requestPermission==='function'){
+      phone.addEventListener('touchmove',function(e){if(using)return;var t=e.touches[0],r=phone.getBoundingClientRect();
+        target=clamp(-((t.clientX-r.left)/r.width-0.5)*2*CAP);},{passive:true});
+      phone.addEventListener('click',function once(){DOE.requestPermission().then(function(s){
+        if(s==='granted')window.addEventListener('deviceorientation',orient,true);});phone.removeEventListener('click',once);});
+    } else if(DOE){window.addEventListener('deviceorientation',orient,true);}
+  }
+  document.querySelectorAll('[data-tilt]').forEach(function(p){makeTilt(p,p.getAttribute('data-tilt'));});
+
+  // ---- shared: two simple "pages" of content for the transition demos ----
+  var PAGES=[
+    '<div class="ui"><div class="hrow"><div><div class="logo">カンパイ<span class="bang">！</span></div><div class="sub">ホーム</div></div><span class="ms gear">settings</span></div>'+
+      '<div class="tiles"><div class="tile"><span class="ms ti">train</span><span class="tt">山手線ゲーム</span><span class="ms" style="opacity:.5">chevron_right</span></div>'+
+      '<div class="tile"><span class="ms ti">local_fire_department</span><span class="tt">ロシアンルーレット</span><span class="ms" style="opacity:.5">chevron_right</span></div>'+
+      '<div class="tile"><span class="ms ti">casino</span><span class="tt">チンチロ</span><span class="ms" style="opacity:.5">chevron_right</span></div></div><div class="foot">ホーム</div></div>',
+    '<div class="ui"><div class="gframe"><div class="gbar"><span class="ms x">close</span><span class="gt">山手線ゲーム</span></div>'+
+      '<div class="gbody"><span class="odai-kick">お題</span><div class="odai">寿司のネタ</div>'+
+      '<button class="sbtn accent">お題を引く</button></div></div></div>'
+  ];
+  function mount(wrap,i){wrap.innerHTML=PAGES[i];}
+
+  window.TR={
+    _o:0,_f:0,_l:0,
+    old:function(){var w=document.querySelector('#tr-old .tr-slidewrap');this._o^=1;
+      w.style.position='absolute';w.style.inset='0';w.style.zIndex=6;
+      // current behavior: the WHOLE screen (incl. beer) would slide; emulate by sliding the phone screen contents together
+      var scr=document.querySelector('#tr-old .screen');
+      scr.animate([{transform:'translateX(40px)',opacity:.3},{transform:'translateX(0)',opacity:1}],{duration:300,easing:'ease-out'});
+      mount(w,this._o);},
+    fade:function(){var w=document.querySelector('#tr-fade .tr-fadewrap');this._f^=1;
+      w.style.position='absolute';w.style.inset='0';w.style.zIndex=6;mount(w,this._f);
+      w.animate([{opacity:0,transform:'scale(.985)'},{opacity:1,transform:'scale(1)'}],{duration:260,easing:'ease-out'});},
+    fill:function(){var w=document.querySelector('#tr-fill .tr-fillwrap');var surge=document.querySelector('#tr-fill .tr-surge');this._l^=1;
+      w.style.position='absolute';w.style.inset='0';w.style.zIndex=6;
+      // carbonation surge overlay rising and fading
+      surge.style.cssText='position:absolute;inset:0;z-index:7;pointer-events:none;background:'+
+        'radial-gradient(circle at 20% 120%,rgba(255,255,255,.5),transparent 30%),'+
+        'radial-gradient(circle at 55% 120%,rgba(255,255,255,.45),transparent 28%),'+
+        'radial-gradient(circle at 82% 120%,rgba(255,255,255,.5),transparent 30%);';
+      surge.animate([{transform:'translateY(60%)',opacity:0},{transform:'translateY(-10%)',opacity:1,offset:.5},{transform:'translateY(-70%)',opacity:0}],{duration:620,easing:'ease-out'});
+      setTimeout(function(){mount(w,TR._l);w.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:300,easing:'ease-out'});},210);},
+  };
+  mount(document.querySelector('#tr-old .tr-slidewrap'),0);
+  mount(document.querySelector('#tr-fade .tr-fadewrap'),0);
+  mount(document.querySelector('#tr-fill .tr-fillwrap'),0);
+
+  // ---- 3. POPUP ----
+  window.POP={open:function(k){var b=document.querySelector('[data-pop="'+k+'"]');var m=b.querySelector('.modal');
+      b.classList.add('show');m.style.animation='none';void m.offsetWidth;m.style.animation='';},
+    close:function(k,e){if(e.target.classList.contains('backdrop'))document.querySelector('[data-pop="'+k+'"]').classList.remove('show');}};
+
+  // ---- 4. YAMANOTE HINTS ----
+  var THEMES={
+    'コンビニで買えるもの':['おにぎり','肉まん','ホットコーヒー','からあげクン'],
+    '寿司のネタ':['まぐろ','サーモン','いくら','えんがわ'],
+    'ラーメンのトッピング':['チャーシュー','味玉','のり','メンマ'],
+    'アルコールの種類':['ビール','ハイボール','日本酒','焼酎'],
+    '47都道府県':['北海道','東京','大阪','沖縄'],
+    '鍋に入れる具材':['白菜','豆腐','しめじ','鶏肉']
+  };
+  var keys=Object.keys(THEMES),ymi=0;
+  window.YM={
+    draw:function(){ymi=(ymi+1)%keys.length;document.getElementById('ym-odai').textContent=keys[ymi];
+      document.getElementById('ym-hints').innerHTML='';},
+    next:function(){document.getElementById('ym-odai').textContent='負けた人 → 罰ゲーム！';document.getElementById('ym-hints').innerHTML='';},
+    hint:function(){var box=document.getElementById('ym-hints');box.innerHTML='';
+      var ex=THEMES[keys[ymi]]||[];ex.forEach(function(t,i){var c=document.createElement('span');c.className='chip';c.textContent=t;
+        box.appendChild(c);setTimeout(function(){c.classList.add('in');},80+i*90);});}
+  };
+
+  // ---- 6. LOADING FILL ----
+  window.LD={pour:function(){var liq=document.getElementById('ld-liquid');liq.style.transition='none';liq.style.height='0%';
+    void liq.offsetWidth;liq.style.transition='height 2s cubic-bezier(.4,.15,.2,1)';liq.style.height='100%';}};
+  setTimeout(function(){LD.pour();},400);
+})();
+</script>
