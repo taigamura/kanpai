@@ -57,11 +57,16 @@ export function KingsCupGame() {
   const isKing = rank === 13;
   const isFourthKing = isKing && kings === 4;
 
+  // The round ends the moment the 4th K is drawn (that player drinks the center cup).
+  const restart = () => {
+    setDeck(freshDeck());
+    setKings(0);
+    setCard(null);
+  };
+
   const draw = () => {
     if (deck.length === 0) {
-      setDeck(freshDeck());
-      setKings(0);
-      setCard(null);
+      restart();
       return;
     }
     const next = [...deck];
@@ -157,11 +162,15 @@ export function KingsCupGame() {
           </T>
         </View>
 
-        <Button
-          title={deck.length === 0 ? 'デッキを混ぜ直す' : card ? '次のカード' : 'カードを引く'}
-          kind="accent"
-          onPress={draw}
-        />
+        {isFourthKing ? (
+          <Button title="もう一回（新しいデッキ）" kind="accent" onPress={restart} />
+        ) : (
+          <Button
+            title={deck.length === 0 ? 'デッキを混ぜ直す' : card ? '次のカード' : 'カードを引く'}
+            kind="accent"
+            onPress={draw}
+          />
+        )}
       </View>
     </GameFrame>
   );

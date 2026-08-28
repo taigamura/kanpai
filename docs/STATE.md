@@ -57,27 +57,32 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
   - Games: 高低/キングスカップ card flips; チンチロ dice tumble + result pop + reveal stagger;
     山手線 お題 flip; ルーレット fuse Pulse + BounceIn boom; PenaltyReveal BounceIn/ZoomIn.
 
-## 山手線 shared お題 + voting — CLIENT BUILT, SHARING OFF (2026-08-28)
-- **What ships:** users can add their own 山手線 お題 (persisted, merged into the draw pool) via
-  a new お題 modal (`src/games/TopicsModal.tsx`, opened from the 山手線 intro). Works fully offline.
-- **Sharing/voting/analytics are DORMANT.** `src/services/topicsConfig.ts` holds `{url:'',key:''}`;
-  while `url` is empty, `syncEnabled()` is false → **nothing leaves the device, no install id is
-  even generated**, and the modal shows "共有・投票は近日公開". So this build's privacy posture is
-  UNCHANGED (still zero data collected) and it is App-Store-safe like prior builds.
-- **To turn ON shared お題 + upvotes + developer analytics (needs a backend + a data-collection
-  decision):**
-  1. Stand up 3 REST endpoints on any host (Supabase / Cloudflare Worker / Firebase Functions):
-     - `GET  {url}/topics`  → `[{ text, votes }]` ranked, top first
-     - `POST {url}/topics`  ← `{ installId, text }`  (submit a shared お題)
-     - `POST {url}/votes`   ← `{ installId, text }`  (one upvote per install)
-     Key is sent as both `apikey` and `Authorization: Bearer <key>`. `installId` is an anonymous
-     per-install string (no account/PII). The votes aggregate IS the developer analytics.
-  2. Fill `url`/`key` in `src/services/topicsConfig.ts`.
-  3. **Privacy work becomes REQUIRED before that build ships:** update App Privacy labels (declare
-     the submitted-text + anonymous-id "User Content"/"Identifiers" collection) and add a line to
-     `docs/terms.html`. Then reship.
-- Client wiring: `src/services/topics.ts` (guarded fetch), `AppState.customTopics` (+add/remove;
-  add also best-effort `submitTopic`), storage keys `customTopics`/`installId`/`topicVotes`.
+## 山手線 shared お題 + voting — LIVE on Supabase (2026-08-28)
+- **What ships:** users add their own 山手線 お題 (persisted, merged into the draw pool) via the
+  お題 modal (`src/games/TopicsModal.tsx`, opened from the 山手線 intro), AND those お題 are shared
+  to everyone + the community list is upvotable. `topicsConfig.ts` is filled with the live Supabase
+  project (`driqzhzlejeujfzwtstg`, anon key committed — publishable/safe). Verified end-to-end
+  (submit/vote/dedupe/read) 2026-08-28; pool seeded with 「コンビニのスイーツ」.
+- **⚠️ DATA COLLECTION IS NOW ON.** The app sends submitted お題 text + an anonymous install id to
+  Supabase. **Before submitting the next build for PUBLIC App Store review, update App Privacy in
+  ASC** (declare "User Content" = submitted text, "Identifiers" = install id) and add a line to
+  `docs/terms.html`. TestFlight is fine meanwhile. Analytics = `topics.votes` + `topic_submissions`
+  in the Supabase dashboard. To disable again, blank out `topicsConfig.ts` and reship.
+- **Backend = Supabase** (client already wired for it; only creds + privacy work remain).
+  To turn ON shared お題 + upvotes + developer analytics:
+  1. Create a Supabase project (free tier). SQL editor → run `supabase/schema.sql` (tables
+     `topics`/`topic_votes`/`topic_submissions` + SECURITY DEFINER RPCs `submit_topic`/`vote_topic`
+     + RLS: anon may only SELECT `topics` and EXECUTE the two RPCs).
+  2. Settings → API: paste **Project URL** + **anon public key** into `src/services/topicsConfig.ts`
+     (`{ url, anonKey }`). The anon key is publishable/safe to ship; NEVER the service_role key.
+     The client hits PostgREST directly: GET `topics` ranked by votes; RPC for submit/vote.
+  3. **Privacy work REQUIRED before that build ships:** update App Privacy labels (declare the
+     submitted-text = "User Content" + anonymous install id = "Identifiers" collection) and add a
+     line to `docs/terms.html`. Then reship. Analytics = the `topics.votes` aggregate +
+     `topic_submissions` log (keyed by anonymous install id, no PII), read in the Supabase dashboard.
+- Client wiring: `src/services/topics.ts` (Supabase PostgREST/RPC, guarded), `topicsConfig.ts`
+  (`url`/`anonKey`, empty = off), `AppState.customTopics` (+add/remove; add also best-effort
+  `submitTopic`), storage keys `customTopics`/`installId`/`topicVotes`.
 
 ## Design status — LAGER THEME BUILT (2026-08-28)
 - **Theme = 生ビール Lager beer-glass (LOCKED, built).** Replaced the twilight-blue izakaya palette.

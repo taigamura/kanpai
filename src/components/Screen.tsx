@@ -1,5 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, ViewStyle, Animated, Easing, Dimensions } from 'react-native';
+import ReAnimated, {
+  useAnimatedSensor,
+  SensorType,
+  useDerivedValue,
+  useSharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/theme/theme';
@@ -53,9 +60,25 @@ function Bubble({ left, size, delay, duration }: (typeof BUBBLES)[number]) {
   );
 }
 
-// Shared screen ground. Mirrors docs/lager-tilt.html (concept 1 "生ビール Lager"):
-// an amber liquid fill, a cream foam head across the top, carbonation rising through it,
-// and a soft diagonal glass shine. Every screen sits "inside the glass."
+// The beer surface should stay level with gravity as the phone tilts. We read the device's
+// roll (left-right tilt) on the UI thread and counter-rotate the liquid layer, low-passed for
+// a gentle slosh and capped so it never dumps. No sensor (simulator/web) → angle stays 0.
+const TILT_CAP = 0.16; // radians (~9°)
+function useTiltStyle() {
+  const sensor = useAnimatedSensor(SensorType.ROTATION, { interval: 40 });
+  const smooth = useSharedValue(0);
+  const angle = useDerivedValue(() => {
+    const roll = sensor.sensor.value.roll;
+    const target = Math.max(-TILT_CAP, Math.min(TILT_CAP, -roll));
+    smooth.value = smooth.value + (target - smooth.value) * 0.1; // low-pass toward target
+    return smooth.value;
+  });
+  return useAnimatedStyle(() => ({ transform: [{ rotate: `${angle.value}rad` }] }));
+}
+
+// Shared screen ground. Mirrors docs/lager-tilt.html (concept 1 "生ビール Lager"): a static
+// amber liquid base, then a tilt layer (cream foam head + carbonation + glass shine) that
+// counter-rotates to the phone's tilt so the beer looks real. Every screen sits inside the glass.
 export function Screen({
   children,
   edges = ['top', 'bottom'],
@@ -65,38 +88,38 @@ export function Screen({
   edges?: Edge[];
   style?: ViewStyle;
 }) {
+  const tiltStyle = useTiltStyle();
   return (
     <View style={styles.root}>
-      {/* amber liquid */}
+      {/* static amber liquid base — always covers the screen, so a tilt never exposes a gap */}
       <LinearGradient
         colors={[colors.beerTop, colors.beerBot]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      {/* carbonation rising from the base */}
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        {BUBBLES.map((b, i) => (
-          <Bubble key={i} {...b} />
-        ))}
-      </View>
-      {/* foam head: solid cream band that softens into the beer */}
-      <View pointerEvents="none" style={styles.foam}>
-        <View style={styles.foamSolid} />
+      {/* tilt layer: foam + bubbles + shine stay level with gravity as the phone rolls */}
+      <ReAnimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, tiltStyle]}>
+        {/* carbonation rising from the base */}
+        <View style={StyleSheet.absoluteFill}>
+          {BUBBLES.map((b, i) => (
+            <Bubble key={i} {...b} />
+          ))}
+        </View>
+        {/* foam head — oversized (starts above/beyond the edges) so tilt keeps the top covered */}
+        <View style={styles.foam}>
+          <View style={styles.foamSolid} />
+          <LinearGradient colors={[colors.foam, 'rgba(253,247,230,0)']} style={styles.foamFade} />
+        </View>
+        {/* diagonal glass shine */}
         <LinearGradient
-          colors={[colors.foam, 'rgba(253,247,230,0)']}
-          style={styles.foamFade}
+          colors={['transparent', 'rgba(255,255,255,0.12)', 'transparent']}
+          locations={[0.34, 0.42, 0.52]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
         />
-      </View>
-      {/* diagonal glass shine */}
-      <LinearGradient
-        pointerEvents="none"
-        colors={['transparent', 'rgba(255,255,255,0.12)', 'transparent']}
-        locations={[0.34, 0.42, 0.52]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
+      </ReAnimated.View>
       <SafeAreaView style={[styles.safe, style]} edges={edges}>
         {children}
       </SafeAreaView>
@@ -112,7 +135,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(255,255,255,0.6)',
   },
-  foam: { position: 'absolute', top: 0, left: 0, right: 0, height: 116 },
-  foamSolid: { height: 90, backgroundColor: colors.foam },
+  // Oversized (negative insets + extra height) so the counter-rotation never pulls the foam
+  // off the top edge; the visible foam-to-beer transition still lands ~90px down at rest.
+  foam: { position: 'absolute', top: -50, left: -60, right: -60, height: 190 },
+  foamSolid: { height: 140, backgroundColor: colors.foam },
   foamFade: { height: 26 },
 });
