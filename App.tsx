@@ -103,7 +103,8 @@ export default function App() {
     );
   }
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    // Amber root so a sliding page transition never exposes a black gap behind the panel.
+    <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <AppStateProvider>
           <NavProvider>
@@ -119,6 +120,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
+  root: { flex: 1, backgroundColor: colors.bg },
+  flex: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
 });
