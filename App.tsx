@@ -45,7 +45,7 @@ function useStartup() {
 }
 
 function Router() {
-  const { ready, ageAccepted } = useAppState();
+  const { ageAccepted } = useAppState();
   const { route, home } = useNav();
 
   // Swipe-right-to-go-back. The nav is flat and every 戻る button goes home, so a rightward swipe
@@ -69,7 +69,6 @@ function Router() {
     [route.name, goBack],
   );
 
-  if (!ready) return <LoadingScreen />;
   if (!ageAccepted) return <AgeGateScreen />;
 
   const screen = (() => {
@@ -146,10 +145,13 @@ function AppBody() {
     return () => clearTimeout(id);
   }, []);
 
-  // While the app fonts are still loading, show the pour without the logotype so it never flashes
-  // in a fallback system face; once fonts are in, the logo renders in the real display font.
-  if (!fontsLoaded || !minSplash) return <LoadingScreen showLogo={fontsLoaded} />;
-
+  // Mount the full provider tree from the FIRST frame — not after the splash gate — so AppState's
+  // AsyncStorage hydration runs *during* the pour, and a single BeerGround + single LoadingScreen
+  // span the whole boot. The Gate (below, inside the providers) is what holds the pour; it waits on
+  // fonts + the min-splash timer + hydration together, then drains straight into Home over the
+  // already-mounted glass. This removes the old loading→home flash, which came from a second
+  // LoadingScreen (pour reset to 0) and a BeerGround remount at the splash→app handoff.
+  const splashHeld = !fontsLoaded || !minSplash;
   return (
     // Amber root as the ultimate fallback ground behind the fixed beer glass.
     <GestureHandlerRootView style={styles.root}>
@@ -160,7 +162,7 @@ function AppBody() {
             {/* the lager glass, rendered once and fixed — every screen cross-fades over it */}
             <BeerGround />
             <ErrorBoundary>
-              <Router />
+              <Gate splashHeld={splashHeld} showLogo={fontsLoaded} />
             </ErrorBoundary>
             {/* UI Studio — web + __DEV__ only; no-op elsewhere */}
             <StudioOverlay />
@@ -169,6 +171,17 @@ function AppBody() {
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
+}
+
+// Single boot gate — lives INSIDE the provider tree so it can wait on AppState hydration (`ready`)
+// alongside fonts + the min-splash timer. One LoadingScreen instance spans the entire boot and
+// drains into Home in place, over the persistent BeerGround, so there is no reset pour and no glass
+// remount between loading and home. `showLogo` is false only in the first frames before app fonts
+// resolve, so the logotype never renders in a fallback system face.
+function Gate({ splashHeld, showLogo }: { splashHeld: boolean; showLogo: boolean }) {
+  const { ready } = useAppState();
+  if (splashHeld || !ready) return <LoadingScreen showLogo={showLogo} />;
+  return <Router />;
 }
 
 const styles = StyleSheet.create({
