@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-08-29. Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-08-29 (icon + ads pass). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 ## TL;DR
 The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
@@ -8,8 +8,9 @@ pipeline works end to end; say **"ship it"** to build + submit a new build. Late
 (**build 4, 2026-08-29**) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the
 shared 山手線 お題 feature LIVE on Supabase (data collection now ON), the KingsCup/transition fixes,
 and the UI pop pass (black boot ！, calm popups, bigger app-wide type).
-**Newest work, BUILT but NOT yet shipped:** 参加者・負けカウント (registered players + per-player
-loss tally; opt-in tap-to-record lose screen) — see its section below. Ship to see it on TF.
+**Newest work, BUILT but NOT yet shipped (as of this handoff):** 参加者・負けカウント (registered
+players + per-player loss tally), the **real app icon** (already committed + wired), and the **ads
+preload-and-cache refactor** — see their sections below. Ship to see them on TF.
 **Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
 (screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
 
@@ -127,6 +128,53 @@ not yet device-tested.
   /`fromRoster`/`handoffNoteName`/`seatResultName`/`loserLabelName`. (Local count state renamed
   `seatCount`; the AppState `players` is imported as `registered` to avoid the name clash.)
 
+## App icon — DONE (committed `c39f32a`)
+The real 1024×1024 `assets/icon.png` (lager mug + red ！ + confetti, brand palette) is committed
+and wired: `app.json` `expo.icon` points at it AND the `expo-splash-screen` plugin uses it as the
+splash image (amber `#E39A24` background). `assets/favicon.png` (web) is generated too. The old
+"placeholder clinking-mugs" wording in prior handoffs is obsolete. `scripts/generate-icon.mjs` +
+`npm run icon` still exist but are NOT needed anymore — the shipped icon is the designed one, not
+generator output. No icon work remains before store submission; it is baked into every build.
+
+## Ads — INTERSTITIAL (preload-cache) + BOTTOM BANNER — BUILT (2026-08-29), not yet device-verified
+Two placements now (SPEC §6). Both hide for owners (`adsRemoved`), on web/Expo Go (native module
+absent), and during boot/age-gate.
+
+### Bottom banner (NEW 2026-08-29)
+`src/ads/BannerAdSlot.tsx` (+ `.web.tsx` stub) renders a fixed **320×50** banner on a foam-cream bar
+with an ink hairline. It is mounted in `App.tsx` as part of a new **`Shell`** that lays out the app
+in a column: content in a `flex:1` box, banner in normal flow BENEATH it. Because the banner reserves
+its own height, it can never float over the UI or hide a button. On no-fill the bar collapses (no
+empty gap). Shown only when `!booting && ageAccepted`.
+- ✅ **Real iOS banner unit wired (2026-08-29):** `REAL_BANNER.ios =
+  ca-app-pub-6862698457969651/9261864571` (AdMob app `~3900340220`, already the `iosAppId` in
+  app.json). Dev shows a TEST banner, RELEASE shows this real unit. Both interstitial + banner now
+  have real iOS units — no ad ids remain to fill. Ship to verify on device. (Android has no unit yet.)
+
+### Interstitial — preload-and-cache refactor
+Fixes "ads don't show up." `src/ads/ads.ts` was rewritten from on-demand-load-and-race to a
+**preload-and-cache** manager (the pattern AdMob recommends):
+- `initAds()` (called once at startup from `App.tsx` after the ATT prompt) initializes the SDK and
+  **preloads** the first interstitial so one is ready before the frequency cap is ever hit.
+- `maybeShowInterstitial(adsRemoved)` (called on every game open, `HomeScreen.openGame`) counts opens;
+  on the 3rd (`SHOW_EVERY = 3`, first two are ad-free) it shows the **cached** ad instantly and, on
+  CLOSED, preloads the next. If nothing is loaded yet (slow/no fill) it kicks a preload and skips
+  WITHOUT resetting the counter, so the next open shows — gameplay never blocks on an ad load.
+- The old code created an interstitial on each attempt, `.load()`d it, and raced a 6s timeout; any
+  fill slower than 6s (routine on a fresh AdMob account) was silently dropped. That race is gone.
+- **On-device diagnostics:** in `__DEV__` every decision logs as `[kanpai/ads] …` (SDK init, load
+  requested/loaded/error, show, "no ad loaded"). Read it in Metro / the Xcode device console to see
+  exactly why an ad did or didn't appear.
+- Dev builds always use Google's **TEST** interstitial id (reliable fill, never a live tap);
+  RELEASE uses the real iOS unit `ca-app-pub-6862698457969651/3331645387`. iOS App ID is in app.json.
+- **Why you may STILL see no ad even though the wiring is correct:** (a) running in **Expo Go / web /
+  a plain simulator** — the native `react-native-google-mobile-ads` module is absent, so ads no-op
+  (the log says so); use a dev-client or EAS build. (b) A **brand-new AdMob account/unit returns
+  "no fill"** for hours-to-days and until the AdMob app is fully set up (payments/app-ads.txt) — the
+  code is correct but there's no inventory; TEST ids in a dev build confirm the wiring meanwhile.
+  (c) You opened fewer than 3 games in a session (the counter resets on cold start). `tsc` clean +
+  jest 5/5 after the refactor. Needs a native rebuild to verify on device — **ship it**.
+
 ## UX polish + audio + game-requests — BUILT (2026-08-28, part 2)
 From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tested on device.
 1. **Loading → home is seamless.** `LoadingScreen` now renders the real `BeerGround` underneath
@@ -209,7 +257,8 @@ From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tes
 1. **IAP:** create non-consumable `app.kanpai.mvp.removeads` @ ¥370 in ASC; finish **banking** so the
    **Paid Apps agreement** goes active (tax forms W-8BEN + Certificate of Foreign Status already submitted);
    add a **sandbox tester**; test buy + restore on a build.
-2. **App icon:** replace the placeholder `assets/icon.png` (`npm run icon` = placeholder art), 1024².
+2. **App icon:** ✅ DONE — a real designed 1024² `assets/icon.png` (lager mug + red ！ + confetti)
+   is committed (`c39f32a`) and wired in `app.json` (`icon` + splash image). No longer a placeholder.
 3. **Listing:** JP screenshots (from the TestFlight build), **17+** age-rating questionnaire, **App Privacy**
    (declare AdMob data collection), support email taigamura.dev@gmail.com.
 4. Attach build to version 1.0.0 → **Submit for Review**.

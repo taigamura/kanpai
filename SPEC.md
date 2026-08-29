@@ -85,8 +85,11 @@ content-heavy, moderation-prone anchor) is deferred to v2.
 ## 6. Monetization
 
 - **Free download** (max reach; break the 0-download streak).
-- **Light ads** (AdMob) — unobtrusive interstitial between games, never mid-round.
-- **¥370 one-time 買い切り IAP** → removes ads (+ becomes the container for future unlocks).
+- **Light ads** (AdMob), two placements, both unobtrusive and never mid-round:
+  - an **interstitial between games** (frequency-capped, first two opens ad-free), and
+  - a **bottom-anchored banner** (320×50) that sits in its own reserved bar UNDER the content so it
+    never covers a button. Both hide entirely for owners (remove-ads IAP) and on the age gate/boot.
+- **¥370 one-time 買い切り IAP** → removes ads (both placements) + becomes the container for future unlocks.
 - Explicitly **no subscription.** ("週500円詐欺" is Picolo's grave.)
 
 ## 7. Tech
@@ -98,7 +101,12 @@ content-heavy, moderation-prone anchor) is deferred to v2.
   their own お題 (works offline) and, when they add/vote, the text + an anonymous install id go to
   Supabase (PostgREST read + `submit_topic`/`vote_topic` RPCs; RLS; see `supabase/schema.sql`).
   Toggle in `src/services/topicsConfig.ts` (blank = fully on-device). Guarded like ads/iap.
-- Ads: `react-native-google-mobile-ads`. IAP: RevenueCat or Expo StoreKit (TBD in build).
+- Ads: `react-native-google-mobile-ads` — (1) interstitial between games, frequency-capped
+  (one per 3 opens, first two ad-free), **preloaded-and-cached** so a slow fill never drops the ad
+  (`src/ads/ads.ts`); (2) a bottom-anchored 320×50 **banner** in a reserved bar
+  (`src/ads/BannerAdSlot.tsx`, mounted in `App.tsx` Shell). See `docs/STATE.md` → "Ads".
+  IAP: **`react-native-iap` v16 (openiap)** —
+  decided and wired (`src/iap/iap.ts`); non-consumable `app.kanpai.mvp.removeads` @ ¥370.
 - **Analytics:** Apple App Store Connect App Analytics + the Supabase お題 vote/submission aggregate.
   No extra tracking SDK beyond AdMob. **Privacy labels now declare data collection** (お題 text =
   User Content, install id = Identifiers) — see `docs/app-privacy.md`.
