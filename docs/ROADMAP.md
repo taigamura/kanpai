@@ -40,14 +40,24 @@
 
 ## Phase 3 — Monetization + telemetry
 - ✅ AdMob wired (`react-native-google-mobile-ads`): interstitial only between games
-  (src/ads/ads.ts), frequency-capped, skipped for owners, guarded to no-op without the
-  native module. ATT requested on launch (src, App.tsx). Config plugin added to app.json.
+  (src/ads/ads.ts), frequency-capped (`SHOW_EVERY = 3`), skipped for owners, guarded to no-op
+  without the native module. ATT requested on launch (App.tsx). Config plugin added to app.json.
+  - ✅ **Preload-and-cache refactor (2026-08-29):** interstitials are now preloaded at startup and
+    after each close, then shown from cache instantly when the cap is hit. Replaces the old
+    on-demand-load-and-race (which dropped any fill slower than 6s — the "ads don't show" cause).
+    `__DEV__` logs each decision as `[kanpai/ads] …` for on-device diagnosis. Real iOS unit in
+    RELEASE, Google TEST id in dev. NOT yet device-verified — needs a native rebuild (ship it).
+- ✅ **Bottom banner (2026-08-29):** `src/ads/BannerAdSlot.tsx` — a fixed 320×50 banner in a reserved
+  bottom bar (mounted via the `App.tsx` `Shell` column, so it never overlaps the UI), hidden for
+  owners / boot / age-gate, collapses on no-fill. Dev shows a TEST banner; **real iOS unit wired**
+  (`ca-app-pub-6862698457969651/9261864571`). Ship to verify on device. (Android unit: not yet.)
 - ✅ ¥370 remove-ads IAP wired (`react-native-iap`, src/iap/iap.ts): purchase + restore in
   Settings; entitlement persisted via AppState/AsyncStorage. Dev-only unlock when native
   module absent.
 - ⚠️ NOT yet runtime-verified — needs a dev/EAS build + accounts. Before launch:
-  - Replace Google TEST ids: app.json `androidAppId`/`iosAppId` + real interstitial unit
-    ids in src/ads/ads.ts (`interstitialUnitId`).
+  - iOS ad ids are all real now: app.json `iosAppId`, interstitial unit in src/ads/ads.ts, and the
+    banner unit in src/ads/BannerAdSlot.tsx (`REAL_BANNER.ios`). Only Android units remain unfilled
+    (Android not yet a ship target).
   - App Store Connect: create NON-CONSUMABLE IAP `app.kanpai.mvp.removeads`, price ¥370;
     activate Paid Apps agreement; test with a sandbox account.
   - Verify react-native-iap call signatures against the installed major version.
@@ -58,8 +68,10 @@
 - Apple App Analytics (no SDK, via App Store Connect) — enable in the ASC dashboard (manual).
 
 ## Phase 4 — Ship prep
-- ✅ App icon + favicon generated (`npm run icon` → scripts/generate-icon.mjs). PLACEHOLDER
-  clinking-mugs art in the brand palette; replace with a designed icon before serious launch.
+- ✅ App icon + favicon DONE. A real designed 1024² `assets/icon.png` (lager mug + red ！ +
+  confetti, brand palette) is committed (`c39f32a`) and wired in app.json (icon + splash image).
+  No longer the generated placeholder. `scripts/generate-icon.mjs` / `npm run icon` are retained
+  but unused — the shipped icon is the designed one.
 - ✅ Name verified available (see SPEC §9). Listing title: カンパイ！飲み会・宅飲みパーティーゲーム.
 - App Store: 17+ rating, alcohol reference; JP screenshots; keyword subtitle.
 - ✅ Terms/EULA + privacy policy page authored: docs/terms.html (利用規約・免責事項・
@@ -75,7 +87,8 @@
 - Consider per-scene tone switcher (合コン / 宅飲み / 会社 / カップル / 女子会).
 
 ## Known placeholders to replace
-- `assets/` — no icon/splash yet.
-- `app.json` → `extra.eas.projectId` empty (set on first EAS build).
-- Terms URL `https://example.com/kanpai/terms` (AgeGate + Settings).
-- AdMob + StoreKit not yet installed (kept out of scaffold so it installs/builds clean).
+(All of the original scaffold placeholders below are now RESOLVED — kept here as a resolved log.)
+- ✅ `assets/` — real 1024² icon + favicon in place (`c39f32a`); splash reuses the icon.
+- ✅ `app.json` → `extra.eas.projectId` set (`ea0d603a-8163-42b9-a1b4-0e93e41d95b5`).
+- ✅ Terms URL now the hosted GitHub Pages page (https://taigamura.github.io/kanpai/terms.html).
+- ✅ AdMob + StoreKit installed + wired (real iOS AdMob ids; IAP on react-native-iap v16).

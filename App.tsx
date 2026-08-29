@@ -27,6 +27,7 @@ import { BeerGround } from '@/components/Screen';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { StudioOverlay } from '@/studio/StudioOverlay';
 import { initAds } from '@/ads/ads';
+import { BannerAdSlot } from '@/ads/BannerAdSlot';
 
 // Request ATT (for ad personalization) then initialize ads. Both are best-effort and
 // guarded — absent native modules (Expo Go / web / tests) simply no-op.
@@ -162,7 +163,7 @@ function AppBody() {
             {/* the lager glass, rendered once and fixed — every screen cross-fades over it */}
             <BeerGround />
             <ErrorBoundary>
-              <Gate splashHeld={splashHeld} showLogo={fontsLoaded} />
+              <Shell splashHeld={splashHeld} showLogo={fontsLoaded} />
             </ErrorBoundary>
             {/* UI Studio — web + __DEV__ only; no-op elsewhere */}
             <StudioOverlay />
@@ -173,19 +174,32 @@ function AppBody() {
   );
 }
 
-// Single boot gate — lives INSIDE the provider tree so it can wait on AppState hydration (`ready`)
-// alongside fonts + the min-splash timer. One LoadingScreen instance spans the entire boot and
+// App shell = the boot gate + the bottom banner, laid out in a column so the banner reserves its
+// own height UNDER the content (it never floats over the UI or hides a button). Lives INSIDE the
+// provider tree so it can wait on AppState hydration (`ready`) alongside fonts + the min-splash
+// timer, and read `ageAccepted`/`adsRemoved`. One LoadingScreen instance spans the entire boot and
 // drains into Home in place, over the persistent BeerGround, so there is no reset pour and no glass
 // remount between loading and home. `showLogo` is false only in the first frames before app fonts
-// resolve, so the logotype never renders in a fallback system face.
-function Gate({ splashHeld, showLogo }: { splashHeld: boolean; showLogo: boolean }) {
-  const { ready } = useAppState();
-  if (splashHeld || !ready) return <LoadingScreen showLogo={showLogo} />;
-  return <Router />;
+// resolve, so the logotype never renders in a fallback system face. The banner shows only once the
+// user is past boot AND the age gate — never over the pour or the 20歳以上 screen.
+function Shell({ splashHeld, showLogo }: { splashHeld: boolean; showLogo: boolean }) {
+  const { ready, ageAccepted } = useAppState();
+  const booting = splashHeld || !ready;
+  return (
+    <View style={styles.shell}>
+      <View style={styles.content}>
+        {booting ? <LoadingScreen showLogo={showLogo} /> : <Router />}
+      </View>
+      {!booting && ageAccepted ? <BannerAdSlot /> : null}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+  // Shell column: content fills, banner sits beneath it in normal flow (reserves its own space).
+  shell: { flex: 1 },
+  content: { flex: 1 },
   fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   // Web phone frame (see WebFrame). Native ignores these.
   webBackdrop: {
