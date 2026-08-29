@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const KEYS = {
   ageAccepted: 'kanpai.ageAccepted.v1',
   roster: 'kanpai.roster.v1',
+  players: 'kanpai.players.v1', // durable named players + per-player 負け (loss) counts
   customPenalties: 'kanpai.customPenalties.v1',
   adsRemoved: 'kanpai.adsRemoved.v1',
   customTopics: 'kanpai.customTopics.v1', // user-added 山手線 お題 (also shared when sync is on)

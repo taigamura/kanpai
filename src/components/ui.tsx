@@ -16,6 +16,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { colors, radius, spacing, font, fonts } from '@/theme/theme';
 import { Icon, IconName } from './Icon';
+import { copy } from '@/content/copy';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -151,6 +152,33 @@ export function Button(
   );
 }
 
+// RuleCard — the "labeled tab" style (chosen from the 10-option board) for the short rules shown
+// before a game starts: a cream card lifted off the beer, with a caramel pill tab straddling the top
+// edge that names the box (default 「ルール」, e.g.「はじめる前に」for KingsCup). Geometry mirrors
+// docs/rulecard-mockups.html #04. The tab pokes 13px above the card, so `marginTop` reserves room.
+export function RuleCard({
+  children,
+  label = copy.ui.ruleCardLabel,
+  style,
+}: {
+  children: React.ReactNode;
+  label?: string;
+  style?: ViewProps['style'];
+}) {
+  return (
+    <View style={[styles.ruleCard, style]}>
+      <View style={styles.ruleTabWrap} pointerEvents="none">
+        <View style={styles.ruleTabPill}>
+          <T bold size={11} style={styles.ruleTabText}>
+            {label}
+          </T>
+        </View>
+      </View>
+      {children}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.card,
@@ -158,6 +186,40 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.line,
+  },
+  ruleCard: {
+    width: '100%',
+    marginTop: 13, // room for the tab that straddles the top edge
+    backgroundColor: colors.bgElevated,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 18,
+    paddingTop: 22,
+    paddingBottom: 16,
+    paddingHorizontal: 18,
+    gap: spacing.sm,
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 4,
+  },
+  ruleTabWrap: {
+    position: 'absolute',
+    top: -13,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  ruleTabPill: {
+    backgroundColor: colors.accent,
+    borderRadius: radius.pill,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+  },
+  ruleTabText: {
+    color: colors.cream,
+    letterSpacing: 2,
   },
   pill: {
     alignSelf: 'center',

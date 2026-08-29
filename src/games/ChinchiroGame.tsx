@@ -4,10 +4,12 @@ import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon, IconName } from '@/components/Icon';
-import { T, Button } from '@/components/ui';
+import { T, Button, RuleCard } from '@/components/ui';
 import { TumbleDie, PressableScale, Pulse, enterItem, enterPop } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
+import { useAppState } from '@/state/AppState';
+import { copy, fmt } from '@/content/copy';
 
 // チンチロ: pass-around multiplayer. Each seat rolls 3 dice in turn; roles are scored
 // and compared; the lowest roll → 罰ゲーム. Seat-based (no names needed).
@@ -19,21 +21,29 @@ type Roll = { dice: [number, number, number]; label: string; score: number; kind
 // Higher score = stronger. Lowest score loses.
 function evaluate(dice: [number, number, number]): Roll {
   const [a, b, c] = [...dice].sort((x, y) => x - y);
-  if (a === 1 && b === 1 && c === 1) return { dice, label: 'ピンゾロ（1のアラシ）', score: 70, kind: 'good' };
-  if (a === b && b === c) return { dice, label: `${a}のアラシ`, score: 50 + a, kind: 'good' };
-  if (a === 4 && b === 5 && c === 6) return { dice, label: 'シゴロ（4-5-6）', score: 45, kind: 'good' };
-  if (a === 1 && b === 2 && c === 3) return { dice, label: 'ヒフミ（1-2-3）', score: -2, kind: 'bad' };
+  if (a === 1 && b === 1 && c === 1) return { dice, label: copy.chinchiro.rolePinzoro, score: 70, kind: 'good' };
+  if (a === b && b === c) return { dice, label: fmt(copy.chinchiro.roleArashi, { n: a }), score: 50 + a, kind: 'good' };
+  if (a === 4 && b === 5 && c === 6) return { dice, label: copy.chinchiro.roleShigoro, score: 45, kind: 'good' };
+  if (a === 1 && b === 2 && c === 3) return { dice, label: copy.chinchiro.roleHifumi, score: -2, kind: 'bad' };
   if (a === b || b === c) {
     const point = a === b ? c : a; // the odd die is the point
-    return { dice, label: `${point}の目`, score: point, kind: 'normal' };
+    return { dice, label: fmt(copy.chinchiro.rolePoint, { n: point }), score: point, kind: 'normal' };
   }
-  return { dice, label: '目なし（ションベン）', score: -1, kind: 'bad' };
+  return { dice, label: copy.chinchiro.roleMenashi, score: -1, kind: 'bad' };
 }
 
 type Phase = 'setup' | 'handoff' | 'rolling' | 'rolled' | 'reveal';
 
 export function ChinchiroGame() {
-  const [players, setPlayers] = useState(3);
+  // When the group has registered players, the seat count IS the roster size (and seats are named);
+  // otherwise fall back to the manual 人数 stepper.
+  const { players: registered } = useAppState();
+  const hasRoster = registered.length > 0;
+  const [seatCount, setSeatCount] = useState(3);
+  const players = hasRoster ? registered.length : seatCount;
+  // Display name for a seat: the registered player's name when set, else 「N人目」.
+  const seatLabel = (i: number) =>
+    hasRoster ? registered[i]?.name ?? '' : fmt(copy.chinchiro.seatN, { n: i + 1 });
   const [phase, setPhase] = useState<Phase>('setup');
   const [seat, setSeat] = useState(0);
   const [rolls, setRolls] = useState<Roll[]>([]);
@@ -102,31 +112,46 @@ export function ChinchiroGame() {
     k === 'good' ? colors.success : k === 'bad' ? colors.danger : colors.text;
 
   return (
-    <GameFrame title="チンチロ">
+    <GameFrame title={copy.chinchiro.title}>
       {phase === 'setup' && (
         <View style={styles.center}>
-          <T dim style={styles.help}>
-            3つのサイコロを振って役を出そう。{'\n'}一番弱い役の人は 罰ゲーム。
-          </T>
-          <T size={font.small} dim>
-            人数
-          </T>
-          <View style={styles.stepper}>
-            <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setPlayers((p) => Math.max(2, p - 1))}>
-              <T size={26} bold>
-                −
-              </T>
-            </PressableScale>
-            <T size={font.title} black style={{ minWidth: 60, textAlign: 'center' }}>
-              {players}
+          <RuleCard>
+            <T dim style={styles.help}>
+              {copy.chinchiro.intro}
             </T>
-            <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setPlayers((p) => Math.min(8, p + 1))}>
-              <T size={26} bold>
-                ＋
+          </RuleCard>
+          {hasRoster ? (
+            <>
+              <T size={font.small} dim>
+                {copy.chinchiro.rosterLabel}
               </T>
-            </PressableScale>
-          </View>
-          <Button title="はじめる" kind="accent" onPress={startGame} />
+              <T bold style={{ textAlign: 'center' }}>
+                {fmt(copy.chinchiro.fromRoster, { names: registered.map((p) => p.name).join('・') })}
+              </T>
+            </>
+          ) : (
+            <>
+              <T size={font.small} dim>
+                {copy.chinchiro.playersLabel}
+              </T>
+              <View style={styles.stepper}>
+                <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setSeatCount((p) => Math.max(2, p - 1))}>
+                  <T size={26} bold>
+                    −
+                  </T>
+                </PressableScale>
+                <T size={font.title} black style={{ minWidth: 60, textAlign: 'center' }}>
+                  {players}
+                </T>
+                <PressableScale style={styles.stepBtn} scaleTo={0.88} onPress={() => setSeatCount((p) => Math.min(8, p + 1))}>
+                  <T size={26} bold>
+                    ＋
+                  </T>
+                </PressableScale>
+              </View>
+            </>
+          )}
+          <Button title={copy.chinchiro.start} kind="accent" onPress={startGame} />
         </View>
       )}
 
@@ -134,19 +159,21 @@ export function ChinchiroGame() {
         <View style={styles.center}>
           <Icon name="dice" size={52} color={colors.text} />
           <T size={font.title} display>
-            {seat + 1}人目
+            {seatLabel(seat)}
           </T>
           <T dim style={styles.help}>
-            スマホを {seat + 1} 人目に渡してください。
+            {hasRoster
+              ? fmt(copy.chinchiro.handoffNoteName, { name: seatLabel(seat) })
+              : fmt(copy.chinchiro.handoffNote, { n: seat + 1 })}
           </T>
-          <Button title="サイコロを振る" kind="accent" onPress={startRoll} />
+          <Button title={copy.chinchiro.roll} kind="accent" onPress={startRoll} />
         </View>
       )}
 
       {phase === 'rolling' && (
         <View style={styles.center}>
           <T dim size={font.small}>
-            {seat + 1}人目
+            {seatLabel(seat)}
           </T>
           <Pulse min={0.96} max={1.06} duration={140}>
             <View style={styles.diceRow}>
@@ -156,16 +183,18 @@ export function ChinchiroGame() {
             </View>
           </Pulse>
           <T display size={20} dim style={{ textAlign: 'center' }}>
-            コロコロ…
+            {copy.chinchiro.rolling}
           </T>
-          <Button title="ストップ！" kind="accent" onPress={stopRoll} />
+          <Button title={copy.chinchiro.stop} kind="accent" onPress={stopRoll} />
         </View>
       )}
 
       {phase === 'rolled' && current && (
         <View style={styles.center}>
           <T dim size={font.small}>
-            {seat + 1}人目の結果
+            {hasRoster
+              ? fmt(copy.chinchiro.seatResultName, { name: seatLabel(seat) })
+              : fmt(copy.chinchiro.seatResult, { n: seat + 1 })}
           </T>
           <View style={styles.diceRow}>
             {current.dice.map((v, i) => (
@@ -179,9 +208,9 @@ export function ChinchiroGame() {
               {current.label}
             </T>
           </Animated.View>
-          <Button title="振り直し" kind="ghost" onPress={startRoll} />
+          <Button title={copy.chinchiro.reroll} kind="ghost" onPress={startRoll} />
           <Button
-            title={seat + 1 >= players ? '結果を見る' : '次の人へ'}
+            title={seat + 1 >= players ? copy.chinchiro.seeResult : copy.chinchiro.next}
             kind="accent"
             onPress={confirmRoll}
           />
@@ -191,7 +220,7 @@ export function ChinchiroGame() {
       {phase === 'reveal' && (
         <View style={styles.center}>
           <T dim size={font.small}>
-            結果
+            {copy.chinchiro.resultLabel}
           </T>
           <View style={styles.results}>
             {rolls.map((r, i) => (
@@ -200,7 +229,7 @@ export function ChinchiroGame() {
                 entering={enterItem(i)}
                 style={[styles.resultRow, i === loserSeat && { borderColor: colors.danger, borderWidth: 1 }]}
               >
-                <T>{i + 1}人目</T>
+                <T>{seatLabel(i)}</T>
                 <View style={styles.diceRowSmall}>
                   {r.dice.map((v, j) => (
                     <Icon key={j} name={`die-${v}` as IconName} size={22} color={tint(r.kind)} />
@@ -212,8 +241,14 @@ export function ChinchiroGame() {
               </Animated.View>
             ))}
           </View>
-          <PenaltyReveal loserLabel={`一番弱いのは ${loserSeat + 1}人目！`} />
-          <Button title="もう一回" kind="ghost" onPress={() => setPhase('setup')} />
+          <PenaltyReveal
+            loserLabel={
+              hasRoster
+                ? fmt(copy.chinchiro.loserLabelName, { name: seatLabel(loserSeat) })
+                : fmt(copy.chinchiro.loserLabel, { n: loserSeat + 1 })
+            }
+          />
+          <Button title={copy.chinchiro.again} kind="ghost" onPress={() => setPhase('setup')} />
         </View>
       )}
     </GameFrame>

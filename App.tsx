@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, FadeOut, runOnJS } from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts, DelaGothicOne_400Regular } from '@expo-google-fonts/dela-gothic-one';
 import {
   ZenKakuGothicNew_400Regular,
@@ -20,10 +20,12 @@ import { AgeGateScreen } from '@/screens/AgeGateScreen';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { RosterScreen } from '@/screens/RosterScreen';
+import { PlayersScreen } from '@/screens/PlayersScreen';
 import { GameHost } from '@/games/GameHost';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { BeerGround } from '@/components/Screen';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { StudioOverlay } from '@/studio/StudioOverlay';
 import { initAds } from '@/ads/ads';
 
 // Request ATT (for ad personalization) then initialize ads. Both are best-effort and
@@ -44,7 +46,28 @@ function useStartup() {
 
 function Router() {
   const { ready, ageAccepted } = useAppState();
-  const { route } = useNav();
+  const { route, home } = useNav();
+
+  // Swipe-right-to-go-back. The nav is flat and every 戻る button goes home, so a rightward swipe
+  // from any non-home screen goes home too. Horizontal-intent thresholds + failOffsetY let the
+  // vertical ScrollViews (home list, settings) win, and no screen has a horizontal gesture to steal.
+  const goBack = useCallback(() => {
+    if (route.name !== 'home') home();
+  }, [route.name, home]);
+  const swipeBack = useMemo(
+    () =>
+      Gesture.Pan()
+        .enabled(route.name !== 'home')
+        .activeOffsetX(24) // needs clear rightward horizontal travel to activate
+        .failOffsetY([-18, 18]) // give up to vertical scrolling
+        .onEnd((e) => {
+          'worklet';
+          if (e.translationX > 70 && e.velocityX > 0 && e.translationX > Math.abs(e.translationY)) {
+            runOnJS(goBack)();
+          }
+        }),
+    [route.name, goBack],
+  );
 
   if (!ready) return <LoadingScreen />;
   if (!ageAccepted) return <AgeGateScreen />;
@@ -55,6 +78,8 @@ function Router() {
         return <HomeScreen />;
       case 'settings':
         return <SettingsScreen />;
+      case 'players':
+        return <PlayersScreen />;
       case 'roster':
         return <RosterScreen next={route.next} />;
       case 'game':
@@ -68,18 +93,43 @@ function Router() {
   // content — pages feel like they resolve in place on the same glass, no sliding background.
   const key = route.name + ('id' in route ? route.id : 'next' in route ? route.next : '');
   return (
-    <Animated.View
-      key={key}
-      entering={FadeIn.duration(240)}
-      exiting={FadeOut.duration(160)}
-      style={styles.fill}
-    >
-      {screen}
-    </Animated.View>
+    <GestureDetector gesture={swipeBack}>
+      <Animated.View
+        key={key}
+        entering={FadeIn.duration(240)}
+        exiting={FadeOut.duration(160)}
+        style={styles.fill}
+      >
+        {screen}
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+
+// Web-only phone frame: center the app in an iPhone-sized (393×852 logical pt) rounded card on a
+// neutral backdrop so `npm run web` reads as a phone instead of stretching full-window (mirrors
+// simple-bookkeeping's AppShell). No-op on native. The `nativeID` becomes a DOM `id` the UI Studio
+// uses to pin arrow-comment coordinates to the frame rect.
+function WebFrame({ children }: { children: React.ReactNode }) {
+  if (Platform.OS !== 'web') return <>{children}</>;
+  return (
+    <View style={styles.webBackdrop}>
+      <View nativeID="kanpai-phone-frame" style={styles.webPhone}>
+        {children}
+      </View>
+    </View>
   );
 }
 
 export default function App() {
+  return (
+    <WebFrame>
+      <AppBody />
+    </WebFrame>
+  );
+}
+
+function AppBody() {
   useStartup();
   const [fontsLoaded] = useFonts({
     DelaGothicOne_400Regular,
@@ -112,6 +162,8 @@ export default function App() {
             <ErrorBoundary>
               <Router />
             </ErrorBoundary>
+            {/* UI Studio — web + __DEV__ only; no-op elsewhere */}
+            <StudioOverlay />
           </NavProvider>
         </AppStateProvider>
       </SafeAreaProvider>
@@ -122,4 +174,28 @@ export default function App() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   fill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  // Web phone frame (see WebFrame). Native ignores these.
+  webBackdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: '#15100a', // dark neutral so the amber phone reads as a device
+  },
+  webPhone: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 393, // iPhone 14/15 logical width (pt)
+    maxHeight: 852, // iPhone 14/15 logical height (pt)
+    borderRadius: 44,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.35)',
+    overflow: 'hidden',
+    backgroundColor: colors.bg,
+    // RN Web renders these as box-shadow; native as elevation/shadow.
+    shadowColor: '#000',
+    shadowOpacity: 0.45,
+    shadowRadius: 40,
+    shadowOffset: { width: 0, height: 20 },
+  },
 });

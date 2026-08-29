@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, FlatList } from 'react-native';
 import { colors, spacing, font, radius } from '@/theme/theme';
-import { T, Button } from '@/components/ui';
+import { T, Button, RuleCard } from '@/components/ui';
 import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
-import type { GameId } from '@/data/games';
+import { GAMES, type GameId } from '@/data/games';
+import { copy, fmt } from '@/content/copy';
 
 // Shared roster entry. Entered once, remembered, editable. Reached only for games
 // that need names (needsRoster). Fast quick-add; can proceed once minPlayers met.
@@ -23,6 +24,9 @@ export function RosterScreen({ next }: { next: GameId }) {
   };
   const remove = (n: string) => setNames((p) => p.filter((x) => x !== n));
 
+  // Quick reminder of the game you're setting up for (e.g. 匿名アンケート's secret-vote rule).
+  const quickRule = GAMES.find((g) => g.id === next)?.rules[0];
+
   const proceed = () => {
     setRoster(names);
     nav.go({ name: 'game', id: next });
@@ -32,25 +36,35 @@ export function RosterScreen({ next }: { next: GameId }) {
     <Screen>
       <View style={styles.header}>
         <Pressable onPress={nav.home} hitSlop={12}>
-          <T bold>← 戻る</T>
+          <T bold>{copy.common.back}</T>
         </Pressable>
         <T display size={font.heading}>
-          参加者
+          {copy.roster.title}
         </T>
         <View style={{ width: 48 }} />
       </View>
+
+      {quickRule && (
+        <View style={{ paddingHorizontal: spacing.lg }}>
+          <RuleCard>
+            <T dim style={{ textAlign: 'center' }}>
+              {quickRule}
+            </T>
+          </RuleCard>
+        </View>
+      )}
 
       <View style={styles.row}>
         <TextInput
           value={draft}
           onChangeText={setDraft}
           onSubmitEditing={add}
-          placeholder="名前を入力"
+          placeholder={copy.roster.inputPlaceholder}
           placeholderTextColor={colors.textDim}
           style={styles.input}
           returnKeyType="done"
         />
-        <Button title="追加" kind="accent" onPress={add} />
+        <Button title={copy.roster.add} kind="accent" onPress={add} />
       </View>
 
       <FlatList
@@ -62,27 +76,27 @@ export function RosterScreen({ next }: { next: GameId }) {
           <Pressable style={styles.chip} onPress={() => remove(item)}>
             <T>{item}</T>
             <T dim size={font.small}>
-              ✕
+              {copy.common.cross}
             </T>
           </Pressable>
         )}
         ListEmptyComponent={
           <T dim style={{ textAlign: 'center', marginTop: spacing.xl }}>
-            参加者を追加してください
+            {copy.roster.empty}
           </T>
         }
       />
 
       <View style={{ padding: spacing.lg }}>
         <Button
-          title={`はじめる（${names.length}人）`}
+          title={fmt(copy.roster.start, { n: names.length })}
           onPress={proceed}
           disabled={names.length < 3}
           style={{ opacity: names.length < 3 ? 0.4 : 1 }}
         />
         {names.length < 3 && (
           <T dim size={font.small} style={{ textAlign: 'center', marginTop: spacing.sm }}>
-            3人以上で遊べます
+            {copy.roster.minNote}
           </T>
         )}
       </View>

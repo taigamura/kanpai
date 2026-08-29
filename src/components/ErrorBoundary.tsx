@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { colors, spacing, font } from '@/theme/theme';
 import { T, Button } from './ui';
 import { Icon } from './Icon';
+import { copy } from '@/content/copy';
 
 // Last-resort crash net. Catches render/runtime errors anywhere below it and shows a
 // friendly Japanese recovery screen instead of a white/blank crash — so a bad round never
@@ -31,12 +32,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
       <View style={styles.root}>
         <Icon name="beer" size={60} color={colors.accent} />
         <T size={font.heading} black style={styles.title}>
-          おっと、しくじりました
+          {copy.errorBoundary.title}
         </T>
         <T dim style={styles.msg}>
-          一度画面を戻してもう一度お試しください。飲みものはそのままで大丈夫です。
+          {copy.errorBoundary.message}
         </T>
-        <Button title="ホームに戻る" kind="accent" onPress={this.reset} style={styles.btn} />
+        <Button title={copy.errorBoundary.reset} kind="accent" onPress={this.reset} style={styles.btn} />
       </View>
     );
   }

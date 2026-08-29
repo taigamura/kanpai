@@ -9,6 +9,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '@/theme/theme';
 import { BeerGround } from './Screen';
+import { copy } from '@/content/copy';
 
 const { height: H } = Dimensions.get('window');
 
@@ -45,10 +46,8 @@ export function LoadingScreen({ showLogo = true }: { showLogo?: boolean }) {
 
       {showLogo && (
         <View style={styles.center} pointerEvents="none">
-          <Animated.Text style={styles.logo}>
-            カンパイ<Animated.Text style={styles.bang}>！</Animated.Text>
-          </Animated.Text>
-          <Animated.Text style={styles.sub}>飲み会・宅飲みパーティーゲーム集</Animated.Text>
+          <Animated.Text style={styles.logo}>{copy.brand.name}</Animated.Text>
+          <Animated.Text style={styles.sub}>{copy.brand.tagline}</Animated.Text>
         </View>
       )}
     </View>
@@ -78,8 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
+  // Single ink logotype — the boot ！ and the home ！ read identically (no red flash on load).
   logo: { fontFamily: fonts.display, fontSize: 40, color: colors.text },
-  // Same ink as the home logotype's ！ — the boot ！ and home ！ read identically (no red flash).
-  bang: { fontFamily: fonts.display, fontSize: 40, color: colors.text },
   sub: { fontFamily: fonts.body, fontSize: 11, letterSpacing: 2, color: colors.textDim },
 });

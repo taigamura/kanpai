@@ -29,6 +29,8 @@ export type IconName =
   | 'request'
   | 'send'
   | 'check'
+  | 'players'
+  | 'trophy'
   // in-game states / affordances
   | 'bomb'
   | 'fuse'
@@ -68,6 +70,8 @@ const GLYPHS: Record<IconName, Glyph> = {
   request: { fam: 'mci', name: 'gamepad-variant-outline' },
   send: { fam: 'ion', name: 'paper-plane' },
   check: { fam: 'ion', name: 'checkmark-circle' },
+  players: { fam: 'mci', name: 'account-group' },
+  trophy: { fam: 'mci', name: 'trophy-outline' },
 
   bomb: { fam: 'mci', name: 'bomb' },
   fuse: { fam: 'ion', name: 'flame' },

@@ -4,30 +4,20 @@ import Animated, { ZoomIn, FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button, PlayingCard } from '@/components/ui';
+import { T, Button, PlayingCard, RuleCard } from '@/components/ui';
 import { FlipIn, Pulse } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
+import { copy, fmt } from '@/content/copy';
 
 // キングスカップ: draw from a real 52-card deck (no repeats until reshuffled). Each rank
 // triggers a rule. THE CENTER CUP: a Kが出るたび、引いた人は自分の飲みものを中央のコップに
 // 少し注ぐ。4枚目（最後）のKを引いた人が、その中央のコップを飲みほす。
 // Because it needs a physical center cup, the game opens with a one-page setup check.
 
-const RULES: Record<number, { name: string; rule: string }> = {
-  1: { name: 'A・ウォーターフォール', rule: '全員で飲み始め、右隣が止めるまで' },
-  2: { name: '2・You', rule: '誰か1人を指名。その人が 罰ゲーム' },
-  3: { name: '3・Me', rule: '自分が 罰ゲーム' },
-  4: { name: '4・床', rule: '最後に床を触った人が 罰ゲーム' },
-  5: { name: '5・男', rule: '男性チームが 罰ゲーム' },
-  6: { name: '6・女', rule: '女性チームが 罰ゲーム' },
-  7: { name: '7・天', rule: '最後に手を上げた人が 罰ゲーム' },
-  8: { name: '8・相棒', rule: '相棒を1人決める。以降その人と運命共同体' },
-  9: { name: '9・韻', rule: 'お題の言葉に韻を踏む。詰まったら 罰ゲーム' },
-  10: { name: '10・テーマ', rule: 'カテゴリを1つ決めて順番に。詰まったら負け' },
-  11: { name: 'J・ルール', rule: '好きなルールを1つ追加できる' },
-  12: { name: 'Q・質問', rule: '質問し合う。答えたら負け' },
-  13: { name: 'K・キング', rule: '自分の飲みものを中央のコップに少し注ぐ' },
-};
+// Rank → rule text lives in the central copy document (content/copy.json).
+const RULES = copy.kingscup.rules;
+const ruleFor = (rank: number) =>
+  RULES[String(rank) as keyof typeof RULES] ?? null;
 
 const RANK_LABEL: Record<number, string> = {
   1: 'A', 11: 'J', 12: 'Q', 13: 'K',
@@ -53,7 +43,7 @@ export function KingsCupGame() {
 
   const rank = card ? Math.floor(card / 10) : 0;
   const suit = card != null ? SUITS[card % 10] : '';
-  const rule = rank ? RULES[rank] : null;
+  const rule = rank ? ruleFor(rank) : null;
   const isKing = rank === 13;
   const isFourthKing = isKing && kings === 4;
   // Three Kings are out → exactly one is still in the deck. Whoever draws it drinks the cup.
@@ -85,38 +75,35 @@ export function KingsCupGame() {
   // One-page setup check: this game needs a physical center cup.
   if (!started) {
     return (
-      <GameFrame title="キングスカップ">
+      <GameFrame title={copy.kingscup.title}>
         <View style={styles.setup}>
           <Icon name="beer" size={60} color={colors.accent} />
-          <T size={font.heading} black style={styles.center8}>
-            はじめる前に
-          </T>
-          <T style={styles.setupLead}>
-            中央に空のコップを1つ用意してください。
-          </T>
-          <View style={styles.rulesBox}>
-            <T dim style={styles.rule}>
-              ・K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。
+          <RuleCard label={copy.kingscup.setupLabel} style={styles.rulesBox}>
+            <T style={styles.setupLead}>
+              {copy.kingscup.setupLead}
             </T>
             <T dim style={styles.rule}>
-              ・4枚目（最後）のKを引いた人が、その中央のコップを飲みほします。
+              {copy.kingscup.setupRule1}
             </T>
-          </View>
-          <Button title="コップを用意した・はじめる" kind="accent" onPress={() => setStarted(true)} />
+            <T dim style={styles.rule}>
+              {copy.kingscup.setupRule2}
+            </T>
+          </RuleCard>
+          <Button title={copy.kingscup.setupStart} kind="accent" onPress={() => setStarted(true)} />
         </View>
       </GameFrame>
     );
   }
 
   return (
-    <GameFrame title="キングスカップ">
+    <GameFrame title={copy.kingscup.title}>
       <View style={styles.play}>
         {oneKingLeft && !isFourthKing && (
           <Pulse min={0.97} max={1.05} duration={520}>
             <View style={styles.warning}>
               <Icon name="crown" size={18} color={colors.cream} />
               <T bold size={font.small} style={{ color: colors.cream }}>
-                最後のK 残り1枚！引いた人がコップを飲みほす
+                {copy.kingscup.lastKingWarning}
               </T>
             </View>
           </Pulse>
@@ -134,10 +121,10 @@ export function KingsCupGame() {
           {isFourthKing ? (
             <>
               <T size={font.title} display style={{ color: colors.accent, textAlign: 'center' }}>
-                最後のK！
+                {copy.kingscup.fourthKingTitle}
               </T>
               <T size={font.heading} black style={{ textAlign: 'center' }}>
-                中央のコップはあなたが飲みほします。
+                {copy.kingscup.fourthKingBody}
               </T>
               <Icon name="beer" size={48} color={colors.accent} />
             </>
@@ -147,7 +134,7 @@ export function KingsCupGame() {
                 {rule?.name}
               </T>
               <T style={{ textAlign: 'center' }}>
-                中央のコップに、自分の飲みものを少し注ごう。
+                {copy.kingscup.kingBody}
               </T>
             </>
           ) : rule ? (
@@ -161,25 +148,25 @@ export function KingsCupGame() {
             </>
           ) : (
             <T dim style={{ textAlign: 'center' }}>
-              カードを引いて、出た役のルールに従おう。
+              {copy.kingscup.drawPrompt}
             </T>
           )}
         </Animated.View>
 
         <View style={styles.meta}>
           <T dim size={font.small}>
-            残り {deck.length} 枚
+            {fmt(copy.kingscup.remaining, { n: deck.length })}
           </T>
           <T dim size={font.small}>
-            K {kings}/4
+            {fmt(copy.kingscup.kingCount, { n: kings })}
           </T>
         </View>
 
         {isFourthKing ? (
-          <Button title="もう一回（新しいデッキ）" kind="accent" onPress={restart} />
+          <Button title={copy.kingscup.restart} kind="accent" onPress={restart} />
         ) : (
           <Button
-            title={deck.length === 0 ? 'デッキを混ぜ直す' : card ? '次のカード' : 'カードを引く'}
+            title={deck.length === 0 ? copy.kingscup.reshuffle : card ? copy.kingscup.nextCard : copy.kingscup.drawCard}
             kind="accent"
             onPress={draw}
           />
@@ -203,7 +190,6 @@ const styles = StyleSheet.create({
   ruleBlock: { alignItems: 'center', gap: spacing.sm },
   meta: { flexDirection: 'row', gap: spacing.lg, marginTop: spacing.xs },
   setup: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
-  center8: { textAlign: 'center' },
   setupLead: { textAlign: 'center', lineHeight: 24 },
   rulesBox: { gap: spacing.sm, width: '100%', marginVertical: spacing.sm },
   rule: { lineHeight: 22 },

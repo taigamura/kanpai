@@ -13,11 +13,12 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button } from '@/components/ui';
+import { T, Button, RuleCard } from '@/components/ui';
 import { enterBoom } from '@/components/motion';
 import { spacing, font, colors } from '@/theme/theme';
 import { startTension, rampTension, stopTension, playExplosion } from '@/audio/sound';
 import { PenaltyReveal } from './PenaltyReveal';
+import { copy } from '@/content/copy';
 
 // ロシアンルーレット / 爆弾パス: hold the phone, pass it around. While it ticks the bomb
 // inflates and a tension bed speeds up; it "explodes" on a random person after a random
@@ -115,18 +116,20 @@ export function RouletteGame() {
   }, []);
 
   return (
-    <GameFrame title="ロシアンルーレット">
+    <GameFrame title={copy.roulette.title}>
       {/* full-screen blast flash, above the glass, below nothing important */}
       <Animated.View pointerEvents="none" style={[styles.flash, flashStyle]} />
 
       <View style={{ alignItems: 'center', gap: spacing.lg }}>
         {state === 'idle' && (
           <>
-            <T dim style={{ textAlign: 'center' }}>
-              スタートしたらスマホを隣へ回していきます。爆発したら…その人の番。
-            </T>
+            <RuleCard>
+              <T dim style={{ textAlign: 'center' }}>
+                {copy.roulette.intro}
+              </T>
+            </RuleCard>
             <Icon name="bomb" size={68} color={colors.text} />
-            <Button title="スタート" kind="accent" onPress={start} />
+            <Button title={copy.roulette.start} kind="accent" onPress={start} />
           </>
         )}
         {state === 'ticking' && (
@@ -137,7 +140,7 @@ export function RouletteGame() {
               </Animated.View>
             </View>
             <T black size={font.heading} style={{ textAlign: 'center' }}>
-              回して！回して！
+              {copy.roulette.ticking}
             </T>
           </>
         )}
@@ -148,11 +151,11 @@ export function RouletteGame() {
             </Animated.View>
             <Animated.View entering={FadeIn.delay(120).duration(300)}>
               <T display size={font.title} style={{ color: colors.danger }}>
-                ドカーン！
+                {copy.roulette.boom}
               </T>
             </Animated.View>
-            <PenaltyReveal loserLabel="今スマホを持っている人！" />
-            <Button title="もう一回" kind="ghost" onPress={start} />
+            <PenaltyReveal loserLabel={copy.roulette.loserLabel} />
+            <Button title={copy.roulette.again} kind="ghost" onPress={start} />
           </>
         )}
       </View>

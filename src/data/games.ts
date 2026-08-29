@@ -1,5 +1,10 @@
 // v1 game registry. Anchor = 山手線ゲーム. All offline, single-phone, pass-around.
 import type { IconName } from '@/components/Icon';
+import { copy } from '@/content/copy';
+
+// Game TITLES are single-sourced from content/copy.json (copy.<id>.title) so the home tiles,
+// the roster screen, and each game's own header can never drift apart — edit the title once.
+// subtitle/rules stay here (home-tile content, kept in the data layer by design).
 
 export type GameId =
   | 'yamanote'
@@ -23,7 +28,7 @@ export type GameDef = {
 export const GAMES: GameDef[] = [
   {
     id: 'yamanote',
-    title: '山手線ゲーム',
+    title: copy.yamanote.title,
     subtitle: 'お題に沿って順番に答える定番',
     icon: 'game-yamanote',
     needsRoster: false,
@@ -37,7 +42,7 @@ export const GAMES: GameDef[] = [
   },
   {
     id: 'roulette',
-    title: 'ロシアンルーレット',
+    title: copy.roulette.title,
     subtitle: 'スマホを回して…爆発するのは誰だ',
     icon: 'game-roulette',
     needsRoster: false,
@@ -51,7 +56,7 @@ export const GAMES: GameDef[] = [
   },
   {
     id: 'highlow',
-    title: '高低（ハイ&ロー）',
+    title: copy.highlow.title,
     subtitle: '次のカードは上か下か',
     icon: 'game-highlow',
     needsRoster: false,
@@ -65,7 +70,7 @@ export const GAMES: GameDef[] = [
   },
   {
     id: 'chinchiro',
-    title: 'チンチロ',
+    title: copy.chinchiro.title,
     subtitle: 'サイコロ3つで勝負',
     icon: 'game-chinchiro',
     needsRoster: false,
@@ -79,7 +84,7 @@ export const GAMES: GameDef[] = [
   },
   {
     id: 'kingscup',
-    title: 'キングスカップ',
+    title: copy.kingscup.title,
     subtitle: 'カードごとにルールが発動',
     icon: 'game-kingscup',
     needsRoster: false,
@@ -93,7 +98,7 @@ export const GAMES: GameDef[] = [
   },
   {
     id: 'anketo',
-    title: '匿名アンケート',
+    title: copy.anketo.title,
     subtitle: '「誰が一番◯◯？」をこっそり投票',
     icon: 'game-anketo',
     needsRoster: true,

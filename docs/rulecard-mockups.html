@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RuleCard mockups — カンパイ！</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --beerTop:#F4C64F; --beerBot:#E39A24; --foam:#FDF7E6;
+    --text:#3C1F05; --textDim:#5F3E17; --accent:#A85A0C; --accentBright:#F7C64E;
+    --card:rgba(255,255,255,0.17); --line:rgba(60,31,5,0.16); --accentLine:rgba(168,90,12,0.45);
+    --bgElevated:#FBF3E0; --primary:#FF5D66; --cream:#FCF5EA;
+    --disp:'Dela Gothic One', system-ui, sans-serif;
+    --body:'Zen Kaku Gothic New', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--body); color:var(--text);
+    background:linear-gradient(180deg,var(--beerTop),var(--beerBot));
+    min-height:100vh; padding:40px 20px 80px;
+  }
+  .page{max-width:960px;margin:0 auto}
+  header{text-align:center;margin-bottom:8px}
+  header h1{font-family:var(--disp);font-size:30px;letter-spacing:.5px}
+  header p{color:var(--textDim);font-size:14px;margin-top:8px;line-height:1.6}
+  .foambar{height:40px;background:linear-gradient(180deg,var(--foam),rgba(253,247,230,0));
+    border-radius:0 0 40px 40px;margin:-40px -20px 24px;}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:28px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .cell{display:flex;flex-direction:column;gap:10px}
+  .cap{display:flex;align-items:baseline;gap:8px}
+  .num{font-family:var(--disp);font-size:15px;color:var(--text)}
+  .name{font-weight:700;font-size:14px}
+  .desc{color:var(--textDim);font-size:12px;line-height:1.5;min-height:32px}
+  /* the shared rule copy */
+  .rule{font-size:15px;line-height:1.6;color:var(--textDim);text-align:center}
+  .btnrow{margin-top:2px}
+  .btn{display:inline-block;background:var(--accent);color:var(--cream);font-weight:900;
+    font-size:14px;padding:11px 22px;border-radius:999px}
+  .frame{background:linear-gradient(180deg,#f7cf62,#e7a52c);border-radius:22px;padding:22px;
+    border:1px solid rgba(60,31,5,.12);display:flex;flex-direction:column;gap:14px;align-items:center}
+
+  /* ---------- 01 Frosted (current) ---------- */
+  .v-frost{width:100%;background:var(--card);border:1px solid var(--line);border-radius:24px;
+    padding:16px 18px;backdrop-filter:blur(2px)}
+  /* ---------- 02 Foam Cream ---------- */
+  .v-cream{width:100%;background:var(--bgElevated);border:1px solid var(--line);border-radius:20px;
+    padding:16px 18px;box-shadow:0 10px 24px rgba(60,31,5,.18)}
+  /* ---------- 03 Caramel Callout ---------- */
+  .v-callout{width:100%;background:var(--bgElevated);border:1px solid var(--line);
+    border-left:6px solid var(--accent);border-radius:14px;padding:16px 18px;
+    box-shadow:0 6px 16px rgba(60,31,5,.14)}
+  .v-callout .rule{text-align:left}
+  /* ---------- 04 Labeled tab ---------- */
+  .v-labeled{width:100%;position:relative;background:var(--bgElevated);border:1px solid var(--line);
+    border-radius:18px;padding:22px 18px 16px;box-shadow:0 8px 20px rgba(60,31,5,.16)}
+  .v-labeled .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    background:var(--accent);color:var(--cream);font-weight:700;font-size:11px;letter-spacing:2px;
+    padding:5px 14px;border-radius:999px}
+  /* ---------- 05 Dashed playful ---------- */
+  .v-dashed{width:100%;background:rgba(253,247,230,.35);border:2px dashed var(--accentLine);
+    border-radius:22px;padding:16px 18px}
+  /* ---------- 06 Beer label ---------- */
+  .v-label{width:100%;background:var(--cream);border:1px solid var(--accent);border-radius:8px;
+    padding:16px;box-shadow:0 6px 16px rgba(60,31,5,.16);outline:2px solid var(--cream);
+    outline-offset:-6px;position:relative}
+  .v-label .kicker{font-family:var(--disp);font-size:11px;letter-spacing:4px;color:var(--accent);
+    text-align:center;text-transform:uppercase}
+  .v-label .div{height:2px;background:linear-gradient(90deg,transparent,var(--accentBright),transparent);
+    margin:8px 0 10px}
+  /* ---------- 07 Coaster ---------- */
+  .v-coaster{width:100%;background:#F0E4C8;border:2px solid rgba(60,31,5,.2);border-radius:16px;
+    padding:18px;position:relative;box-shadow:0 4px 12px rgba(60,31,5,.14)}
+  .v-coaster::before{content:"";position:absolute;inset:5px;border:1px dashed rgba(60,31,5,.28);
+    border-radius:11px;pointer-events:none}
+  /* ---------- 08 Foam top ---------- */
+  .v-foamtop{width:100%;border-radius:20px;overflow:hidden;border:1px solid var(--line);
+    box-shadow:0 8px 20px rgba(60,31,5,.16)}
+  .v-foamtop .head{height:26px;background:linear-gradient(180deg,#fff,var(--foam));position:relative}
+  .v-foamtop .head i{position:absolute;bottom:5px;border-radius:50%;background:rgba(255,255,255,.9)}
+  .v-foamtop .head i:nth-child(1){left:22%;width:6px;height:6px}
+  .v-foamtop .head i:nth-child(2){left:44%;width:4px;height:4px;bottom:9px}
+  .v-foamtop .head i:nth-child(3){left:70%;width:7px;height:7px}
+  .v-foamtop .body{background:#fbeecb;padding:14px 18px}
+  /* ---------- 09 Gold underline ---------- */
+  .v-gold{width:100%;background:var(--bgElevated);border:1px solid var(--line);border-radius:18px;
+    padding:16px 18px;box-shadow:0 8px 20px rgba(60,31,5,.16)}
+  .v-gold .kicker{font-weight:900;font-size:12px;letter-spacing:2px;color:var(--accent);
+    text-align:center}
+  .v-gold .bar{width:44px;height:3px;background:var(--accentBright);border-radius:3px;margin:7px auto 11px}
+  /* ---------- 10 Glass shine ---------- */
+  .v-glass{width:100%;position:relative;overflow:hidden;background:rgba(255,255,255,.22);
+    border:1px solid rgba(255,255,255,.5);border-radius:24px;padding:16px 18px;
+    backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 22px rgba(60,31,5,.16)}
+  .v-glass::before{content:"";position:absolute;top:-40%;left:-10%;width:60%;height:180%;
+    background:linear-gradient(105deg,transparent,rgba(255,255,255,.35),transparent);
+    transform:rotate(12deg);pointer-events:none}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="foambar"></div>
+  <header>
+    <h1>ルールボックス 10案</h1>
+    <p>各ゲームの開始前に出る説明文（RuleCard）のスタイル案。<br>
+       同じ本文・同じ生ビール背景で比較。番号で選んでください → その1つをアプリに実装します。</p>
+  </header>
+
+  <div class="grid">
+
+    <div class="cell">
+      <div class="cap"><span class="num">01</span><span class="name">Frosted（現行）</span></div>
+      <div class="desc">今のまま。半透明のすりガラス。ホームのタイルと同じ質感。</div>
+      <div class="frame">
+        <div class="v-frost"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">02</span><span class="name">Foam Cream</span></div>
+      <div class="desc">泡色の不透明カード＋やわらかい影。読みやすさ最優先。</div>
+      <div class="frame">
+        <div class="v-cream"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">03</span><span class="name">Caramel Callout</span></div>
+      <div class="desc">左にキャラメルの太帯。注意書き・コールアウト風で目を引く。</div>
+      <div class="frame">
+        <div class="v-callout"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">04</span><span class="name">Labeled Tab</span></div>
+      <div class="desc">上辺に「ルール」タブが乗る。何の枠か一目で分かる。</div>
+      <div class="frame">
+        <div class="v-labeled"><span class="tag">ルール</span><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">05</span><span class="name">Dashed Playful</span></div>
+      <div class="desc">破線のキャラメル枠。軽くてカジュアル、パーティー感。</div>
+      <div class="frame">
+        <div class="v-dashed"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">06</span><span class="name">Beer Label</span></div>
+      <div class="desc">瓶ラベル風。二重枠＋トラッキング広めの見出し＋金の罫線。</div>
+      <div class="frame">
+        <div class="v-label">
+          <div class="kicker">RULE ・ ルール</div><div class="div"></div>
+          <p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p>
+        </div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">07</span><span class="name">Coaster</span></div>
+      <div class="desc">コースター／厚紙風。内側に破線リング。飲み会小物っぽさ。</div>
+      <div class="frame">
+        <div class="v-coaster"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">08</span><span class="name">Foam Top</span></div>
+      <div class="desc">上に泡ヘッド＋気泡。ビールのモチーフをカードに凝縮。</div>
+      <div class="frame">
+        <div class="v-foamtop">
+          <div class="head"><i></i><i></i><i></i></div>
+          <div class="body"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        </div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">09</span><span class="name">Gold Underline</span></div>
+      <div class="desc">小見出し＋金のアンダーライン。上品でまとまりが良い。</div>
+      <div class="frame">
+        <div class="v-gold">
+          <div class="kicker">あそびかた</div><div class="bar"></div>
+          <p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p>
+        </div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+    <div class="cell">
+      <div class="cap"><span class="num">10</span><span class="name">Glass Shine</span></div>
+      <div class="desc">ガラスの光沢＋ぼかし。グラスの中らしい立体感。</div>
+      <div class="frame">
+        <div class="v-glass"><p class="rule">お題に沿って順番に答えます。詰まったり被ったりしたら負け。</p></div>
+        <div class="btnrow"><span class="btn">お題を引く</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;color:var(--textDim);font-size:12px;margin-top:36px;line-height:1.6">
+    番号を選べば、その1案を <code>RuleCard</code>（src/components/ui.tsx）に実装して全ゲーム共通で反映します。<br>
+    「6番、ただし影は弱め」のような微調整の指定もOK。
+  </p>
+</div>
+</body>
+</html>

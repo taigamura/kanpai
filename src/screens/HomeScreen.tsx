@@ -11,18 +11,40 @@ import { useNav } from '@/navigation/Nav';
 import { useAppState } from '@/state/AppState';
 import { maybeShowInterstitial } from '@/ads/ads';
 import { GameRequestModal } from '@/games/GameRequestModal';
+import { copy, fmt } from '@/content/copy';
 
 export function HomeScreen() {
   const nav = useNav();
-  const { adsRemoved } = useAppState();
+  const { adsRemoved, players, setRoster } = useAppState();
   const [rulesFor, setRulesFor] = useState<GameDef | null>(null);
   const [requestOpen, setRequestOpen] = useState(false);
+
+  // Summary line for the 参加者 entry: leader (most losses) once anyone has lost, else headcount.
+  const leader = players.reduce<(typeof players)[number] | null>(
+    (best, p) => (p.losses > 0 && (!best || p.losses > best.losses) ? p : best),
+    null,
+  );
+  const playersSub = !players.length
+    ? copy.players.homeEmptySub
+    : leader
+      ? fmt(copy.players.homeLeaderSub, { name: leader.name, n: leader.losses })
+      : fmt(copy.players.homeCountSub, { n: players.length });
 
   const openGame = (g: GameDef) => {
     // Interstitials only between games (on open), frequency-capped, and never for owners.
     void maybeShowInterstitial(adsRemoved);
-    if (g.needsRoster) nav.go({ name: 'roster', next: g.id });
-    else nav.go({ name: 'game', id: g.id });
+    if (g.needsRoster) {
+      // Registered players ARE the roster: seed it and skip the per-session roster screen
+      // once there are enough of them. Otherwise fall back to the quick-add roster flow.
+      if (players.length >= g.minPlayers) {
+        setRoster(players.map((p) => p.name));
+        nav.go({ name: 'game', id: g.id });
+      } else {
+        nav.go({ name: 'roster', next: g.id });
+      }
+    } else {
+      nav.go({ name: 'game', id: g.id });
+    }
   };
 
   return (
@@ -30,10 +52,10 @@ export function HomeScreen() {
       <Animated.View entering={FadeIn.duration(500)} style={styles.header}>
         <View>
           <T display size={font.title}>
-            カンパイ！
+            {copy.brand.name}
           </T>
           <T dim size={font.small} style={styles.headerSub}>
-            飲み会・宅飲みパーティーゲーム集
+            {copy.brand.tagline}
           </T>
         </View>
         <PressableScale onPress={() => nav.go({ name: 'settings' })} scaleTo={0.85} hitSlop={12}>
@@ -42,8 +64,27 @@ export function HomeScreen() {
       </Animated.View>
 
       <ScrollView contentContainerStyle={styles.grid}>
+        {/* 参加者・負けカウント — a utility entry, deliberately NOT styled like a game tile:
+            solid caramel card + people icon + chevron, so it reads as a manager, not a game. */}
+        <Animated.View entering={enterItem(0)}>
+          <PressableScale style={styles.playersTile} onPress={() => nav.go({ name: 'players' })}>
+            <View style={styles.playersIcon}>
+              <Icon name="players" size={26} color={colors.cream} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <T size={font.body} black style={{ color: colors.cream }}>
+                {copy.players.homeTitle}
+              </T>
+              <T size={font.small} style={styles.playersSub}>
+                {playersSub}
+              </T>
+            </View>
+            <Icon name="back" size={22} color={colors.cream} style={styles.playersChevron} />
+          </PressableScale>
+        </Animated.View>
+
         {GAMES.map((g, i) => (
-          <Animated.View key={g.id} entering={enterItem(i)} style={styles.tile}>
+          <Animated.View key={g.id} entering={enterItem(i + 1)} style={styles.tile}>
             {/* Left: main tap target opens the game */}
             <PressableScale style={styles.tileMain} onPress={() => openGame(g)}>
               <Icon name={g.icon} size={34} color={colors.text} />
@@ -63,14 +104,14 @@ export function HomeScreen() {
               onPress={() => setRulesFor(g)}
               hitSlop={10}
               accessibilityRole="button"
-              accessibilityLabel={`${g.title} のルール`}
+              accessibilityLabel={fmt(copy.home.rulesA11y, { title: g.title })}
             >
               <Icon name="info" size={26} color={colors.accent} />
             </PressableScale>
             {g.status === 'stub' && (
               <View style={styles.badge}>
                 <T size={11} bold style={{ color: colors.accent }}>
-                  制作中
+                  {copy.home.inProgress}
                 </T>
               </View>
             )}
@@ -78,15 +119,15 @@ export function HomeScreen() {
         ))}
 
         {/* Suggestion box: let players ask for more games. */}
-        <Animated.View entering={enterItem(GAMES.length)}>
+        <Animated.View entering={enterItem(GAMES.length + 1)}>
           <PressableScale style={styles.requestTile} scaleTo={0.97} onPress={() => setRequestOpen(true)}>
             <Icon name="add" size={26} color={colors.accent} />
             <View style={{ flex: 1 }}>
               <T bold style={{ color: colors.accent }}>
-                ゲームをリクエスト
+                {copy.home.requestTitle}
               </T>
               <T dim size={font.small} style={{ marginTop: 2 }}>
-                遊びたいゲームをリクエストする
+                {copy.home.requestSub}
               </T>
             </View>
           </PressableScale>
@@ -112,7 +153,7 @@ export function HomeScreen() {
               </T>
             </View>
             <T dim size={font.small} style={styles.modalLabel}>
-              遊び方
+              {copy.home.rulesLabel}
             </T>
             <View style={styles.rulesList}>
               {rulesFor?.rules.map((line, i) => (
@@ -123,7 +164,7 @@ export function HomeScreen() {
               ))}
             </View>
               <Button
-                title="閉じる"
+                title={copy.home.close}
                 kind="ghost"
                 onPress={() => setRulesFor(null)}
                 style={styles.modalClose}
@@ -166,6 +207,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  playersTile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.accent,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.md,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.lg,
+  },
+  playersIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  playersSub: { color: colors.cream, opacity: 0.85, marginTop: 2 },
+  playersChevron: { transform: [{ scaleX: -1 }] }, // flip chevron-back to point forward
   requestTile: {
     flexDirection: 'row',
     alignItems: 'center',
