@@ -1,12 +1,13 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-08-28. Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-08-29. Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 ## TL;DR
 The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
 pipeline works end to end; say **"ship it"** to build + submit a new build. Latest shipped build
-(2026-08-28) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the shared 山手線
-お題 feature LIVE on Supabase (data collection now ON), and the KingsCup/transition fixes.
+(**build 4, 2026-08-29**) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the
+shared 山手線 お題 feature LIVE on Supabase (data collection now ON), the KingsCup/transition fixes,
+and the UI pop pass (black boot ！, calm popups, bigger app-wide type).
 **Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
 (screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
 
@@ -31,7 +32,8 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **TestFlight builds:** build 2 (older) + **build 3 (current — has AdMob + IAP + terms link)**. Both `IN_BETA_TESTING`. Test build 3.
+- **TestFlight builds:** build 2 + build 3 (older) + **build 4 (current — adds the UI pop pass:
+  black boot ！, calm popups, bigger type)**, shipped 2026-08-29. Test build 4.
 
 ## Critical gotchas — DO NOT LOSE
 1. **Xcode 26.3 build fix (shipped):** expo-modules-jsi@57.0.5 annotates `RuntimeScheduler` constructors with
@@ -80,9 +82,11 @@ Mocked in `docs/refine-mockups.html` (signed off), then wired in:
 
 Verified: `tsc --noEmit` clean, `jest` 5/5. Not yet runtime-tested on device — ship + check on TF.
 
-## UI pop pass — BUILT (2026-08-28, part 3, from TestFlight feedback) — NOT shipped yet
-Four small consistency/legibility fixes. `tsc` clean + jest 5/5. Party-direction mockups in
-`docs/party-mockups.html` (home shelf w/ per-game color, big お題 headline, full-bleed 罰ゲーム flood).
+## UI pop pass — SHIPPED (2026-08-29, PR #5 `ed5cf3f`, TestFlight build 4) — from TF feedback
+Four small consistency/legibility fixes. `tsc` clean + jest 5/5. Shipped to TestFlight
+(EAS submission `81f49a21-604a-4dd6-986b-3c694dff9e17`); not yet device-verified. Party-direction
+mockups in `docs/party-mockups.html` (home shelf w/ per-game color, big お題 headline, full-bleed
+罰ゲーム flood) — a direction to react to, not yet built into the app.
 1. **Uniform black ！.** `LoadingScreen` bang was `colors.primary` (red) while the home logotype's ！
    is ink — boot now uses `colors.text` so the two match (no red flash on load).
 2. **Calm popups everywhere.** `TopicsModal` (みんなのお題) + `GameRequestModal` were still entering
