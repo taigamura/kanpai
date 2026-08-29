@@ -8,6 +8,8 @@ pipeline works end to end; say **"ship it"** to build + submit a new build. Late
 (**build 4, 2026-08-29**) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the
 shared 山手線 お題 feature LIVE on Supabase (data collection now ON), the KingsCup/transition fixes,
 and the UI pop pass (black boot ！, calm popups, bigger app-wide type).
+**Newest work, BUILT but NOT yet shipped:** 参加者・負けカウント (registered players + per-player
+loss tally; opt-in tap-to-record lose screen) — see its section below. Ship to see it on TF.
 **Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
 (screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
 
@@ -96,6 +98,35 @@ mockups in `docs/party-mockups.html` (home shelf w/ per-game color, big お題 h
    title 34→40. Every screen sizes off these tokens, so game text now reads big app-wide. Also
    `GameFrame` per-screen title font.body→font.heading. Watch for any tight layouts on next TF build.
 
+## 参加者・負けカウント (registered players + loss tally) — BUILT (2026-08-29)
+Opt-in named-players system. Empty = every game behaves exactly as before (anonymous
+「負けた人！」). Register players and the app switches into tally mode. `tsc` clean + jest 5/5;
+not yet device-tested.
+- **Model:** `players: {name, losses}[]` in `AppState`, persisted under `kanpai.players.v1`
+  (new key in `storage.ts`). Mutators: `addPlayer`/`removePlayer`/`adjustLoss(name, ±1)`/`resetLosses`.
+- **Home entry (top of list, NOT a game tile):** solid caramel card + people icon + forward
+  chevron above all game tiles (`HomeScreen.tsx`), deliberately distinct from the frosted-glass
+  game rows. Subtitle adapts: 「参加者を登録して負け数を記録」→「N人が参加中」→「最多負け：○○（N回）」
+  once someone's lost. New route `{name:'players'}` (`Nav.tsx` + `App.tsx`).
+- **Players screen (`src/screens/PlayersScreen.tsx`):** quick-add/remove, live leaderboard sorted
+  by losses (trophy icon on anyone with losses), 「負け数をリセット」 button (Alert-confirmed) shown
+  only when there's something to reset.
+- **Lose screen (`PenaltyReveal.tsx`, shared across all 6 games):** when players registered, shows
+  「負けた人をタップ（負け数に記録）」 + a chip per player (name + count). Tap records a loss + turns the
+  chip red; tap again undoes it. Selection is a per-reveal toggle (local `selected[]`) so a mistap
+  is reversible and never double-counts. 罰ゲーム draw unchanged below.
+- **匿名アンケート uses these players:** `HomeScreen.openGame` seeds the session roster from players
+  and skips the roster screen when `players.length >= minPlayers`; else the old quick-add flow runs.
+  AnketoGame itself is unchanged (still reads `roster`).
+- New icons `players` (account-group) + `trophy` (trophy-outline) in `Icon.tsx`. All strings in
+  `content/copy.json` under `players.*` + `penalty.whoPrompt`/`penalty.lossSuffix`.
+- **チンチロ defers to registered players (2026-08-29):** when players are registered, the 人数
+  stepper is replaced by a read-only roster line and the seat count IS `registered.length`; seats
+  are named (handoff / result / reveal rows / loser label all show the player's name via `seatLabel`)
+  instead of「N人目」. No players → the manual stepper is unchanged. New copy keys `chinchiro.rosterLabel`
+  /`fromRoster`/`handoffNoteName`/`seatResultName`/`loserLabelName`. (Local count state renamed
+  `seatCount`; the AppState `players` is imported as `registered` to avoid the name clash.)
+
 ## UX polish + audio + game-requests — BUILT (2026-08-28, part 2)
 From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tested on device.
 1. **Loading → home is seamless.** `LoadingScreen` now renders the real `BeerGround` underneath
@@ -165,6 +196,9 @@ From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tes
   `docs/lager-tilt.html` / `docs/beer-glass-ui.html` concept 1). StatusBar → `dark` for the light foam top.
   - Decoupled tokens added: `cardBack` (dark card back), `accentBright` (gold crown on dark), `cream`
     (button foreground), `beerTop/beerBot/foam`. `accent` is now deep caramel (legible dark-on-light).
+  - **Foam:beer ratio = 3:7 (2026-08-29).** The cream foam head now fills the top 30% of the glass,
+    amber liquid the bottom 70%, driven by `FOAM_*` constants at the top of `src/components/Screen.tsx`
+    (proportional to screen height, not fixed px). Change the `0.3` there to re-tune the ratio.
 - **Tilt layer NOT built** (deferred): the live foam/bubble-stays-level-on-tilt gimmick from
   `docs/lager-tilt.html` needs `expo-sensors` (DeviceMotion) = a new native module + rebuild. The static
   beer-glass ground ships the Lager look now; add tilt as a follow-up if desired before store screenshots.
@@ -180,6 +214,79 @@ From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tes
    (declare AdMob data collection), support email taigamura.dev@gmail.com.
 4. Attach build to version 1.0.0 → **Submit for Review**.
 5. Ship a fresh build after any code change: **"ship it"**.
+
+## UI Studio — browser slider + comment tool for UI finetuning (BUILT 2026-08-29)
+A dev-only, **web + `__DEV__` only** overlay for tuning the UI without code round-trips. Runs the
+REAL app on `react-native-web` (true fidelity, not a mockup replica).
+- **Launch:** `npm run web` (or `npx expo start --web`), open localhost in a browser, click the
+  **🎛 Studio** button (bottom-right). No-op on native/production — adds nothing to the app bundle.
+- **iPhone-sized frame:** on web the app is centered in a 393×852 (iPhone 14/15 logical pt) rounded
+  card with shadow on a dark backdrop (`WebFrame` in `App.tsx`, mirrors simple-bookkeeping's
+  AppShell) so it reads as a phone. The frame carries `nativeID="kanpai-phone-frame"`; the Studio
+  normalizes arrow-comment coords to that frame rect so arrows stay pinned to components on resize.
+- **How fidelity works:** `src/theme/studio.ts` reads token overrides from `localStorage` at module
+  load and `Object.assign`s them onto the token objects in `theme.ts` **before** any screen's
+  `StyleSheet.create()` captures a value. The panel edits pending values; **Apply** persists +
+  reloads the page so `StyleSheet.create()` re-captures at the new sizes = pixel-exact. Route is
+  persisted across the reload (`Nav.tsx`, studio-only) so you stay on the screen you're tuning.
+- **Sliders:** tabs 文字 (font: title/heading/body/small), 余白 (spacing xs→xxl), 角丸 (radius),
+  色 (colors: hex = picker, rgba = text). All read from `theme.ts` tokens dynamically.
+- **Comments:** コメント tab → 「＋ 矢印コメント」 → drag an arrow onto any component and type a note
+  (for things a slider can't express). Comments are tagged to the current screen, stored in
+  `localStorage`. **📋 Copy for Claude** exports token diffs + comments as a paste-ready block.
+- **Files:** `src/theme/studio.ts` (bridge), `src/studio/studioDom.ts` (the DOM UI, vanilla),
+  `src/studio/StudioOverlay.tsx` (RN shim, dynamic-imports the DOM module), mounted in `App.tsx`.
+  `theme.ts` exports `THEME_DEFAULTS` (pristine snapshot for diffs) + calls `applyTokenOverrides`.
+- **Web-bundle enablers:** AdMob/IAP/expo-audio are native-only and broke `expo start --web`
+  bundling. Added `.web.ts` no-op stubs (`src/ads/ads.web.ts`, `src/iap/iap.web.ts`,
+  `src/audio/sound.web.ts`) that Metro prefers on web. **Native builds are untouched** (they never
+  see `.web.ts`). If a new native-only module is added, give it a `.web.ts` stub too or web breaks.
+- **Workflow:** tune with sliders → for anything else, drop an arrow-comment → hit Copy for Claude →
+  paste here, and I apply the diffs to `theme.ts` + address the comments.
+
+## Swipe-back navigation — BUILT (2026-08-29)
+Right-swipe from any non-home screen goes home (`App.tsx` Router: a RNGH `Gesture.Pan` wrapping the
+routed view). The nav is flat and every 戻る button calls `nav.home`, so swipe-back = go home. Guards:
+`enabled` only off-home, `activeOffsetX(24)` needs clear horizontal travel, `failOffsetY([-18,18])`
+yields to the vertical ScrollViews, and it only fires on a rightward, mostly-horizontal flick
+(`translationX > 70 && velocityX > 0 && translationX > |translationY|`). Verified on web: right→home,
+vertical drag + left drag do nothing. No screen has a competing horizontal gesture.
+
+## Boxed pre-game rules — BUILT (2026-08-29, restyled from 10-option board)
+Pre-start rule/instruction text is wrapped in a shared `RuleCard` (`src/components/ui.tsx`) instead
+of floating as loose text. **Style = "labeled tab" (option #04** from `docs/rulecard-mockups.html`,
+also published as an artifact): cream `bgElevated` card + a caramel accent pill straddling the top
+edge that names the box. `RuleCard` takes an optional `label` prop (default 「ルール」). The tab pokes
+13px above the card, so the style reserves `marginTop:13` — keep clearance above it.
+Applied to: 山手線, チンチロ, ロシアンルーレット, 匿名アンケート, キングスカップ (label「はじめる前に」,
+now holds the whole setup: lead + the two center-cup bullets; the old standalone heading + spacing-
+only `rulesBox` are gone), 高低 (new intro screen, see below), and the roster/name-input screen.
+(The 10 mockups also live as an artifact; #07 Coaster was briefly built then replaced by #04.)
+
+## 高低 intro screen + roster quick-rule — BUILT (2026-08-29)
+- **高低 (HighLow):** added a pre-start screen (`started` state) with the rule in a `RuleCard` +
+  a スタート button; the first card is drawn only on スタート (`start()` → `setCurrent(draw())`).
+  The old mid-play rule line under the card was removed (now on the intro). Was previously the one
+  game with no intro — it dealt a card immediately.
+- **Roster / name-input (`src/screens/RosterScreen.tsx`):** shows a quick-rule `RuleCard` above the
+  name field, game-aware via `GAMES.find(g => g.id === next)?.rules[0]` — so 匿名アンケート's
+  secret-vote rule appears while you enter players. Generic: any needsRoster game shows its rule[0].
+
+## Central UI text document — BUILT (2026-08-29)
+Every user-facing UI **chrome** string (buttons, titles, labels, instructions, modal copy, alerts,
+game rule/role text) now lives in one editable document: **`content/copy.json`** (repo root). Edit a
+value there and it is mirrored everywhere that string renders (Fast Refresh / next build picks it up).
+- Loader: `src/content/copy.ts` exports `copy` (the typed JSON) + `fmt(template, vars)` for the
+  handful of strings with `{n}`/`{name}`/`{names}`/`{i}`/`{total}`/`{title}` placeholders. Keep those
+  tokens intact when editing.
+- Scope decision: **UI chrome only.** Game CONTENT lists stay in `src/data/*.ts` (山手線 themes+hints,
+  アンケート questions, game roster/rules on the home tiles, penalties) — that layer was already a clean
+  single edit surface and was deliberately left alone.
+- Type-safety: `tsc` validates every `copy.x.y` key path, so a mistyped key fails the build (not silently
+  at runtime). Two intentional non-copy literals remain in code: the `・` name-joiner in AnketoGame and the
+  `[カンパイ]` console.error tag in ErrorBoundary (a dev log, not shown to users).
+- KingsCup rank→rule text and Chinchiro role names moved into `copy.kingscup.rules` / `copy.chinchiro.role*`.
+  The standalone chinchiro jest spec keeps its own label copy, so it's unaffected.
 
 ## Diagnostics note
 The ASC API is queryable from WSL with the `.p8` key (ES256 JWT → `api.appstoreconnect.apple.com/v1`); a prior

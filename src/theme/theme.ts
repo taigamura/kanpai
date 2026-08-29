@@ -34,7 +34,7 @@ export const colors = {
 export const spacing = {
   xs: 4,
   sm: 8,
-  md: 16,
+  md: 10,
   lg: 24,
   xl: 32,
   xxl: 48,
@@ -51,10 +51,10 @@ export const radius = {
 // bold from across a table — a party app, not a productivity app. Everything sizes off these
 // tokens, so raising them here enlarges every screen uniformly without touching call sites.
 export const font = {
-  title: 40, // hero お題 / result numbers
-  heading: 28, // section + game titles, modal heads
-  body: 19, // default body copy, buttons, instructions
-  small: 15, // captions, labels, vote counts
+  title: 42, // hero お題 / result numbers
+  heading: 20, // section + game titles, modal heads
+  body: 18, // default body copy, buttons, instructions
+  small: 12, // captions, labels, vote counts
 };
 
 // Typefaces (loaded in App.tsx via @expo-google-fonts). Mirror of design-mockups.html:
@@ -67,3 +67,17 @@ export const fonts = {
   bodyBold: 'ZenKakuGothicNew_700Bold',
   bodyBlack: 'ZenKakuGothicNew_900Black',
 };
+
+// UI Studio (web + __DEV__ only): snapshot the pristine defaults so the Studio panel can show
+// modified state / diffs, then apply any saved token overrides in place BEFORE the app's
+// StyleSheet.create() calls read these objects. On native / production this is a no-op.
+import { applyTokenOverrides } from './studio';
+
+export const THEME_DEFAULTS = {
+  colors: { ...colors },
+  spacing: { ...spacing },
+  radius: { ...radius },
+  font: { ...font },
+};
+
+applyTokenOverrides(colors, spacing, radius, font);

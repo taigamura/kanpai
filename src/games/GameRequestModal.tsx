@@ -6,6 +6,7 @@ import { T, Button } from '@/components/ui';
 import { PopIn } from '@/components/motion';
 import { Icon } from '@/components/Icon';
 import { submitGameRequest } from '@/services/requests';
+import { copy } from '@/content/copy';
 
 // "Add more games" suggestion box, opened from the home screen. Free-text: the player types the
 // game they wish カンパイ！ had; it's sent to the backend (best-effort) and logged for the
@@ -38,28 +39,28 @@ export function GameRequestModal({ visible, onClose }: { visible: boolean; onClo
               <View style={styles.thanks}>
                 <Icon name="check" size={44} color={colors.success} />
                 <T display size={font.heading} style={{ textAlign: 'center' }}>
-                  ありがとう！
+                  {copy.request.thanksTitle}
                 </T>
                 <T dim style={{ textAlign: 'center', lineHeight: 22 }}>
-                  リクエストを受け取りました。{'\n'}今後のアップデートの参考にします。
+                  {copy.request.thanksBody}
                 </T>
-                <Button title="閉じる" kind="accent" onPress={close} style={{ marginTop: spacing.sm }} />
+                <Button title={copy.request.close} kind="accent" onPress={close} style={{ marginTop: spacing.sm }} />
               </View>
             ) : (
               <>
                 <View style={styles.head}>
                   <Icon name="request" size={24} color={colors.text} />
                   <T display size={font.heading}>
-                    ゲームをリクエスト
+                    {copy.request.title}
                   </T>
                 </View>
                 <T dim size={font.small} style={{ lineHeight: 20 }}>
-                  遊びたいゲームや欲しい機能を教えてください。人気のリクエストから追加していきます。
+                  {copy.request.help}
                 </T>
                 <TextInput
                   value={text}
                   onChangeText={setText}
-                  placeholder="例：ジェスチャーゲーム、お絵かき対決 など"
+                  placeholder={copy.request.placeholder}
                   placeholderTextColor={colors.textDim}
                   style={styles.input}
                   multiline
@@ -67,14 +68,14 @@ export function GameRequestModal({ visible, onClose }: { visible: boolean; onClo
                   textAlignVertical="top"
                 />
                 <Button
-                  title="送信する"
+                  title={copy.request.send}
                   kind="accent"
                   icon="send"
                   onPress={send}
                   disabled={text.trim().length === 0}
                   style={text.trim().length === 0 ? styles.disabled : undefined}
                 />
-                <Button title="閉じる" kind="ghost" onPress={close} />
+                <Button title={copy.request.close} kind="ghost" onPress={close} />
               </>
             )}
           </Pressable>

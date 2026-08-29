@@ -3,11 +3,12 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button } from '@/components/ui';
+import { T, Button, RuleCard } from '@/components/ui';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { ANKETO_QUESTIONS } from '@/data/anketoQuestions';
 import { useAppState } from '@/state/AppState';
 import { PenaltyReveal } from './PenaltyReveal';
+import { copy, fmt } from '@/content/copy';
 
 // 匿名アンケート（押したの誰だ風）: pass the phone around; each player secretly votes for
 // one person; the tally is revealed at the end. Top-voted → 罰ゲーム.
@@ -60,20 +61,22 @@ export function AnketoGame() {
   };
 
   return (
-    <GameFrame title="匿名アンケート">
+    <GameFrame title={copy.anketo.title}>
       {phase === 'intro' && (
         <View style={styles.center}>
           <T size={font.heading} black style={styles.q}>
             {question}
           </T>
-          <T dim style={styles.help}>
-            スマホを回して、1人ずつこっそり投票します。他の人に見られないように！
-          </T>
+          <RuleCard>
+            <T dim style={styles.help}>
+              {copy.anketo.intro}
+            </T>
+          </RuleCard>
           <T dim size={font.small}>
-            参加者：{roster.length ? roster.join('・') : '未設定'}
+            {copy.anketo.participantsPrefix}{roster.length ? roster.join('・') : copy.anketo.unset}
           </T>
-          <Button title="投票をはじめる" kind="accent" onPress={start} />
-          <Button title="別の質問にする" kind="ghost" onPress={nextRound} />
+          <Button title={copy.anketo.startVote} kind="accent" onPress={start} />
+          <Button title={copy.anketo.otherQuestion} kind="ghost" onPress={nextRound} />
         </View>
       )}
 
@@ -81,13 +84,13 @@ export function AnketoGame() {
         <View style={styles.center}>
           <Icon name="pass-phone" size={64} color={colors.accent} />
           <T size={font.title} display style={styles.q}>
-            {voter} さんへ
+            {fmt(copy.anketo.handoffTo, { name: voter })}
           </T>
           <T dim style={styles.help}>
-            スマホを {voter} さんに渡してください。{'\n'}準備ができたらタップ。
+            {fmt(copy.anketo.handoffNote, { name: voter })}
           </T>
           <Button
-            title={`${voter} です・投票する`}
+            title={fmt(copy.anketo.handoffConfirm, { name: voter })}
             kind="accent"
             onPress={() => setPhase('ballot')}
           />
@@ -97,7 +100,7 @@ export function AnketoGame() {
       {phase === 'ballot' && (
         <View style={styles.ballot}>
           <T dim size={font.small}>
-            {voter} さんの投票（{voterIndex + 1}/{roster.length}）
+            {fmt(copy.anketo.ballotLabel, { name: voter, i: voterIndex + 1, total: roster.length })}
           </T>
           <T size={font.heading} black style={styles.q}>
             {question}
@@ -110,7 +113,7 @@ export function AnketoGame() {
             ))}
           </View>
           <T dim size={font.small} style={styles.foot}>
-            こっそり選んでね。タップした瞬間に次の人へ。
+            {copy.anketo.ballotFoot}
           </T>
         </View>
       )}
@@ -118,7 +121,7 @@ export function AnketoGame() {
       {phase === 'reveal' && (
         <View style={styles.center}>
           <T dim size={font.small}>
-            結果発表
+            {copy.anketo.resultLabel}
           </T>
           <T size={font.heading} black style={styles.q}>
             {question}
@@ -131,15 +134,15 @@ export function AnketoGame() {
               >
                 <T>{name}</T>
                 <T bold style={{ color: colors.accent }}>
-                  {n}票
+                  {n}{copy.anketo.voteSuffix}
                 </T>
               </View>
             ))}
           </View>
           <PenaltyReveal
-            loserLabel={`最多得票：${tally.winners.join('・')} さん！`}
+            loserLabel={fmt(copy.anketo.loserLabel, { names: tally.winners.join('・') })}
           />
-          <Button title="次の質問" kind="ghost" onPress={nextRound} />
+          <Button title={copy.anketo.nextQuestion} kind="ghost" onPress={nextRound} />
         </View>
       )}
     </GameFrame>

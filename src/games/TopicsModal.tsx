@@ -21,6 +21,7 @@ import {
   loadVotedSet,
   type CommunityTopic,
 } from '@/services/topics';
+import { copy } from '@/content/copy';
 
 // お題 manager for 山手線: add your own お題 (kept locally, and shared to everyone when the
 // backend is on), and 👍 the community's お題. Vote counts double as developer analytics.
@@ -70,31 +71,31 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
             <View style={styles.head}>
               <Icon name="game-yamanote" size={24} color={colors.text} />
               <T display size={font.heading}>
-                お題
+                {copy.topics.title}
               </T>
             </View>
 
             <T dim size={font.small}>
-              自分のお題を追加{shared ? '（みんなにも共有されます）' : ''}
+              {copy.topics.addOwn}{shared ? copy.topics.addOwnSharedSuffix : ''}
             </T>
             <View style={styles.row}>
               <TextInput
                 value={draft}
                 onChangeText={setDraft}
                 onSubmitEditing={add}
-                placeholder="例：好きなアイスの味"
+                placeholder={copy.topics.placeholder}
                 placeholderTextColor={colors.textDim}
                 style={styles.input}
                 returnKeyType="done"
               />
-              <Button title="追加" kind="accent" onPress={add} />
+              <Button title={copy.topics.add} kind="accent" onPress={add} />
             </View>
 
             <ScrollView style={styles.scroll} contentContainerStyle={{ gap: spacing.sm }}>
               {customTopics.length > 0 && (
                 <>
                   <T dim size={font.small} style={styles.section}>
-                    あなたのお題（タップで削除）
+                    {copy.topics.yourTopics}
                   </T>
                   {customTopics.map((t) => (
                     <PressableScale
@@ -105,7 +106,7 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
                     >
                       <T>{t}</T>
                       <T dim size={font.small}>
-                        ✕
+                        {copy.common.cross}
                       </T>
                     </PressableScale>
                   ))}
@@ -113,17 +114,17 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
               )}
 
               <T dim size={font.small} style={styles.section}>
-                みんなのお題
+                {copy.topics.communityTopics}
               </T>
               {!shared ? (
                 <T dim size={font.small} style={styles.note}>
-                  共有・投票は近日公開。いま追加したお題は、この端末のゲームに登場します。
+                  {copy.topics.comingSoon}
                 </T>
               ) : loading ? (
                 <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.md }} />
               ) : community.length === 0 ? (
                 <T dim size={font.small} style={styles.note}>
-                  まだお題がありません。最初の投稿者になろう！
+                  {copy.topics.empty}
                 </T>
               ) : (
                 community.map((c, i) => {
@@ -147,7 +148,7 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
               )}
             </ScrollView>
 
-            <Button title="閉じる" kind="ghost" onPress={onClose} style={{ marginTop: spacing.sm }} />
+            <Button title={copy.topics.close} kind="ghost" onPress={onClose} style={{ marginTop: spacing.sm }} />
           </Pressable>
         </Animated.View>
       </Pressable>

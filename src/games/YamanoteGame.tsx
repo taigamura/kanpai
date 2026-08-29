@@ -2,13 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { GameFrame } from '@/components/GameFrame';
-import { T, Button, Pill } from '@/components/ui';
+import { T, Button, Pill, RuleCard } from '@/components/ui';
 import { enterItem, enterPop } from '@/components/motion';
 import { spacing, font, colors } from '@/theme/theme';
 import { YAMANOTE_THEMES, YAMANOTE_HINTS } from '@/data/yamanoteThemes';
 import { useAppState } from '@/state/AppState';
 import { PenaltyReveal } from './PenaltyReveal';
 import { TopicsModal } from './TopicsModal';
+import { copy } from '@/content/copy';
 
 // 山手線ゲーム (anchor): draw a theme, players answer in turn to a rhythm.
 // The app is the referee/theme source; play happens verbally. Loser → 罰ゲーム.
@@ -34,16 +35,18 @@ export function YamanoteGame() {
   };
 
   return (
-    <GameFrame title="山手線ゲーム">
+    <GameFrame title={copy.yamanote.title}>
       <View style={{ alignItems: 'center', gap: spacing.lg }}>
         {theme == null ? (
           <>
-            <T dim style={{ textAlign: 'center' }}>
-              お題に沿って順番に答えます。詰まったり被ったりしたら負け。
-            </T>
-            <Button title="お題を引く" kind="accent" onPress={draw} />
+            <RuleCard>
+              <T dim style={{ textAlign: 'center' }}>
+                {copy.yamanote.intro}
+              </T>
+            </RuleCard>
+            <Button title={copy.yamanote.draw} kind="accent" onPress={draw} />
             <Button
-              title="お題を追加・みんなのお題"
+              title={copy.yamanote.addTopics}
               kind="ghost"
               onPress={() => setShowTopics(true)}
             />
@@ -55,7 +58,7 @@ export function YamanoteGame() {
               size={11}
               style={{ color: colors.accent, letterSpacing: 2, textTransform: 'uppercase' }}
             >
-              お題
+              {copy.yamanote.topicLabel}
             </T>
             <Animated.View key={theme} entering={enterPop()}>
               <T display size={font.title} style={{ textAlign: 'center' }}>
@@ -75,7 +78,7 @@ export function YamanoteGame() {
                 </View>
               ) : (
                 <Button
-                  title="ヒント（例）"
+                  title={copy.yamanote.hint}
                   kind="ghost"
                   icon="bulb"
                   onPress={() => setShowHint(true)}
@@ -85,13 +88,13 @@ export function YamanoteGame() {
 
             {!lost ? (
               <View style={{ gap: spacing.sm, width: '100%' }}>
-                <Button title="負けた人が出た" onPress={() => setLost(true)} />
-                <Button title="次のお題" kind="ghost" onPress={draw} />
+                <Button title={copy.yamanote.loserDetected} onPress={() => setLost(true)} />
+                <Button title={copy.yamanote.nextTopic} kind="ghost" onPress={draw} />
               </View>
             ) : (
               <>
-                <PenaltyReveal loserLabel="負けた人！" />
-                <Button title="次のお題" kind="ghost" onPress={draw} />
+                <PenaltyReveal loserLabel={copy.yamanote.loserLabel} />
+                <Button title={copy.yamanote.nextTopic} kind="ghost" onPress={draw} />
               </>
             )}
           </>

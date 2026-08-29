@@ -4,6 +4,7 @@ import { spacing, font } from '@/theme/theme';
 import { T } from './ui';
 import { Screen } from './Screen';
 import { useNav } from '@/navigation/Nav';
+import { copy } from '@/content/copy';
 
 // Shared frame for every game screen: glow ground, a back button, a display-face title.
 export function GameFrame({ title, children }: { title: string; children: React.ReactNode }) {
@@ -13,7 +14,7 @@ export function GameFrame({ title, children }: { title: string; children: React.
       <View style={styles.header}>
         <Pressable onPress={nav.home} hitSlop={12}>
           <T size={font.body} bold>
-            ← 戻る
+            {copy.common.back}
           </T>
         </Pressable>
         <T size={font.heading} display>

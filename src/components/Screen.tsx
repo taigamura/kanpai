@@ -13,6 +13,15 @@ import { colors } from '@/theme/theme';
 
 const RISE = Math.round(Dimensions.get('window').height * 0.92);
 
+// Foam-to-beer ratio = 3:7 — the cream foam head fills the top 30% of the glass, amber liquid the
+// bottom 70%. The foam band is oversized above the screen edge (FOAM_TOP) so the counter-rotating
+// tilt never exposes a gap; its solid bottom lands exactly on the 30% line, then fades into the beer.
+const GLASS_H = Dimensions.get('window').height;
+const FOAM_TOP = -50; // overscan above the top edge (kept for tilt coverage)
+const FOAM_FADE_H = 34; // blend zone below the solid foam
+const FOAM_SOLID_H = Math.round(GLASS_H * 0.3) - FOAM_TOP; // solid bottom sits at 30% of screen height
+const FOAM_BAND_H = FOAM_SOLID_H + FOAM_FADE_H;
+
 // Carbonation: a fixed set of bubbles rising from the bottom of the glass to the foam.
 // Positions/sizes are static (not random per render) so nothing reflows across nav.
 const BUBBLES = [
@@ -158,9 +167,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(255,255,255,0.6)',
   },
-  // Oversized (negative insets + extra height) so the counter-rotation never pulls the foam
-  // off the top edge; the visible foam-to-beer transition still lands ~90px down at rest.
-  foam: { position: 'absolute', top: -50, left: -60, right: -60, height: 190 },
-  foamSolid: { height: 140, backgroundColor: colors.foam },
-  foamFade: { height: 26 },
+  // Foam head doubles as the app's top "header" band: the cream must fully contain each screen's
+  // title + subtitle (home logotype, game titles) before it fades into the beer. Oversized negative
+  // insets keep the top covered under the counter-rotating tilt; FOAM_TOP anchors it above the edge.
+  // Solid cream reaches the 30% line (bottom = FOAM_TOP + FOAM_SOLID_H) then fades over FOAM_FADE_H,
+  // so the logotype + subtitle sit on foam even with a device status-bar inset. The 3:7 foam:beer
+  // ratio is set by the FOAM_* constants at the top of the file, not here.
+  foam: { position: 'absolute', top: FOAM_TOP, left: -60, right: -60, height: FOAM_BAND_H },
+  foamSolid: { height: FOAM_SOLID_H, backgroundColor: colors.foam },
+  foamFade: { height: FOAM_FADE_H },
 });
