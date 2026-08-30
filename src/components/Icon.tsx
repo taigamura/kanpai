@@ -19,6 +19,8 @@ export type IconName =
   | 'game-chinchiro'
   | 'game-kingscup'
   | 'game-anketo'
+  | 'game-katakana'
+  | 'game-numberline'
   // UI chrome
   | 'settings'
   | 'info'
@@ -41,6 +43,9 @@ export type IconName =
   | 'timer'
   | 'up'
   | 'down'
+  | 'star'
+  | 'eye'
+  | 'eye-off'
   // dice faces (チンチロ) — value-indexed
   | 'die-1'
   | 'die-2'
@@ -60,6 +65,8 @@ const GLYPHS: Record<IconName, Glyph> = {
   'game-chinchiro': { fam: 'mci', name: 'dice-multiple' },
   'game-kingscup': { fam: 'mci', name: 'crown' },
   'game-anketo': { fam: 'mci', name: 'vote-outline' },
+  'game-katakana': { fam: 'mci', name: 'comment-question-outline' },
+  'game-numberline': { fam: 'mci', name: 'sort-numeric-ascending' },
 
   settings: { fam: 'ion', name: 'settings-outline' },
   info: { fam: 'ion', name: 'information-circle-outline' },
@@ -82,6 +89,9 @@ const GLYPHS: Record<IconName, Glyph> = {
   timer: { fam: 'ion', name: 'timer-outline' },
   up: { fam: 'ion', name: 'arrow-up' },
   down: { fam: 'ion', name: 'arrow-down' },
+  star: { fam: 'mci', name: 'star' },
+  eye: { fam: 'ion', name: 'eye-outline' },
+  'eye-off': { fam: 'ion', name: 'eye-off-outline' },
 
   'die-1': { fam: 'mci', name: 'dice-1' },
   'die-2': { fam: 'mci', name: 'dice-2' },

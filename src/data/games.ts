@@ -12,7 +12,9 @@ export type GameId =
   | 'highlow'
   | 'chinchiro'
   | 'kingscup'
-  | 'anketo';
+  | 'anketo'
+  | 'katakana'
+  | 'numberline';
 
 export type GameDef = {
   id: GameId;
@@ -108,6 +110,34 @@ export const GAMES: GameDef[] = [
       'お題にスマホを回して、1人ずつこっそり投票します。',
       '全員の投票が終わると集計を発表。',
       '最多得票の人が 罰ゲーム。',
+    ],
+  },
+  {
+    id: 'katakana',
+    title: copy.katakana.title,
+    subtitle: 'カタカナ語をカタカナ・英語ぬきで説明',
+    icon: 'game-katakana',
+    needsRoster: true,
+    minPlayers: 3,
+    status: 'playable',
+    rules: [
+      '出題者だけがカタカナのお題を見て、カタカナ語と英語を使わず日本語だけで説明します。',
+      '制限時間内に誰かが当てたら、出題者と当てた人の両方に得点。',
+      '目標点に最初に到達した人の勝ち。最下位の人が 罰ゲーム。',
+    ],
+  },
+  {
+    id: 'numberline',
+    title: copy.numberline.title,
+    subtitle: '数字を言葉にして、小さい順に並ぶ',
+    icon: 'game-numberline',
+    needsRoster: true,
+    minPlayers: 3,
+    status: 'playable',
+    rules: [
+      '各自こっそり1〜100の数字が配られます。お題に沿って、その数字の大きさを表す言葉で表現。',
+      '全員で相談して小さい順に並べ、答え合わせ。',
+      '本当の順番から一番ズレていた人が 罰ゲーム。ぴったり並べば全員成功。',
     ],
   },
 ];

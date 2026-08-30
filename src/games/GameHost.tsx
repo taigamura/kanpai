@@ -6,6 +6,8 @@ import { HighLowGame } from './HighLowGame';
 import { ChinchiroGame } from './ChinchiroGame';
 import { KingsCupGame } from './KingsCupGame';
 import { AnketoGame } from './AnketoGame';
+import { KatakanaGame } from './KatakanaGame';
+import { NumberLineGame } from './NumberLineGame';
 
 export function GameHost({ id }: { id: GameId }) {
   switch (id) {
@@ -21,6 +23,10 @@ export function GameHost({ id }: { id: GameId }) {
       return <KingsCupGame />;
     case 'anketo':
       return <AnketoGame />;
+    case 'katakana':
+      return <KatakanaGame />;
+    case 'numberline':
+      return <NumberLineGame />;
     default:
       return null;
   }

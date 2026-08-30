@@ -38,6 +38,12 @@
 - ✅ 山手線: draw a theme, answer verbally in turn, loser → 罰ゲーム. (Countdown timer was
   built then removed 2026-08-28 — the game is purely verbal, no timer needed.)
 
+## Phase 2.5 — Roster expansion ✅ (2026-08-30)
+- ✅ **英語禁止** + **意思疎通** added → 8 games. Both pass-around,
+  roster-based point games; loser does 罰ゲーム (shared PenaltyReveal). Its loser algorithm is
+  unit-tested (`src/games/numberLineScore.ts`). RosterScreen now respects per-game `minPlayers`. Built,
+  `tsc`/`jest` green, web bundles clean; NOT yet device-tested on TestFlight.
+
 ## Phase 3 — Monetization + telemetry
 - ✅ AdMob wired (`react-native-google-mobile-ads`): interstitial only between games
   (src/ads/ads.ts), frequency-capped (`SHOW_EVERY = 3`), skipped for owners, guarded to no-op

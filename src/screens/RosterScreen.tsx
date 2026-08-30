@@ -25,7 +25,9 @@ export function RosterScreen({ next }: { next: GameId }) {
   const remove = (n: string) => setNames((p) => p.filter((x) => x !== n));
 
   // Quick reminder of the game you're setting up for (e.g. 匿名アンケート's secret-vote rule).
-  const quickRule = GAMES.find((g) => g.id === next)?.rules[0];
+  const game = GAMES.find((g) => g.id === next);
+  const quickRule = game?.rules[0];
+  const min = game?.minPlayers ?? 2;
 
   const proceed = () => {
     setRoster(names);
@@ -91,12 +93,12 @@ export function RosterScreen({ next }: { next: GameId }) {
         <Button
           title={fmt(copy.roster.start, { n: names.length })}
           onPress={proceed}
-          disabled={names.length < 3}
-          style={{ opacity: names.length < 3 ? 0.4 : 1 }}
+          disabled={names.length < min}
+          style={{ opacity: names.length < min ? 0.4 : 1 }}
         />
-        {names.length < 3 && (
+        {names.length < min && (
           <T dim size={font.small} style={{ textAlign: 'center', marginTop: spacing.sm }}>
-            {copy.roster.minNote}
+            {fmt(copy.roster.minNote, { n: min })}
           </T>
         )}
       </View>

@@ -2,9 +2,9 @@
 // module is absent (Expo Go, web, unit tests) every call is a safe no-op, so screens can call
 // these freely without feature-detecting themselves.
 //
-// Used by the games that benefit from audio (currently ロシアンルーレット): a looping tension
-// bed whose playback rate we ramp up as the bomb inflates, and a one-shot explosion SFX. The
-// audio is synthesized/royalty-free (see assets/audio), so nothing needs licensing.
+// Used by the time-gated games (ロシアンルーレット, 英語禁止): a looping countdown-timer bed
+// (`assets/audio/timer.mp3`) that we swap for a double-speed version (`timer-fast.mp3`) when time
+// is running out, plus a one-shot explosion SFX (`explosion.mp3`) for ロシアンルーレット's blast.
 
 type ExpoAudio = typeof import('expo-audio');
 type AudioPlayer = import('expo-audio').AudioPlayer;
@@ -34,48 +34,62 @@ export function audioAvailable(): boolean {
   return mod != null;
 }
 
-// ── Tension bed ─────────────────────────────────────────────────────────────
-// A single looping player, created lazily and reused. `startTension` (re)starts it at rate 1;
-// `rampTension(p)` sets the playback rate from a 0→1 progress so the ticking accelerates as the
-// bomb grows; `stopTension` pauses + rewinds it.
-let tension: AudioPlayer | null = null;
+// ── Countdown timer bed ──────────────────────────────────────────────────────
+// Two looping players, created lazily and reused: the normal-speed ticking and its double-speed
+// (倍速) version. `startTimer` plays the normal loop; `switchTimerFast` cross-swaps to the fast
+// loop as time runs low; `stopTimer` halts both. Only one is ever audible at a time.
+let timerNormal: AudioPlayer | null = null;
+let timerFast: AudioPlayer | null = null;
 
-export function startTension(): void {
+function pausePlayer(p: AudioPlayer | null): void {
+  if (!p) return;
+  try {
+    p.pause();
+    void p.seekTo(0);
+  } catch {
+    /* best-effort */
+  }
+}
+
+export function startTimer(): void {
   if (!mod) return;
   void ensureMode();
   try {
-    if (!tension) {
-      tension = mod.createAudioPlayer(require('../../assets/audio/tension.m4a'));
-      tension.loop = true;
+    pausePlayer(timerFast);
+    if (!timerNormal) {
+      timerNormal = mod.createAudioPlayer(require('../../assets/audio/timer.mp3'));
+      timerNormal.loop = true;
     }
-    tension.playbackRate = 1;
-    tension.volume = 0.7;
-    void tension.seekTo(0);
-    tension.play();
+    timerNormal.volume = 0.8;
+    void timerNormal.seekTo(0);
+    timerNormal.play();
   } catch {
     /* best-effort */
   }
 }
 
-// progress: 0 (just started) → 1 (about to blow). Ramps rate 1.0 → 1.9 (pitch + tempo climb).
-export function rampTension(progress: number): void {
-  if (!tension) return;
+// Swap the normal loop for the double-speed one (call when time is nearly up). Idempotent-ish:
+// if the fast loop is already the active one, restarting it is harmless.
+export function switchTimerFast(): void {
+  if (!mod) return;
+  void ensureMode();
   try {
-    const p = Math.max(0, Math.min(1, progress));
-    tension.playbackRate = 1 + p * 0.9;
+    pausePlayer(timerNormal);
+    if (!timerFast) {
+      timerFast = mod.createAudioPlayer(require('../../assets/audio/timer-fast.mp3'));
+      timerFast.loop = true;
+    }
+    timerFast.volume = 0.8;
+    void timerFast.seekTo(0);
+    timerFast.play();
   } catch {
     /* best-effort */
   }
 }
 
-export function stopTension(): void {
-  if (!tension) return;
-  try {
-    tension.pause();
-    void tension.seekTo(0);
-  } catch {
-    /* best-effort */
-  }
+export function stopTimer(): void {
+  pausePlayer(timerNormal);
+  pausePlayer(timerFast);
 }
 
 // ── Explosion SFX ───────────────────────────────────────────────────────────
@@ -85,17 +99,17 @@ export function playExplosion(): void {
   if (!mod) return;
   void ensureMode();
   try {
-    const p = mod.createAudioPlayer(require('../../assets/audio/explosion.m4a'));
+    const p = mod.createAudioPlayer(require('../../assets/audio/explosion.mp3'));
     p.volume = 1;
     p.play();
-    // Release after the clip's length (~1.6s) so we don't leak native players.
+    // Release after the clip's length so we don't leak native players.
     setTimeout(() => {
       try {
         p.remove();
       } catch {
         /* already gone */
       }
-    }, 2500);
+    }, 3000);
   } catch {
     /* best-effort */
   }

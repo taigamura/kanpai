@@ -1,6 +1,13 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-08-30 (banner ad + preload ship). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-08-30 (ad diagnostic + IAP graceful-fail + ¥300 ship). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+
+**Latest shipped build (2026-08-30, commit `2f12abf` / PR #11, EAS submission
+`22242023-3c1d-4eef-b4fc-d1677d99c867`, ipa `build-1788061248213.ipa`)** adds the **hidden on-device
+ad diagnostic** (Settings title ×7 → 広告診断), **IAP graceful-fail** (shows 「現在購入できません」 instead
+of the broken "[?]" sheet when the product can't be resolved), and the **¥370→¥300** price (button now
+shows StoreKit's live price). Processing on Apple at handoff. Use the ad diagnostic on this build to
+confirm whether the no-ads issue is no-fill vs wiring.
 
 ## TL;DR
 The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
@@ -48,12 +55,21 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
    If expo-modules-jsi bumps version, regenerate the patch (nibble-app 57.0.4 lacks the annotations).
 2. **IAP is react-native-iap v16 (openiap):** `fetchProducts` (not `getProducts`), `requestPurchase` is
    **event-based** (result via `purchaseUpdatedListener`), and `finishTransaction` is mandatory. src/iap/iap.ts is already correct for v16 — don't "simplify" it back to the old API.
-3. **Audio = expo-audio (NEW native module, 2026-08-28 part 2).** Added for ロシアンルーレット
-   (tension bed + explosion SFX). `src/audio/sound.ts` is guarded like ads/iap (absent module → no-op).
-   Assets in `assets/audio/*.m4a` are **synthesized with ffmpeg** (royalty-free, no licensing). The
-   app.json plugin is configured playback-only: `microphonePermission:false`, `recordAudioAndroid:false`,
+3. **Audio = expo-audio (native module).** `src/audio/sound.ts` is guarded like ads/iap (absent
+   module → no-op) with a `.web.ts` stub. **Assets (`assets/audio/*.mp3`, user-provided 2026-08-30):**
+   `timer.mp3` (countdown bed), `timer-fast.mp3` (倍速 version), `explosion.mp3` (爆発, roulette blast).
+   The old ffmpeg-synth `tension.m4a`/`explosion.m4a` were **removed**. Filenames were renamed from
+   the original Japanese (`制限時間タイマー…`, `爆発1`) to **ASCII** for Metro/EAS safety — if you drop
+   in replacements, keep the ASCII names. **API:** `startTimer()` / `switchTimerFast()` / `stopTimer()`
+   / `playExplosion()`. Used by the two **time-gated** games:
+   - **英語禁止:** timer bed plays during the describe phase; swaps to 倍速 in the **last 5s** (matches
+     the UI turning red); stops when the phase ends. Threshold = `remaining === 5` in `KatakanaGame.tsx`.
+   - **ロシアンルーレット:** blast time is random (4–15s), so the bed just swaps to 倍速 after a fixed
+     `FAST_AFTER_MS` (5s) of ticking; `explosion.mp3` fires on detonation. (The old continuous
+     playback-rate ramp was removed.)
+   app.json plugin is playback-only: `microphonePermission:false`, `recordAudioAndroid:false`,
    `enableBackgroundPlayback:false` — do NOT let it re-add mic / background-audio perms (App Review risk).
-   Needs a native rebuild (it's a new module) — ship it.
+   Needs a native rebuild — ship it.
 4. **Re-run `supabase/schema.sql`** in the Supabase SQL editor before the game-request box works:
    it adds the `game_requests` table + `submit_game_request` RPC. Until then the request modal still
    thanks the user (best-effort) but nothing is logged.
@@ -137,6 +153,28 @@ splash image (amber `#E39A24` background). `assets/favicon.png` (web) is generat
 "placeholder clinking-mugs" wording in prior handoffs is obsolete. `scripts/generate-icon.mjs` +
 `npm run icon` still exist but are NOT needed anymore — the shipped icon is the designed one, not
 generator output. No icon work remains before store submission; it is baked into every build.
+
+## Two new games — 英語禁止 + 意思疎通 — BUILT (2026-08-30, not yet shipped)
+Roster grew from 6 → **8 games**. Both are pass-around, roster-based POINT games (unlike the
+loser-drinks games); per the locked decision the **loser still does 罰ゲーム** via the shared
+`PenaltyReveal`. `tsc` clean, `jest` 9/9 (added 4 number-line tests), and the **web bundle exports clean**.
+NOT yet on TestFlight — ship to device-test.
+1. **英語禁止** — `src/games/KatakanaGame.tsx`. The describer sees a カタカナ word
+   and explains it in Japanese with no カタカナ/English; a correct guess within the time limit gives
+   BOTH describer and guesser +1. Config screen sets **目標点 (3/5/7/10)** + **制限時間 (10/15/30/60s)**;
+   race to target, rotating describer; **lowest scorer → 罰ゲーム** at win. Word pool:
+   `src/data/katakanaWords.ts` (~100 loanwords). Timer is a `setInterval` countdown gated to the
+   describe phase. Katakana ban is verbal/honor-based (not app-enforced).
+2. **意思疎通** — `src/games/NumberLineGame.tsx`. Each player is secretly dealt a distinct **1–100**
+   (pass-around reveal). A theme sets a scale; players say a word of matching magnitude, then the
+   group taps everyone into small→large order. On reveal, the **most-misplaced player → 罰ゲーム**;
+   a perfectly ordered round = 全員成功 (no penalty). Themes: `src/data/itoThemes.ts` (~40, each
+   `{theme, low, high}`). Loser algorithm is extracted to the pure, unit-tested
+   `src/games/numberLineScore.ts` (`computeNumberLineOutcome`, tie-break toward the larger number).
+- **Wiring touched:** `games.ts` (`GameId` +katakana/+numberline, two `GameDef`s, minPlayers 3), `Icon.tsx`
+  (+`game-katakana`/`game-numberline`/`star`/`eye`/`eye-off`), `GameHost.tsx` (two cases), `content/copy.json`
+  (`katakana`/`numberline` blocks). **`RosterScreen` generalized** to respect each game's `minPlayers`
+  (was hardcoded to 3; `copy.roster.minNote` is now the template `{n}人以上で遊べます`).
 
 ## Ads NOT showing on TestFlight — diagnosis + on-device diagnostic (2026-08-30)
 Tester reported no ads (banner + interstitial) on TestFlight. Wiring was audited and is CORRECT
