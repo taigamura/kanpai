@@ -59,6 +59,12 @@ running cost makes that a good trade. Not a venture outcome.
 | 4 | **チンチロ** | 3-dice JP drinking dice; score by roll | Med–High | Optional |
 | 5 | **キングスカップ** | Draw card → each card is a rule/action | Med | Optional |
 | 6 | **匿名アンケート**（押したの誰だ風） | "誰が一番◯◯?" everyone votes secretly → reveal tally | Med | **Yes** |
+| 7 | **英語禁止** | Describe a katakana word in JP only; correct guess → describer+guesser score; race to target | Med | **Yes** |
+| 8 | **意思疎通** | Secret 1–100 each; order the group small→large by theme; most-misplaced loses | Med | **Yes** |
+
+> **Roster expanded 2026-08-30:** games 7–8 added (6 → 8). Both are pass-around, roster-based POINT
+> games; per the locked decision the loser still does 罰ゲーム (shared PenaltyReveal), keeping the
+> drinking-bundle framing. See `docs/STATE.md` → "Two new games".
 
 **Anchor rationale:** 山手線ゲーム is clean, instantly understood, tiny to build, and carries no
 下ネタ moderation burden — the right thing to lead a first ship with. 王様ゲーム (the spicy,
