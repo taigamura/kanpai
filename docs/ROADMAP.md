@@ -51,14 +51,14 @@
   bottom bar (mounted via the `App.tsx` `Shell` column, so it never overlaps the UI), hidden for
   owners / boot / age-gate, collapses on no-fill. Dev shows a TEST banner; **real iOS unit wired**
   (`ca-app-pub-6862698457969651/9261864571`). Ship to verify on device. (Android unit: not yet.)
-- ✅ ¥370 remove-ads IAP wired (`react-native-iap`, src/iap/iap.ts): purchase + restore in
+- ✅ ¥300 remove-ads IAP wired (`react-native-iap`, src/iap/iap.ts): purchase + restore in
   Settings; entitlement persisted via AppState/AsyncStorage. Dev-only unlock when native
   module absent.
 - ⚠️ NOT yet runtime-verified — needs a dev/EAS build + accounts. Before launch:
   - iOS ad ids are all real now: app.json `iosAppId`, interstitial unit in src/ads/ads.ts, and the
     banner unit in src/ads/BannerAdSlot.tsx (`REAL_BANNER.ios`). Only Android units remain unfilled
     (Android not yet a ship target).
-  - App Store Connect: create NON-CONSUMABLE IAP `app.kanpai.mvp.removeads`, price ¥370;
+  - App Store Connect: create NON-CONSUMABLE IAP `app.kanpai.mvp.removeads`, price ¥300;
     activate Paid Apps agreement; test with a sandbox account.
   - Verify react-native-iap call signatures against the installed major version.
   - Confirm AdMob privacy manifest / SKAdNetwork + App Privacy answers.

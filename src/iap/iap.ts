@@ -1,4 +1,6 @@
-// ¥370 remove-ads 買い切り (non-consumable), on react-native-iap v16 (openiap).
+// ¥300 remove-ads 買い切り (non-consumable), on react-native-iap v16 (openiap).
+// (The authoritative price is the App Store Connect price tier — the app displays StoreKit's
+//  localized price at runtime and never hardcodes a number in the buy button.)
 // Guarded require so dev/Expo Go/web/tests don't crash when the native StoreKit module
 // is absent.
 //
@@ -25,6 +27,39 @@ export function iapAvailable(): boolean {
   return !!IAP;
 }
 
+export type RemoveAdsProduct = {
+  /** StoreKit's localized, currency-formatted price, e.g. "¥300". */
+  price: string;
+  /** The product's display name as configured in App Store Connect. */
+  title: string;
+};
+
+/** Outcome of a buy attempt, so the UI can tell "not set up yet" from "user cancelled". */
+export type PurchaseResult = 'owned' | 'cancelled' | 'unavailable';
+
+/**
+ * Look up the remove-ads product in the store. Returns null when StoreKit can't resolve it —
+ * which on a real device means the non-consumable isn't "Ready to Submit" in App Store Connect
+ * yet, or the Paid Apps agreement isn't active. (That unresolved state is exactly what makes the
+ * native purchase sheet show a blank "[?]" app name and a placeholder price.)
+ */
+export async function fetchRemoveAdsProduct(): Promise<RemoveAdsProduct | null> {
+  if (!(await ensureConnected())) return null;
+  try {
+    const products =
+      (await IAP.fetchProducts?.({ skus: [REMOVE_ADS_SKU], type: 'in-app' })) ?? [];
+    const p = products.find((x: any) => x?.id === REMOVE_ADS_SKU || x?.productId === REMOVE_ADS_SKU);
+    if (!p) return null;
+    // v16 exposes the formatted price as displayPrice; older/adjacent shapes use localizedPrice.
+    const price: string =
+      p.displayPrice ?? p.localizedPrice ?? p.price ?? '';
+    const title: string = p.title ?? p.displayName ?? '';
+    return { price, title };
+  } catch {
+    return null;
+  }
+}
+
 // v16 wants a single long-lived connection (not init/end per call).
 let connected = false;
 async function ensureConnected(): Promise<boolean> {
@@ -44,15 +79,14 @@ async function ensureConnected(): Promise<boolean> {
  * so we wait on it, finish the transaction (critical on iOS), then confirm ownership.
  * Returns true only once the entitlement is owned.
  */
-export async function purchaseRemoveAds(): Promise<boolean> {
-  if (!(await ensureConnected())) return false;
+export async function purchaseRemoveAds(): Promise<PurchaseResult> {
+  if (!(await ensureConnected())) return 'unavailable';
 
-  // Best-effort: load the product first (iOS StoreKit prefers products fetched before buy).
-  try {
-    await IAP.fetchProducts?.({ skus: [REMOVE_ADS_SKU], type: 'in-app' });
-  } catch {
-    /* unknown SKUs are omitted, not thrown; a real config error surfaces at purchase */
-  }
+  // Resolve the product FIRST. iOS StoreKit prefers products fetched before buy, and if it can't
+  // be resolved (product not created / Paid Apps agreement inactive) we must NOT call
+  // requestPurchase — that's what pops the useless "[?]" sheet. Bail out as 'unavailable' instead.
+  const product = await fetchRemoveAdsProduct();
+  if (!product) return 'unavailable';
 
   const bought = await new Promise<boolean>((resolve) => {
     let settled = false;
@@ -97,7 +131,8 @@ export async function purchaseRemoveAds(): Promise<boolean> {
     setTimeout(() => settle(false), 120000);
   });
 
-  return bought || (await isRemoveAdsOwned());
+  if (bought || (await isRemoveAdsOwned())) return 'owned';
+  return 'cancelled';
 }
 
 /** Restore / check ownership of the remove-ads entitlement (also used at launch). */

@@ -9,3 +9,6 @@ export async function initAds(): Promise<void> {
 export async function maybeShowInterstitial(_adsRemoved: boolean): Promise<void> {
   /* no ads on web */
 }
+export function debugTryInterstitial(): void {
+  /* no ads on web */
+}

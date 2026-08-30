@@ -1,16 +1,16 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-08-29 (icon + ads pass). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-08-30 (banner ad + preload ship). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 ## TL;DR
 The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
-pipeline works end to end; say **"ship it"** to build + submit a new build. Latest shipped build
-(**build 4, 2026-08-29**) has: the Lager beer-glass theme, app-wide motion + phone-tilt beer, the
-shared 山手線 お題 feature LIVE on Supabase (data collection now ON), the KingsCup/transition fixes,
-and the UI pop pass (black boot ！, calm popups, bigger app-wide type).
-**Newest work, BUILT but NOT yet shipped (as of this handoff):** 参加者・負けカウント (registered
-players + per-player loss tally), the **real app icon** (already committed + wired), and the **ads
-preload-and-cache refactor** — see their sections below. Ship to see them on TF.
+pipeline works end to end; say **"ship it"** to build + submit a new build. **Latest shipped build
+(2026-08-30, commit `b6b0582`, EAS submission `c9443b50`, ipa `build-1788017349308.ipa`)** adds the
+**bottom banner ad** + the **interstitial preload-and-cache fix**, on top of everything below:
+参加者・負けカウント (registered players + loss tally), the **real app icon**, the Lager beer-glass
+theme, app-wide motion + phone-tilt beer, the shared 山手線 お題 feature LIVE on Supabase (data
+collection ON), the KingsCup/transition fixes, and the UI pop pass. Processing on Apple at handoff
+(≈5–10 min) — verify banner + interstitial on TestFlight once it lands. Nothing built-but-unshipped.
 **Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
 (screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
 
@@ -21,8 +21,10 @@ preload-and-cache refactor** — see their sections below. Ship to see them on T
 - **App Store Connect app:** listing name "カンパイ！飲み会パーティーゲーム集", **Apple ID `6805814337`**
   (home-screen name stays カンパイ！; listing name differs because bare カンパイ！ was taken).
 - **AdMob (iOS):** App ID `ca-app-pub-6862698457969651~3900340220` (app.json); interstitial unit
-  `ca-app-pub-6862698457969651/3331645387` (src/ads/ads.ts — real unit in RELEASE only, dev uses TEST ids).
-- **IAP:** non-consumable `app.kanpai.mvp.removeads` @ ¥370 (src/iap/iap.ts `REMOVE_ADS_SKU`).
+  `ca-app-pub-6862698457969651/3331645387` (src/ads/ads.ts); banner unit
+  `ca-app-pub-6862698457969651/9261864571` (src/ads/BannerAdSlot.tsx). Real units in RELEASE only;
+  dev uses Google TEST ids. Android has no units yet (not a ship target).
+- **IAP:** non-consumable `app.kanpai.mvp.removeads` @ ¥300 (src/iap/iap.ts `REMOVE_ADS_SKU`).
 - **ASC API key (for submit):** keyId `FM2QG63KF9`, issuer `427cba56-68b8-42ec-b1a8-2f71d5195e53`,
   `.p8` at `~/.appstoreconnect/keys/AuthKey_FM2QG63KF9.p8` on WSL (in eas.json). Shared across the user's apps.
 - **Terms/Privacy:** https://taigamura.github.io/kanpai/terms.html (GitHub Pages from `/docs`). Support email **taigamura.dev@gmail.com**.
@@ -35,8 +37,9 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **TestFlight builds:** build 2 + build 3 (older) + **build 4 (current — adds the UI pop pass:
-  black boot ！, calm popups, bigger type)**, shipped 2026-08-29. Test build 4.
+- **TestFlight builds:** builds 2–4 (older) + build 4 (UI pop pass) + **the current build shipped
+  2026-08-30** (banner ad + interstitial preload fix + 参加者・負けカウント + real icon; commit
+  `b6b0582`, EAS submission `c9443b50`). Test the newest one.
 
 ## Critical gotchas — DO NOT LOSE
 1. **Xcode 26.3 build fix (shipped):** expo-modules-jsi@57.0.5 annotates `RuntimeScheduler` constructors with
@@ -99,10 +102,9 @@ mockups in `docs/party-mockups.html` (home shelf w/ per-game color, big お題 h
    title 34→40. Every screen sizes off these tokens, so game text now reads big app-wide. Also
    `GameFrame` per-screen title font.body→font.heading. Watch for any tight layouts on next TF build.
 
-## 参加者・負けカウント (registered players + loss tally) — BUILT (2026-08-29)
+## 参加者・負けカウント (registered players + loss tally) — SHIPPED (2026-08-30, build `b6b0582`)
 Opt-in named-players system. Empty = every game behaves exactly as before (anonymous
-「負けた人！」). Register players and the app switches into tally mode. `tsc` clean + jest 5/5;
-not yet device-tested.
+「負けた人！」). Register players and the app switches into tally mode. `tsc` clean + jest 5/5.
 - **Model:** `players: {name, losses}[]` in `AppState`, persisted under `kanpai.players.v1`
   (new key in `storage.ts`). Mutators: `addPlayer`/`removePlayer`/`adjustLoss(name, ±1)`/`resetLosses`.
 - **Home entry (top of list, NOT a game tile):** solid caramel card + people icon + forward
@@ -136,7 +138,32 @@ splash image (amber `#E39A24` background). `assets/favicon.png` (web) is generat
 `npm run icon` still exist but are NOT needed anymore — the shipped icon is the designed one, not
 generator output. No icon work remains before store submission; it is baked into every build.
 
-## Ads — INTERSTITIAL (preload-cache) + BOTTOM BANNER — BUILT (2026-08-29), not yet device-verified
+## Ads NOT showing on TestFlight — diagnosis + on-device diagnostic (2026-08-30)
+Tester reported no ads (banner + interstitial) on TestFlight. Wiring was audited and is CORRECT
+(App.tsx: ATT → `initAds()` → SDK init → preload; `BannerAdSlot` mounted once `!booting &&
+ageAccepted`; real iOS units in RELEASE). So the cause is environment/account-side, most-likely-first:
+1. **Tester may be on an OLD build.** Banner + the interstitial preload-fix exist only from build
+   `b6b0582` (2026-08-30). Confirm the installed TestFlight build number first.
+2. **Brand-new AdMob account + app not yet public = ~zero fill (expected).** Real units serve little
+   or nothing until the app is LIVE on the App Store and the **AdMob app is linked** to that listing,
+   **`app-ads.txt` is published** (MISSING — must be at `taigamura.github.io/app-ads.txt`, the
+   USER-pages root, not `/kanpai/`), and AdMob payments/tax are complete. New units also no-fill for
+   hours–48h. A **dev build uses Google TEST ids (always fill)** — use it to prove the wiring.
+3. **Interstitial needs ≥3 game opens/session** (first 2 ad-free, resets on cold start). Banner has
+   no such gate, so a missing banner points at #1/#2.
+
+**On-device ad diagnostic — BUILT (this session).** Because the `[kanpai/ads]` console logs are
+`__DEV__`-only (silent in a RELEASE TestFlight build), added an always-on status store + a hidden
+Settings panel so a tester can SEE why an ad didn't appear without Xcode:
+- `src/ads/adStatus.ts` — tiny pub/sub store (`reportAdStatus`/`subscribeAdStatus`/`getAdStatus`).
+- `ads.ts` + `BannerAdSlot.tsx` report every SDK/interstitial/banner event into it (module present,
+  test-vs-live ids, SDK init/ready/failed, LOADED / NO_FILL / ERROR, opens count).
+- **Reveal:** in Settings, **tap the「設定」title 7×** → a 「広告診断」 card appears showing all state +
+  an「インタースティシャルを試す」button (`debugTryInterstitial`, bypasses the freq cap). Hidden from
+  normal users; works in release. NOT localized copy (dev tooling, strings inline). Needs a native
+  rebuild — ship it, then read the panel on TestFlight to confirm no-fill vs a wiring problem.
+
+## Ads — INTERSTITIAL (preload-cache) + BOTTOM BANNER — SHIPPED (2026-08-30, build `b6b0582`)
 Two placements now (SPEC §6). Both hide for owners (`adsRemoved`), on web/Expo Go (native module
 absent), and during boot/age-gate.
 
@@ -253,10 +280,31 @@ From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tes
 - Other locked tweaks this session: **山手線 timer removed** (verbal game, no countdown); **per-game
   responsible-drinking caution removed from GameFrame footer** (age-gate + Settings legal notices kept).
 
+## IAP purchase-sheet UX — diagnosed + hardened (2026-08-30)
+TestFlight tester saw the buy sheet show a **"[?]" app name** and a **typed-password login (no Face
+ID)**. Both are expected symptoms, not app bugs:
+- **Password, not Face ID:** TestFlight IAP always runs in the **StoreKit Sandbox**, and Sandbox
+  deliberately does NOT use the streamlined Face ID one-tap flow — the sandbox tester must type their
+  Apple ID password. Real production users WILL get the Face ID flow. Nothing to fix in code.
+- **"[?]" app name + placeholder price:** StoreKit resolved NO product metadata, because the
+  non-consumable **isn't "Ready to Submit" in ASC yet and/or the Paid Apps agreement isn't active**
+  (both still open below). With no product, the sheet has nothing to show. This is account-side.
+
+Code hardening shipped so the app degrades gracefully once ASC is set up (commit pending):
+- `iap.ts`: new `fetchRemoveAdsProduct()` returns `{price,title}` or null; `purchaseRemoveAds` now
+  returns `'owned' | 'cancelled' | 'unavailable'` and **refuses to open the sheet when the product
+  can't be resolved** (returns `'unavailable'`) so testers never hit the broken "[?]" sheet again.
+- `SettingsScreen.tsx`: fetches the product on mount and shows **StoreKit's live localized price**
+  on the buy button (fallback `¥300`), so the price is whatever the ASC price tier says and is never
+  a stale hardcode. On `'unavailable'` it shows 「現在購入できません」 instead of a dead sheet.
+- **Price is now ¥300** (was ¥370) everywhere in docs/copy — but the AUTHORITATIVE number is the ASC
+  price tier: **set the removeads product to ¥300 when you create it**, and the button follows it.
+
 ## Remaining to launch (manual unless noted "Claude can do")
-1. **IAP:** create non-consumable `app.kanpai.mvp.removeads` @ ¥370 in ASC; finish **banking** so the
-   **Paid Apps agreement** goes active (tax forms W-8BEN + Certificate of Foreign Status already submitted);
-   add a **sandbox tester**; test buy + restore on a build.
+1. **IAP:** create non-consumable `app.kanpai.mvp.removeads` @ **¥300** in ASC; finish **banking** so
+   the **Paid Apps agreement** goes active (tax forms W-8BEN + Certificate of Foreign Status already
+   submitted); add a **sandbox tester**; test buy + restore on a build. Until the product exists +
+   the agreement is active, the buy button correctly reports 「現在購入できません」 (see the IAP section above).
 2. **App icon:** ✅ DONE — a real designed 1024² `assets/icon.png` (lager mug + red ！ + confetti)
    is committed (`c39f32a`) and wired in `app.json` (`icon` + splash image). No longer a placeholder.
 3. **Listing:** JP screenshots (from the TestFlight build), **17+** age-rating questionnaire, **App Privacy**
@@ -342,4 +390,7 @@ The ASC API is queryable from WSL with the `.p8` key (ES256 JWT → `api.appstor
 session used this to read build `processingState` / `internalBuildState` and beta-tester state. Handy for TestFlight debugging.
 
 ## Verification at handoff
-`npx tsc --noEmit` clean; `npx jest` 5/5 pass. Latest work committed + pushed to `origin/main`.
+`npx tsc --noEmit` clean; `npx jest` 5/5 pass. Latest work landed on `origin/main` (`b6b0582`, PR #10)
+and **shipped to TestFlight** (EAS submission `c9443b50`, ipa `build-1788017349308.ipa`) on 2026-08-30.
+Untracked-but-intentionally-uncommitted in the tree: `store-assets/` + `store-assets.zip` (App Store
+screenshots) and `.ralph/` — left out of commits on purpose.

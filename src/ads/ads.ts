@@ -13,12 +13,24 @@
 // hit, and immediately preload the next. In __DEV__ every decision is logged so you can see
 // on-device (Metro / Xcode console) exactly why an ad did or didn't appear.
 import { Platform } from 'react-native';
+import { reportAdStatus } from './adStatus';
 
 let Ads: any = null;
 try {
   Ads = require('react-native-google-mobile-ads');
 } catch {
   Ads = null;
+}
+
+// Seed the on-device diagnostic with build facts as soon as this module loads.
+reportAdStatus({
+  module: Ads ? 'present' : 'absent',
+  env: !Ads ? 'unknown' : __DEV__ ? 'test-ids' : 'live-ids',
+});
+
+function errText(err: unknown): string {
+  const anyErr = err as any;
+  return anyErr?.code || anyErr?.message || String(err ?? 'unknown');
 }
 
 let initialized = false;
@@ -59,9 +71,11 @@ function preload(): void {
   const unit = interstitialUnitId();
   if (!unit) {
     log('preload skipped: no unit id');
+    reportAdStatus({ interstitial: 'ユニットID無し' });
     return;
   }
   loading = true;
+  reportAdStatus({ interstitial: '読み込み中…', interstitialUnit: unit });
   try {
     const ad = Ads.InterstitialAd.createForAdRequest(unit, {
       requestNonPersonalizedAdsOnly: true,
@@ -71,6 +85,7 @@ function preload(): void {
       cachedLoaded = true;
       loading = false;
       log('interstitial loaded, ready to show');
+      reportAdStatus({ interstitial: 'LOADED（表示待ち）' });
     });
     ad.addAdEventListener(Ads.AdEventType.ERROR, (err: unknown) => {
       // No fill / network / config error. Clear state; the next game open retries.
@@ -78,6 +93,7 @@ function preload(): void {
       cached = null;
       cachedLoaded = false;
       loading = false;
+      reportAdStatus({ interstitial: `ERROR/NO_FILL: ${errText(err)}` });
     });
     ad.addAdEventListener(Ads.AdEventType.CLOSED, () => {
       // User dismissed the ad. Drop the spent instance and preload the next one.
@@ -85,6 +101,7 @@ function preload(): void {
       cached = null;
       cachedLoaded = false;
       loading = false;
+      reportAdStatus({ interstitial: 'CLOSED（次を読込）' });
       preload();
     });
     ad.load();
@@ -98,16 +115,47 @@ function preload(): void {
 export async function initAds(): Promise<void> {
   if (!Ads) {
     log('native module absent — ads disabled (Expo Go / web / simulator without dev build)');
+    reportAdStatus({ sdk: 'failed', interstitial: 'ネイティブ広告モジュール無し' });
     return;
   }
   if (initialized) return;
+  reportAdStatus({ sdk: 'initializing' });
   try {
     await Ads.default().initialize();
     initialized = true;
     log('SDK initialized');
+    reportAdStatus({ sdk: 'ready' });
     preload(); // have the first interstitial ready before the cap is ever hit
   } catch (e) {
     log('SDK init failed:', e);
+    reportAdStatus({ sdk: 'failed', interstitial: `SDK init失敗: ${errText(e)}` });
+  }
+}
+
+/**
+ * Debug helper for the Settings ad panel: show the cached interstitial immediately if one is
+ * ready, otherwise kick a preload. Bypasses the frequency cap so a tester can force an attempt
+ * on-device and watch the status readout.
+ */
+export function debugTryInterstitial(): void {
+  if (!Ads) {
+    reportAdStatus({ interstitial: 'ネイティブ広告モジュール無し' });
+    return;
+  }
+  if (cachedLoaded && cached) {
+    const ad = cached;
+    cached = null;
+    cachedLoaded = false;
+    reportAdStatus({ interstitial: 'SHOWING（デバッグ）' });
+    try {
+      ad.show();
+    } catch (e) {
+      reportAdStatus({ interstitial: `show失敗: ${errText(e)}` });
+      preload();
+    }
+  } else {
+    reportAdStatus({ interstitial: '未読込→preload（デバッグ）' });
+    preload();
   }
 }
 
@@ -119,6 +167,7 @@ export async function maybeShowInterstitial(adsRemoved: boolean): Promise<void> 
   if (!Ads) return;
 
   opensSinceAd += 1;
+  reportAdStatus({ opens: opensSinceAd });
   if (opensSinceAd < SHOW_EVERY) {
     log(`open ${opensSinceAd}/${SHOW_EVERY} — no ad yet`);
     return;
@@ -128,11 +177,13 @@ export async function maybeShowInterstitial(adsRemoved: boolean): Promise<void> 
     // Cap reached but nothing is ready (slow/absent fill). Don't reset the counter —
     // kick a preload so the NEXT open can show, and don't block gameplay waiting.
     log('cap reached but no ad loaded — preloading, will try next open');
+    reportAdStatus({ interstitial: 'cap到達だが未読込→次回表示' });
     preload();
     return;
   }
 
   opensSinceAd = 0;
+  reportAdStatus({ opens: 0 });
   const ad = cached;
   // Mark spent immediately so a double-open can't show the same instance twice; CLOSED will
   // preload the replacement.
@@ -140,9 +191,11 @@ export async function maybeShowInterstitial(adsRemoved: boolean): Promise<void> 
   cachedLoaded = false;
   try {
     log('showing interstitial');
+    reportAdStatus({ interstitial: 'SHOWING' });
     ad.show();
   } catch (e) {
     log('show threw:', e);
+    reportAdStatus({ interstitial: `show失敗: ${errText(e)}` });
     preload();
   }
 }
