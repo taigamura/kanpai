@@ -10,6 +10,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/theme/theme';
 import { useAppState } from '@/state/AppState';
+import { reportAdStatus } from './adStatus';
 
 let Ads: any = null;
 try {
@@ -39,7 +40,11 @@ export function BannerAdSlot() {
 
   if (adsRemoved || !Ads) return null;
   const unit = bannerUnitId();
-  if (!unit || failed) return null;
+  if (!unit) {
+    reportAdStatus({ banner: 'ユニットID無し', bannerUnit: null });
+    return null;
+  }
+  if (failed) return null;
 
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
@@ -49,9 +54,15 @@ export function BannerAdSlot() {
         requestOptions={{ requestNonPersonalizedAdsOnly: true }}
         onAdLoaded={() => {
           if (__DEV__) console.log('[kanpai/ads] banner loaded');
+          reportAdStatus({ banner: 'LOADED', bannerUnit: unit });
         }}
         onAdFailedToLoad={(e: unknown) => {
           if (__DEV__) console.log('[kanpai/ads] banner failed:', e);
+          const anyErr = e as any;
+          reportAdStatus({
+            banner: `ERROR/NO_FILL: ${anyErr?.code || anyErr?.message || String(e ?? 'unknown')}`,
+            bannerUnit: unit,
+          });
           setFailed(true); // collapse the bar on no-fill so no empty gap is left
         }}
       />

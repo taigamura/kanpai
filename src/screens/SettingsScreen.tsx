@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, ScrollView, Linking, Alert } from 'react-native';
 import { colors, spacing, font, radius } from '@/theme/theme';
 import { T, Button, Card } from '@/components/ui';
 import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
-import { purchaseRemoveAds, restorePurchases, iapAvailable } from '@/iap/iap';
-import { copy } from '@/content/copy';
+import { purchaseRemoveAds, restorePurchases, iapAvailable, fetchRemoveAdsProduct } from '@/iap/iap';
+import { debugTryInterstitial } from '@/ads/ads';
+import { subscribeAdStatus, type AdStatus } from '@/ads/adStatus';
+import { copy, fmt } from '@/content/copy';
 
 export function SettingsScreen() {
   const { customPenalties, addCustomPenalty, removeCustomPenalty, adsRemoved, setAdsRemoved } =
@@ -14,6 +16,36 @@ export function SettingsScreen() {
   const nav = useNav();
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
+  // Live StoreKit price (e.g. "¥300"). Null until fetched; falls back to the copy default so the
+  // button never shows a stale hardcoded number — the real price comes from the ASC price tier.
+  const [price, setPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    if (iapAvailable()) {
+      fetchRemoveAdsProduct().then((p) => {
+        if (alive && p?.price) setPrice(p.price);
+      });
+    }
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const buyLabel = fmt(copy.settings.buy, { price: price ?? copy.settings.buyPriceFallback });
+
+  // Hidden ad diagnostic: tap the Settings title 7× to reveal it (works in release/TestFlight,
+  // where the [kanpai/ads] console logs are silenced). Lets a tester see SDK/interstitial/banner
+  // state on-device and force an interstitial attempt.
+  const [titleTaps, setTitleTaps] = useState(0);
+  const [showAdDebug, setShowAdDebug] = useState(false);
+  const [ad, setAd] = useState<AdStatus | null>(null);
+  useEffect(() => (showAdDebug ? subscribeAdStatus(setAd) : undefined), [showAdDebug]);
+  const bumpTitle = () => {
+    const n = titleTaps + 1;
+    setTitleTaps(n);
+    if (n >= 7) setShowAdDebug(true);
+  };
 
   const buyRemoveAds = async () => {
     setBusy(true);
@@ -27,9 +59,17 @@ export function SettingsScreen() {
         }
         return;
       }
-      const ok = await purchaseRemoveAds();
-      if (ok) setAdsRemoved(true);
-      else Alert.alert(copy.settings.alertPurchaseFailedTitle, copy.settings.alertPurchaseFailedBody);
+      const result = await purchaseRemoveAds();
+      if (result === 'owned') {
+        setAdsRemoved(true);
+      } else if (result === 'unavailable') {
+        // Product not resolvable (not set up in ASC / Paid Apps agreement inactive). Show a clear
+        // message instead of the native "[?]" purchase sheet.
+        Alert.alert(copy.settings.alertUnavailableTitle, copy.settings.alertUnavailableBody);
+      } else {
+        // 'cancelled' — user backed out of the payment sheet; treat quietly as a failed attempt.
+        Alert.alert(copy.settings.alertPurchaseFailedTitle, copy.settings.alertPurchaseFailedBody);
+      }
     } finally {
       setBusy(false);
     }
@@ -52,9 +92,11 @@ export function SettingsScreen() {
         <Pressable onPress={nav.home} hitSlop={12}>
           <T bold>{copy.common.back}</T>
         </Pressable>
-        <T display size={font.heading}>
-          {copy.settings.title}
-        </T>
+        <Pressable onPress={bumpTitle} hitSlop={8}>
+          <T display size={font.heading}>
+            {copy.settings.title}
+          </T>
+        </Pressable>
         <View style={{ width: 48 }} />
       </View>
 
@@ -106,7 +148,7 @@ export function SettingsScreen() {
           </View>
         </Card>
 
-        {/* Remove ads (¥370 買い切り) — wired to StoreKit in the IAP task */}
+        {/* Remove ads (買い切り) — price shown is StoreKit's live localized price from ASC */}
         <Card>
           <T size={font.heading} black>
             {copy.settings.removeAdsTitle}
@@ -121,7 +163,7 @@ export function SettingsScreen() {
           ) : (
             <>
               <Button
-                title={busy ? copy.settings.processing : copy.settings.buy}
+                title={busy ? copy.settings.processing : buyLabel}
                 onPress={buyRemoveAds}
                 disabled={busy}
                 style={{ marginTop: spacing.md }}
@@ -146,8 +188,47 @@ export function SettingsScreen() {
             {copy.settings.legalNote}
           </T>
         </Card>
+
+        {/* Hidden ad diagnostic (revealed by tapping the title 7×). Debug-only; not localized copy. */}
+        {showAdDebug && (
+          <Card>
+            <T size={font.heading} black>
+              広告診断
+            </T>
+            <T dim size={font.small} style={{ marginTop: spacing.xs }}>
+              広告が出ない原因を端末上で確認するための開発用パネルです。
+            </T>
+            <View style={{ marginTop: spacing.md, gap: spacing.xs }}>
+              <DebugRow label="ネイティブ広告モジュール" value={ad?.module ?? '—'} />
+              <DebugRow label="広告ユニット" value={ad?.env ?? '—'} />
+              <DebugRow label="SDK" value={ad?.sdk ?? '—'} />
+              <DebugRow label="インタースティシャル" value={ad?.interstitial ?? '—'} />
+              <DebugRow label="バナー" value={ad?.banner ?? '—'} />
+              <DebugRow label="ゲーム開封カウント" value={`${ad?.opens ?? 0} / 3`} />
+            </View>
+            <Button
+              title="インタースティシャルを試す"
+              kind="accent"
+              onPress={debugTryInterstitial}
+              style={{ marginTop: spacing.md }}
+            />
+          </Card>
+        )}
       </ScrollView>
     </Screen>
+  );
+}
+
+function DebugRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.debugRow}>
+      <T dim size={font.small} style={{ flexShrink: 0 }}>
+        {label}
+      </T>
+      <T size={font.small} style={{ flex: 1, textAlign: 'right' }}>
+        {value}
+      </T>
+    </View>
   );
 }
 
@@ -159,6 +240,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   row: { flexDirection: 'row', gap: spacing.sm },
+  debugRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
   input: {
     flex: 1,
     backgroundColor: colors.bgElevated,
