@@ -1,173 +1,160 @@
-# カンパイ！ — App Store submission runbook (v1.0.0 public release)
+# カンパイ！ — App Store submission runbook (v1.0.0)
 
-_Grounded in `docs/STATE.md` (2026-08-29). Currently: live on TestFlight (build 4), NOT public._
-_"Claude can do" = say it in this session. Everything else is manual in App Store Connect (ASC)._
+Step by step to take カンパイ！ from "built" to "Submitted for Review" in App Store
+Connect (ASC). Do the steps in order. Anything marked **Claude can do** = ask in a
+session; everything else is manual in the ASC web UI.
 
-Bundle id `app.kanpai.mvp` · ASC Apple ID `6805814337` · listing name「カンパイ！飲み会パーティーゲーム集」
-· min iOS 16.4 · support email taigamura.dev@gmail.com · Terms/Privacy https://taigamura.github.io/kanpai/terms.html
+**Single sources of truth (do not retype these into ASC from memory):**
+- Listing text (name, subtitle, keywords, description, What's New): `docs/store-listing.md`
+- App Privacy answers: `docs/app-privacy.md`
+- Screenshots: `store-assets/appstore_6.9/` + `store-assets/appstore_6.7/` (6 each), `store-assets/instagram/` (IG, not for ASC)
 
----
-
-## Phase 0 — Decisions before you touch ASC
-- [x] **App icon — DONE.** A real designed 1024² `assets/icon.png` (lager mug + red ！ + confetti) is
-      committed (`c39f32a`) and wired in `app.json` (icon + splash). It bakes into every build; no
-      icon action remains. (The old "placeholder clinking-mugs" note is obsolete.)
-- [ ] **Confirm screenshots.** DONE this session: App Store set 15 at 6.9″ (1290×2796) + 6.7″
-      (1284×2778) in `store-assets/`. You need ≥3 per size; you have 5. Good.
-- [ ] **Confirm the reviewed build.** The newest code (参加者・負けカウント) is built but NOT yet
-      shipped. Ship a fresh build so review sees the final app (Phase 2).
-
-## Phase 1 — Backend + privacy prerequisites (do before the review build)
-- [ ] **Re-run `supabase/schema.sql`** in the Supabase SQL editor if not already: it adds the
-      `game_requests` table + `submit_game_request` RPC so the home "ゲームをリクエスト" box logs.
-      (お題 tables `topics`/`topic_votes`/`topic_submissions` are already live.)
-- [ ] **Data collection is ON** (お題 text + anonymous install id go to Supabase). This MUST be
-      declared in ASC App Privacy before public review — see Phase 5. TestFlight didn't need it; public does.
-
-## Phase 2 — Build the app you will submit  (Claude can do: say "ship it")
-- [x] Icon is already in place (Phase 0) — nothing to do here for the icon.
-- [ ] **"ship it"** → commits, pushes, builds on the Mac over SSH, submits the .ipa to ASC via EAS.
-      This is also the build that first ships the ads **preload-and-cache** fix + the 参加者・負けカウント
-      feature — all built but not on TestFlight yet.
-      Result: a new build appears in ASC → TestFlight after ~10–20 min processing.
-- [ ] Smoke-test that build on TestFlight (age gate → each of the 6 games → settings).
-
-## Phase 3 — Paid Apps agreement + IAP (needed for the ¥370 remove-ads purchase)
-Business → Agreements: the **Paid Apps** agreement must be **Active** or IAP won't work / can't be reviewed.
-- [ ] Tax forms (W-8BEN + Certificate of Foreign Status) — already submitted per STATE.
-- [ ] **Complete banking** (add a bank account) so Paid Apps flips to Active.
-- [ ] ASC → your app → **In-App Purchases** → create a **Non-Consumable**:
-      - Product ID: **`app.kanpai.mvp.removeads`**  (must match `REMOVE_ADS_SKU` in `src/iap/iap.ts`)
-      - Reference name: e.g. "広告を非表示" · Price: **¥370** (JP tier)
-      - Localized display name + description (JP), add a review screenshot.
-- [ ] Add a **Sandbox tester** (Users and Access → Sandbox) and test **buy + restore** on a build.
-      (Dev builds unlock without the native module; a real StoreKit test needs the ASC product live.)
-- [ ] The IAP is submitted **with** the app version the first time (attach it in Phase 6).
-
-## Phase 4 — Listing metadata  (ASC → your app → the 1.0.0 version page)
-- [ ] **Name:**「カンパイ！飲み会パーティーゲーム集」(already the app name).
-- [ ] **Subtitle (30 chars):**「飲み会・宅飲みパーティーゲーム集」(keyword-carrying, per SPEC §9).
-- [ ] **Keywords:** 飲み会,宅飲み,パーティー,ゲーム,山手線,王様,チンチロ,罰ゲーム,合コン,二次会 (100 chars, comma-sep, no spaces).
-- [ ] **Description:** the pitch — 6 games in one, 買い切り (no subscription), offline pass-around, JP-native.
-      Mention each game. No medical/【over-claims】.
-- [ ] **Promotional text** (optional, editable without review).
-- [ ] **Screenshots:** upload `store-assets/appstore_6.9/*` to the 6.9″ slot and `appstore_6.7/*` to
-      the 6.7″ slot, in order 01→05. (6.9″ + 6.7″ is sufficient; older sizes auto-scale.)
-- [ ] **App icon** shows from the build; **Support URL** + **Marketing URL**:
-      https://taigamura.github.io/kanpai/terms.html (or a landing page).
-- [ ] **Category:** Games → primary **Entertainment**/**Casual** (Games subcat). Secondary optional.
-- [ ] **Copyright, contact info** (uses your ASC account; support email taigamura.dev@gmail.com).
-
-## Phase 5 — Age rating + App Privacy (BOTH required before submit)
-- [ ] **Age rating questionnaire** → answer so it lands on **17+**: declare
-      "Alcohol, Tobacco, or Drug Use or References" = **Frequent/Intense** (the app references drinking).
-      This matches the in-app 20歳以上 age gate. Expect **17+**.
-- [ ] **App Privacy** (App → App Privacy → Edit): "Do you collect data?" **Yes**, then enter exactly
-      what's in **`docs/app-privacy.md`**:
-      - **User Content → Other User Content** (お題 + request text): collected, NOT linked, NOT tracking, App Functionality.
-      - **Identifiers → User ID** (anon install id): collected, NOT linked, NOT tracking, App Functionality.
-      - **Identifiers → Device ID** (AdMob): collected, NOT linked, **tracking = Yes**, Third-Party Advertising.
-      - **Usage Data → Product Interaction** (AdMob): collected, NOT linked, **tracking = Yes**, Third-Party Advertising.
-      - Diagnostics: leave unchecked (no remote crash SDK) unless AdMob requires it.
-      - **Tracking (ATT):** "uses data for tracking" = Yes (AdMob). ATT prompt already ships via `expo-tracking-transparency`.
-      - Do NOT declare on-device-only data (roster, custom 罰ゲーム, settings, purchase state).
-      - Privacy Policy URL: https://taigamura.github.io/kanpai/terms.html
-
-## Phase 6 — Attach build, compliance, submit
-- [ ] On the **1.0.0** version page → **Build** → select the Phase 2 build.
-- [ ] Attach the **`app.kanpai.mvp.removeads` IAP** to this version (first submission only).
-- [ ] **Export compliance:** the app uses only standard HTTPS/exempt encryption → answer "No" to
-      proprietary/non-exempt encryption (add `ITSAppUsesNonExemptEncryption=false` to keep it non-interactive on future builds).
-- [ ] **Content rights / advertising identifier (IDFA):** answer **Yes** it uses IDFA → check "Serve
-      advertisements within the app" (AdMob), and the ATT boxes.
-- [ ] **App Review notes:** the app is 17+ alcohol-*referencing* but has NO forced drinking (every
-      penalty offers a non-alcoholic out), NO 一気飲み mechanic; the 20歳以上 gate + EULA are shown on
-      first launch. A demo account is not needed (offline, no login). Note the ¥370 IAP is remove-ads.
-- [ ] **Submit for Review.** Choose manual or automatic release.
-
-## Phase 7 — After submit
-- [ ] Watch for **Metadata Rejected / needs info** (alcohol apps sometimes get age/marketing questions —
-      the notes in Phase 6 pre-empt most).
-- [ ] On **Approved** → release (or it auto-releases). Verify the live listing + a real purchase.
-- [ ] Any code change after this = a new build via **"ship it"**, then attach the new build to the next version.
+**Key identifiers**
+| | |
+|---|---|
+| Bundle id | `app.kanpai.mvp` |
+| ASC Apple ID | `6805814337` |
+| Listing name | カンパイ！飲み会パーティーゲーム集 |
+| Min iOS | 16.4 |
+| IAP (non-consumable) | `app.kanpai.mvp.removeads` @ **¥300** |
+| Support email | taigamura.dev@gmail.com |
+| Terms + Privacy URL | https://taigamura.github.io/kanpai/terms.html |
+| Age rating | 17+ (alcohol references) |
 
 ---
 
-### Quick "what's blocking" summary
-Screenshots ✅ · Icon ✅ (real, wired) · Ads ✅ (preload-cache fix, ship to verify) · Build ⚠️ ship latest ·
-Paid Apps ⚠️ finish banking · IAP ⚠️ create in ASC · App Privacy ⚠️ enter per `app-privacy.md` ·
-17+ questionnaire ⚠️ · Listing copy ⚠️.
+## Phase 1 — Pre-flight (gates the submission; do first)
 
-> **Ads note:** two placements — interstitial between games + a bottom 320×50 banner. The code is
-> correct. If ads don't show, it's environment, not wiring: Expo Go / web / plain simulator have no
-> native ad module (use a dev-client or EAS build), and a brand-new AdMob account returns "no fill"
-> for hours-to-days until payments/app-ads.txt are set up. A dev build uses Google TEST ids and WILL
-> show both ads — that's the wiring check. **All iOS ad ids are now real** (interstitial + banner unit
-> `…/9261864571`); nothing left to fill. Ship a build to verify both on device. See `docs/STATE.md` → "Ads".
+- [ ] **Paid Apps agreement is Active.** ASC → Business → Agreements. Tax forms
+      (W-8BEN + Certificate of Foreign Status) are submitted; **finish banking** (add a
+      bank account) so Paid Apps flips to **Active**. The IAP cannot be reviewed until this
+      is Active. Until then the in-app buy button correctly shows「現在購入できません」.
+- [ ] **Create the IAP.** ASC → your app → **In-App Purchases** → **Non-Consumable**:
+      - Product ID: **`app.kanpai.mvp.removeads`** (must match `REMOVE_ADS_SKU` in `src/iap/iap.ts`)
+      - Reference name: 広告を非表示 · Display name: 広告を非表示
+      - Description: 動画・バナー広告をすべて非表示にします。買い切りで、月額課金はありません。
+      - **Price: ¥300** (the app reads StoreKit's live price, so this tier is authoritative)
+      - Add a review screenshot of the Settings buy button.
+      - Add a **Sandbox tester** (Users and Access → Sandbox) and test buy + restore.
+- [ ] **A reviewable build exists.** A build must be processed in ASC → TestFlight. The
+      current shipped build is code-identical to `main`. Only ship a new one if code changed
+      (see Phase 4).
+- [ ] **(Recommended) `app-ads.txt` published.** Put it at `taigamura.github.io/app-ads.txt`
+      (the USER-pages root, NOT `/kanpai/`) so AdMob can fill once live. Not a submission
+      blocker, but blocks ad revenue after launch.
+- [ ] **(If not done) Supabase schema.** Run `supabase/schema.sql` in the Supabase SQL editor
+      so the home "ゲームをリクエスト" box logs. Not a blocker.
 
 ---
 
-# COPY-PASTE BLOCK — everything to enter in ASC
+## Phase 2 — The submission, step by step in ASC
 
-## Listing text
-**App Name (≤30):**
-カンパイ！飲み会パーティーゲーム集
+Go to ASC → **Apps → カンパイ！ → the 1.0.0 version page** and fill each section.
 
-**Subtitle (≤30):**
-飲み会・宅飲みで盛り上がる6ゲーム
+### Step 1 — Version + listing metadata
+- [ ] Confirm the version is **1.0.0** (create it if needed).
+- [ ] Paste **Name, Subtitle, Promotional text, Keywords, Description, What's New**
+      from **`docs/store-listing.md`** into the **Japanese (ja)** localization. (JP-only app.)
+- [ ] **Category:** Games → Entertainment / Casual.
+- [ ] **Support URL** + **Marketing URL:** https://taigamura.github.io/kanpai/terms.html
+      (or the `/kanpai/` landing page). **Copyright:** 2026 Taiga Kimura.
 
-**Keywords (≤100, comma-separated, NO spaces):**
-飲み会,宅飲み,パーティー,ゲーム,山手線,王様ゲーム,チンチロ,罰ゲーム,合コン,二次会,乾杯,飲みゲー,宴会,女子会,パーティーゲーム
+### Step 2 — Screenshots
+- [ ] Upload `store-assets/appstore_6.9/AppStore_01…06*.png` to the **6.9″** slot and
+      `store-assets/appstore_6.7/*` to the **6.7″** slot, in filename order **01 → 06**.
+      (6.9″ + 6.7″ is sufficient; other sizes auto-scale.)
+- [ ] The `store-assets/instagram/` files are for Instagram, **not** ASC. Do not upload them here.
 
-**Promotional text (≤170):**
-スマホ1台ですぐ乾杯。飲み会・宅飲みが盛り上がる6つのゲームを、準備いらずのオフラインで。買い切りで広告も消せます。
+### Step 3 — App icon
+- [ ] The 1024² icon comes from the build automatically. Nothing to upload.
 
-**Description:**
-カンパイ！は、飲み会・宅飲みがそのまま盛り上がる、スマホ1台で遊べるパーティーゲーム集です。アプリを開いてすぐ、みんなでプレイできます。ネット接続もアカウント登録も不要です。
+### Step 4 — Age rating (Apple's multi-step wizard, 7 steps)
+**Step 1 (Features):** Parental Controls **NO** · Age Assurance **NO** (the 20歳以上 gate is
+self-declared, not a verified mechanism) · Unrestricted Web Access **NO** · Social Media
+**NO** · **User-Generated Content → depends on the shared お題 feature (see below)**.
+**Steps 2–7 (Content):** everything **None** EXCEPT **Alcohol, Tobacco, or Drug Use or
+References** = the frequent/intense level → lands on **17+**.
 
-■ 収録ゲーム（全6種）
-・山手線ゲーム：お題に沿って順番に答える定番ゲーム。
-・ロシアンルーレット：スマホを回して、爆発した人が負け。
-・ハイ&ロー：次のカードが上か下かを当てる。
-・チンチロ：サイコロ3つの出目で勝負。
-・キングスカップ：引いたカードごとにルールが発動。
-・匿名アンケート：「誰が一番◯◯？」をこっそり投票して集計。
+- [ ] **UGC decision.** The community 山手線 お題 (submit + shown to others + upvote) is
+      user-generated content, and it is currently **ON** (`src/services/topicsConfig.ts` is
+      populated). If UGC = YES, Apple **Guideline 1.2** requires filtering + report + block +
+      contact, which the app does not have → likely rejection.
+      - **For v1.0 (recommended):** blank `src/services/topicsConfig.ts` so お題 are
+        local-only, **reship** (real code change → new build via "ship it"), then answer
+        **UGC = NO** here AND drop "User Content" + the install-id "User ID" from App Privacy
+        (Step 5). Re-enable sharing in a later version after adding report/block/filter.
+      - **To keep sharing:** answer **UGC = YES** and first build the UGC safeguards
+        (report/hide/block + basic filtering). More work.
 
-■ 特長
-・準備いらずで即スタート。スマホを回して遊ぶオフライン専用です。
-・無料でダウンロードでき、広告は¥370の買い切りで非表示にできます。月額課金は一切ありません。
-・参加者を登録して、負けた回数を記録できます。
-・自分だけの罰ゲームを追加・保存できます。
+### Step 5 — App Privacy
+- [ ] App → **App Privacy** → Edit → "Do you collect data?" **Yes**, then enter **exactly**
+      the data types in **`docs/app-privacy.md`**:
+      User Content (お題/request text), User ID (anon install id), Device ID + Product
+      Interaction (AdMob, tracking = Yes). ATT = Yes. Do NOT declare on-device-only data
+      (roster, custom 罰ゲーム, settings, purchase state).
+- [ ] Privacy Policy URL: https://taigamura.github.io/kanpai/terms.html
 
-■ 安心して遊ぶために
-・お酒を強制する演出はありません。負けても罰ゲームか、ソフトドリンクでOKです。
-・一気飲みをあおる要素はありません。
-・20歳以上の確認と、飲みすぎ注意のご案内を表示します。飲酒は自己責任、適量でお楽しみください。
+### Step 6 — Build + IAP
+- [ ] On the 1.0.0 page → **Build** → select the Phase 1 build.
+- [ ] Attach the **`app.kanpai.mvp.removeads`** IAP to this version (first submission only).
 
-対象年齢：17歳以上（飲酒に関する表現を含みます）。
+### Step 7 — App Review Information  ← the page with Sign-In / Contact / Notes
+- [ ] **Sign-In Information: UNCHECK "Sign-in required".** The app is fully offline with no
+      account or login, so the reviewer needs no credentials. Leaving it checked with blank
+      fields stalls review.
+- [ ] **Contact Information:** Taiga / Kimura · a reachable phone (with country code, e.g.
+      +81…) · taigamura.dev@gmail.com.
+- [ ] **Notes:** paste the review-note block at the bottom of this file (heads off the
+      alcohol-app age/marketing questions).
+- [ ] **Attachment:** leave empty (optional).
 
-## URLs / misc
-- **Support URL:** https://taigamura.github.io/kanpai/terms.html
-- **Marketing URL (optional):** https://taigamura.github.io/kanpai/terms.html
-- **Privacy Policy URL:** https://taigamura.github.io/kanpai/terms.html
-- **Support email:** taigamura.dev@gmail.com
-- **Copyright:** 2026 Taiga Kimura
-- **Primary category:** Games (Entertainment / Casual)
-- **Age rating:** 17+ (Alcohol references = Frequent/Intense)
+### Step 8 — Export compliance + IDFA
+- [ ] **Export compliance:** standard HTTPS only → "No" to proprietary/non-exempt encryption.
+      (`ITSAppUsesNonExemptEncryption: false` is already set in `app.json`, so this may not
+      even prompt.)
+- [ ] **Advertising identifier (IDFA):** **Yes** → check "Serve advertisements within the
+      app" (AdMob) + the ATT boxes.
 
-## In-App Purchase (Non-Consumable)
-- **Product ID (must match code):** app.kanpai.mvp.removeads
-- **Reference Name (internal):** 広告を非表示
-- **Display Name (shown to user):** 広告を非表示
-- **Description:** 動画・バナー広告をすべて非表示にします。買い切りで、月額課金はありません。
-- **Price:** ¥370
+### Step 9 — Release option + Submit
+- [ ] Choose **manual** or **automatic** release.
+- [ ] **Submit for Review.**
 
-## App Review notes (paste into "Notes")
-本アプリは17歳以上向けで、飲酒に「言及」しますが、飲酒を強制する演出はありません。すべての罰は「罰ゲーム」または「ソフトドリンクでOK」で、アルコールを強制しません。一気飲みをあおる仕組みもありません。初回起動時に20歳以上確認と利用規約（免責事項含む）を表示します。完全オフラインで動作し、ログイン不要のためデモアカウントは不要です。¥370の買い切りアプリ内課金は「広告を非表示」にするものです。
+---
 
-## Export compliance
-Uses standard HTTPS only, no proprietary/non-exempt encryption → answer "No".
-(`ITSAppUsesNonExemptEncryption: false` is already set in app.json.)
+## Phase 3 — After submit
+- [ ] Watch for **Metadata Rejected / needs info** (alcohol apps sometimes get age/marketing
+      questions; the Phase 2 Step 7 notes pre-empt most).
+- [ ] On **Approved** → release (or it auto-releases). Verify the live listing + a real
+      purchase of the ¥300 remove-ads IAP.
 
-## IDFA / advertising
-Uses IDFA = Yes → check "Serve advertisements within the app" (AdMob) + the ATT boxes.
+---
+
+## Phase 4 — Shipping a code change later ("ship it")
+Store-listing edits and screenshots do NOT need a new build (screenshots upload in the ASC
+web UI; `eas submit` uploads only the `.ipa`). Only **source-code** changes need a build.
+When they do: say **"ship it"** to run commit → push → Mac build → submit, then attach the
+new build to the next version. **Claude can do** the build/submit; the ASC metadata steps
+above stay manual.
+
+---
+
+## Copy-paste — App Review notes (Phase 2, Step 7)
+
+```
+This is a Japanese-only party-game collection, rated 17+ for alcohol references. It never forces drinking: every losing penalty can be a non-alcoholic dare (罰ゲーム), there is no "chug/one-shot" mechanic, and a 20+ age confirmation and EULA (with disclaimer) are shown on first launch. The app runs fully offline with no account or login, so no demo credentials are needed. The single in-app purchase (¥300, non-consumable) only removes ads.
+
+本アプリは17歳以上向けで、飲酒に「言及」しますが、飲酒を強制する演出はありません。負けたときの罰はすべて「罰ゲーム」で代替でき、アルコールを強制しません。一気飲みをあおる仕組みもありません。初回起動時に20歳以上の確認と利用規約（免責事項を含む）を表示します。完全にオフラインで動作し、ログイン不要のため、レビュー用のデモアカウントは必要ありません。買い切りのアプリ内課金（¥300）は「広告を非表示」にするものです。
+```
+
+## Copy-paste — IAP (Phase 1)
+```
+Product ID:    app.kanpai.mvp.removeads   (must match src/iap/iap.ts)
+Type:          Non-Consumable
+Reference /
+Display name:  広告を非表示
+Description:   動画・バナー広告をすべて非表示にします。買い切りで、月額課金はありません。
+Price:         ¥300
+```
+
+> Listing text (name/subtitle/keywords/description/What's New) is NOT duplicated here on
+> purpose. It lives in `docs/store-listing.md` so it can't drift. Copy it from there.
