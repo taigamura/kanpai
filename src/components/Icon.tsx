@@ -38,7 +38,9 @@ export type IconName =
   | 'fuse'
   | 'boom'
   | 'pass-phone'
-  | 'beer'
+  | 'party'
+  | 'flag'
+  | 'more'
   | 'crown'
   | 'timer'
   | 'up'
@@ -84,7 +86,9 @@ const GLYPHS: Record<IconName, Glyph> = {
   fuse: { fam: 'ion', name: 'flame' },
   boom: { fam: 'ion', name: 'flash' },
   'pass-phone': { fam: 'ion', name: 'phone-portrait-outline' },
-  beer: { fam: 'mci', name: 'glass-mug-variant' },
+  party: { fam: 'mci', name: 'party-popper' },
+  flag: { fam: 'mci', name: 'flag-outline' },
+  more: { fam: 'mci', name: 'dots-horizontal' },
   crown: { fam: 'mci', name: 'crown' },
   timer: { fam: 'ion', name: 'timer-outline' },
   up: { fam: 'ion', name: 'arrow-up' },

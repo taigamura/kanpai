@@ -16,7 +16,6 @@ import { colors } from '@/theme/theme';
 import { AppStateProvider, useAppState } from '@/state/AppState';
 import { NavProvider, useNav } from '@/navigation/Nav';
 
-import { AgeGateScreen } from '@/screens/AgeGateScreen';
 import { HomeScreen } from '@/screens/HomeScreen';
 import { SettingsScreen } from '@/screens/SettingsScreen';
 import { RosterScreen } from '@/screens/RosterScreen';
@@ -46,7 +45,6 @@ function useStartup() {
 }
 
 function Router() {
-  const { ageAccepted } = useAppState();
   const { route, home } = useNav();
 
   // Swipe-right-to-go-back. The nav is flat and every 戻る button goes home, so a rightward swipe
@@ -69,8 +67,6 @@ function Router() {
         }),
     [route.name, goBack],
   );
-
-  if (!ageAccepted) return <AgeGateScreen />;
 
   const screen = (() => {
     switch (route.name) {
@@ -177,20 +173,20 @@ function AppBody() {
 // App shell = the boot gate + the bottom banner, laid out in a column so the banner reserves its
 // own height UNDER the content (it never floats over the UI or hides a button). Lives INSIDE the
 // provider tree so it can wait on AppState hydration (`ready`) alongside fonts + the min-splash
-// timer, and read `ageAccepted`/`adsRemoved`. One LoadingScreen instance spans the entire boot and
+// timer, and read `adsRemoved`. One LoadingScreen instance spans the entire boot and
 // drains into Home in place, over the persistent BeerGround, so there is no reset pour and no glass
 // remount between loading and home. `showLogo` is false only in the first frames before app fonts
 // resolve, so the logotype never renders in a fallback system face. The banner shows only once the
-// user is past boot AND the age gate — never over the pour or the 20歳以上 screen.
+// user is past boot — never over the pour.
 function Shell({ splashHeld, showLogo }: { splashHeld: boolean; showLogo: boolean }) {
-  const { ready, ageAccepted } = useAppState();
+  const { ready } = useAppState();
   const booting = splashHeld || !ready;
   return (
     <View style={styles.shell}>
       <View style={styles.content}>
         {booting ? <LoadingScreen showLogo={showLogo} /> : <Router />}
       </View>
-      {!booting && ageAccepted ? <BannerAdSlot /> : null}
+      {!booting ? <BannerAdSlot /> : null}
     </View>
   );
 }
@@ -207,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
-    backgroundColor: '#15100a', // dark neutral so the amber phone reads as a device
+    backgroundColor: '#0b130e', // dark neutral so the green phone reads as a device
   },
   webPhone: {
     flex: 1,

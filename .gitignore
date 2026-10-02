@@ -34,3 +34,6 @@ npm-debug.*
 # IDE
 .vscode/
 .idea/
+
+# Playwright MCP scratch (captures, console logs)
+.playwright-mcp/

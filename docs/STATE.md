@@ -1,30 +1,69 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-08-30 (ad diagnostic + IAP graceful-fail + ¥300 ship). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-10-02 (4.3(b) rejection → no-drinking cream-soda reframe + UGC moderation). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
-**Latest shipped build (2026-08-30, commit `2f12abf` / PR #11, EAS submission
-`22242023-3c1d-4eef-b4fc-d1677d99c867`, ipa `build-1788061248213.ipa`)** adds the **hidden on-device
-ad diagnostic** (Settings title ×7 → 広告診断), **IAP graceful-fail** (shows 「現在購入できません」 instead
-of the broken "[?]" sheet when the product can't be resolved), and the **¥370→¥300** price (button now
-shows StoreKit's live price). Processing on Apple at handoff. Use the ad diagnostic on this build to
-confirm whether the no-ads issue is no-fill vs wiring.
+**2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
+app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
+mode, submission `7806a648-a907-4b97-ad11-da91a0ed138c`). The app was **reframed** and a new build
+resubmitted for the same app record (Apple ID 6805814337) — see "4.3(b) reframe" below. Everything
+in this file that mentions 17+, the age gate, the lager theme, or キングスカップ's center cup is
+historical.
+
+## 4.3(b) reframe (2026-10-02)
+- **No drinking anywhere.** キングスカップ → **キングカード** (K = add a 「キングの罰」; the 4th-K drawer
+  does them all; A = 「せーの」 pose game). Alcohol お題 replaced (山手線: お菓子の名前, ファミレスの
+  メニュー; アンケート: ゲームに強そう; 意思疎通: 大人っぽい食べ物). Tagline: みんなで遊べるパーティーゲーム集.
+- **Age gate removed** (`AgeGateScreen` deleted, `ageAccepted` gone from AppState/storage; banner now
+  shows as soon as boot ends). Terms page (`docs/terms.html`) rewritten: no alcohol, 罰ゲーム safety,
+  UGC rules + 24h report handling.
+- **Theme: メロンクリームソーダ** (`src/theme/theme.ts`): green soda gradient, vanilla ice-cream band
+  with a scalloped scoop edge (`src/components/Screen.tsx`), cherry-red primary, bottle-green accent.
+  Token names `beerTop/beerBot/foam` kept to avoid churn. New icon: `assets/icon.svg` →
+  `node scripts/generate-icon.mjs` (now renders from the SVG). Splash bg `#FFF8E6`.
+- **Home order** leads with the original games: 意思疎通, 英語禁止, 匿名アンケート, then 山手線,
+  キングカード, ハイ&ロー, ロシアンルーレット, チンチロ (`src/data/games.ts`).
+- **UGC moderation (Guideline 1.2)** on shared お題: posting rules accepted before first share
+  (`KEYS.ugcAgreed`), NG-word filter (`src/data/ngWords.ts` + server `banned_words`), ⋯ menu per
+  community お題 → 通報する / この投稿者をブロック (hidden locally at once via `KEYS.hiddenTopics`;
+  server: `report_topic` auto-hides at 2 reports, `block_topic_author`, `list_topics(p_install)`).
+  Client falls back to the plain GET if `list_topics` isn't deployed. **Migration:
+  `supabase/2026-10-02-ugc-moderation.sql` must be run in the Supabase SQL editor** (also hides the
+  community お題 「好きなおつまみ」). Check reports: `select * from topic_reports order by created_at desc;`
+- **Supabase free tier pauses after inactivity** — it was paused on 2026-10-02 (DNS didn't even
+  resolve) and the user resumed it. A paused project = empty community list in the app, and no
+  moderation UI for a reviewer to see. Keep it awake around review time.
+- **Store assets:** new 6 panels × 6.9″/6.7″ in `store-assets/appstore_*` (cream-soda canvas;
+  captured from dev-web at 440×956@3x with seeded players + mocked community お題). The Instagram
+  set in `store-assets/instagram` is still the OLD beer-themed art (not regenerated).
+- **ASC (manual):** paste name/subtitle/keywords/description/review notes from
+  `docs/store-listing.md`, re-answer the age-rating questionnaire (alcohol = None, UGC = yes),
+  replace screenshots, select the new build, then reply in the Resolution Center with the drafted
+  reply and resubmit.
 
 ## TL;DR
-The app is **built and live on TestFlight (internal testing)**. **Not yet public.** The full ship
-pipeline works end to end; say **"ship it"** to build + submit a new build. **Latest shipped build
-(2026-08-30, commit `b6b0582`, EAS submission `c9443b50`, ipa `build-1788017349308.ipa`)** adds the
-**bottom banner ad** + the **interstitial preload-and-cache fix**, on top of everything below:
-参加者・負けカウント (registered players + loss tally), the **real app icon**, the Lager beer-glass
-theme, app-wide motion + phone-tilt beer, the shared 山手線 お題 feature LIVE on Supabase (data
-collection ON), the KingsCup/transition fixes, and the UI pop pass. Processing on Apple at handoff
-(≈5–10 min) — verify banner + interstitial on TestFlight once it lands. Nothing built-but-unshipped.
-**Before PUBLIC release:** update ASC App Privacy (see `docs/app-privacy.md`) + listing work
-(screenshots, 17+ questionnaire, IAP/Paid-Apps agreement). See the sections below for detail.
+**v1.0.0 is SUBMITTED FOR REVIEW** (first public submission) — waiting on Apple. The submitted build
+is the iPhone-only `cf68ee7` above, with: the `app.kanpai.mvp.removeads` **¥300** IAP attached, **App
+Privacy published** (AdMob Device ID/Product Interaction = tracking Yes; Crash/Performance =
+App Functionality; shared-お題 User Content + install-id User ID = not tracking), **17+** age rating,
+and the **scatter-style store screenshots**. Nothing built-but-unshipped. The ship pipeline works end
+to end; say **"ship it"** to build + submit a new build.
+- **Store assets** were replaced this session (committed `d45c784`) with a **scatter-style** set: App
+  Store 6 screenshots × 6.9″/6.7″ + a 3-panel Instagram panorama, rendered from real device screens
+  in the app's real fonts (**Dela Gothic One** headlines, **Zen Kaku Gothic New** body — embedded as
+  data URIs so they match the in-app カンパイ！ logotype). Files in `store-assets/`.
+- **⚠️ Watch for a Guideline 1.2 (UGC) rejection.** The shared 山手線 お題 feature ships **live**
+  (`src/services/topicsConfig.ts` populated) with no report/hide/block, so user-submitted text is
+  distributed to others with no moderation. If Apple bounces it, add a minimal report/hide to the
+  community お題 list (`src/games/TopicsModal.tsx`) and re-ship. (Kept-live was the user's call.)
+- **IP note (2026-09-01):** the 英語禁止 / 意思疎通 modes are mechanically カタカナーシ / ito, but
+  renamed (no trademark use) and built on original word/theme lists (spot-checked: no verbatim
+  overlap). Game rules aren't copyrightable in JP/US; low legal risk. Don't reference those names in
+  UI or ASC metadata.
 
 ## Identifiers (all already committed in-repo)
 - **Repo:** github.com/taigamura/kanpai (PUBLIC), branch `main`.
 - **EAS project:** `@taigamura/kanpai`, projectId `ea0d603a-8163-42b9-a1b4-0e93e41d95b5` (app.json).
-- **Bundle id:** `app.kanpai.mvp`. **Min iOS: 16.4** (Expo SDK 57 floor — TestFlight hides it on older devices).
+- **Bundle id:** `app.kanpai.mvp`. **Min iOS: 16.4** (Expo SDK 57 floor — TestFlight hides it on older devices). **iPhone-only** since `cf68ee7` (`ios.supportsTablet:false`) — iPad users run it in iPhone-compat mode.
 - **App Store Connect app:** listing name "カンパイ！飲み会パーティーゲーム集", **Apple ID `6805814337`**
   (home-screen name stays カンパイ！; listing name differs because bare カンパイ！ was taken).
 - **AdMob (iOS):** App ID `ca-app-pub-6862698457969651~3900340220` (app.json); interstitial unit
@@ -44,9 +83,10 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **TestFlight builds:** builds 2–4 (older) + build 4 (UI pop pass) + **the current build shipped
-  2026-08-30** (banner ad + interstitial preload fix + 参加者・負けカウント + real icon; commit
-  `b6b0582`, EAS submission `c9443b50`). Test the newest one.
+- **TestFlight/ASC builds:** the newest is the **iPhone-only build submitted for review 2026-09-01**
+  (commit `cf68ee7`, EAS submission `4888b816-f077-47ca-ad5c-7eddb237f7e3`, ipa
+  `build-1788192472381.ipa`). Prior: `b1ce033`/#12 (8 games + scatter store assets),
+  `b6b0582`/`c9443b50` (banner + preload). Test the newest.
 
 ## Critical gotchas — DO NOT LOSE
 1. **Xcode 26.3 build fix (shipped):** expo-modules-jsi@57.0.5 annotates `RuntimeScheduler` constructors with
@@ -338,17 +378,20 @@ Code hardening shipped so the app degrades gracefully once ASC is set up (commit
 - **Price is now ¥300** (was ¥370) everywhere in docs/copy — but the AUTHORITATIVE number is the ASC
   price tier: **set the removeads product to ¥300 when you create it**, and the button follows it.
 
-## Remaining to launch (manual unless noted "Claude can do")
-1. **IAP:** create non-consumable `app.kanpai.mvp.removeads` @ **¥300** in ASC; finish **banking** so
-   the **Paid Apps agreement** goes active (tax forms W-8BEN + Certificate of Foreign Status already
-   submitted); add a **sandbox tester**; test buy + restore on a build. Until the product exists +
-   the agreement is active, the buy button correctly reports 「現在購入できません」 (see the IAP section above).
-2. **App icon:** ✅ DONE — a real designed 1024² `assets/icon.png` (lager mug + red ！ + confetti)
-   is committed (`c39f32a`) and wired in `app.json` (`icon` + splash image). No longer a placeholder.
-3. **Listing:** JP screenshots (from the TestFlight build), **17+** age-rating questionnaire, **App Privacy**
-   (declare AdMob data collection), support email taigamura.dev@gmail.com.
-4. Attach build to version 1.0.0 → **Submit for Review**.
+## Launch status — SUBMITTED FOR REVIEW (2026-09-01)
+All the v1.0.0 submission gates below are **done**; the app is in Apple's review queue. See
+`docs/SUBMIT.md` for the full step-by-step runbook (kept current).
+1. **IAP:** ✅ `app.kanpai.mvp.removeads` non-consumable @ **¥300** created, Paid Apps agreement
+   active, review screenshot uploaded, attached to the 1.0.0 version.
+2. **App icon:** ✅ real 1024² `assets/icon.png` (committed `c39f32a`), wired in `app.json`.
+3. **Listing:** ✅ scatter screenshots (6.9″/6.7″) uploaded, `docs/store-listing.md` copy in the ja
+   localization, **17+** age rating (Apple's multi-step wizard; UGC = YES since sharing is live),
+   **App Privacy published** (per `docs/app-privacy.md` + AdMob Crash/Performance diagnostics).
+4. **Submitted for Review** ✅ (iPhone-only build `cf68ee7`).
 5. Ship a fresh build after any code change: **"ship it"**.
+- **After review:** if approved → release + verify a real ¥300 purchase; publish `app-ads.txt` at
+  `taigamura.github.io/app-ads.txt` (user-pages root) for AdMob fill. If rejected, most likely
+  **Guideline 1.2 (UGC)** — add report/hide to `TopicsModal` and re-ship (see TL;DR).
 
 ## UI Studio — browser slider + comment tool for UI finetuning (BUILT 2026-08-29)
 A dev-only, **web + `__DEV__` only** overlay for tuning the UI without code round-trips. Runs the
@@ -428,7 +471,11 @@ The ASC API is queryable from WSL with the `.p8` key (ES256 JWT → `api.appstor
 session used this to read build `processingState` / `internalBuildState` and beta-tester state. Handy for TestFlight debugging.
 
 ## Verification at handoff
-`npx tsc --noEmit` clean; `npx jest` 5/5 pass. Latest work landed on `origin/main` (`b6b0582`, PR #10)
-and **shipped to TestFlight** (EAS submission `c9443b50`, ipa `build-1788017349308.ipa`) on 2026-08-30.
-Untracked-but-intentionally-uncommitted in the tree: `store-assets/` + `store-assets.zip` (App Store
-screenshots) and `.ralph/` — left out of commits on purpose.
+`npx tsc --noEmit` clean; `npx jest` **9/9** pass (preflight before the 2026-09-01 ship). This session
+landed 3 commits on `origin/main`: `d45c784` (scatter store assets), `cf68ee7`/PR #13 (iPhone-only),
+`fb90e28` (SUBMIT.md rewrite). **Shipped** iPhone-only build `build-1788192472381.ipa` (EAS submission
+`4888b816-f077-47ca-ad5c-7eddb237f7e3`) from `cf68ee7`, then **Submitted for Review** via the ASC UI.
+`store-assets/` is now **committed** (no longer untracked). Untracked-but-intentionally-uncommitted:
+`.ralph/`, `store-assets.zip` (stale — pre-scatter), and the `handoff` skill/command (this session's,
+uncommitted). Pre-existing uncommitted-and-not-mine: `docs/STATE.md` was already modified before the
+session; `.claude/skills/catchup/SKILL.md`.

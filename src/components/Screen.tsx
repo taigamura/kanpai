@@ -13,12 +13,16 @@ import { colors } from '@/theme/theme';
 
 const RISE = Math.round(Dimensions.get('window').height * 0.92);
 
-// Foam-to-beer ratio = 3:7 — the cream foam head fills the top 30% of the glass, amber liquid the
-// bottom 70%. The foam band is oversized above the screen edge (FOAM_TOP) so the counter-rotating
-// tilt never exposes a gap; its solid bottom lands exactly on the 30% line, then fades into the beer.
+// Ice-cream-to-soda ratio = 3:7 — the vanilla ice-cream layer fills the top 30% of the glass, melon
+// soda the bottom 70%. (Identifiers still say foam/beer from the original lager theme.) The band is
+// oversized above the screen edge (FOAM_TOP) so the counter-rotating tilt never exposes a gap; its
+// solid bottom lands exactly on the 30% line, then a scalloped scoop edge hangs into the soda.
 const GLASS_H = Dimensions.get('window').height;
 const FOAM_TOP = -50; // overscan above the top edge (kept for tilt coverage)
 const FOAM_FADE_H = 34; // blend zone below the solid foam
+const SCOOP_D = 56; // diameter of each scoop bump on the ice cream's bottom edge
+const SCOOP_STEP = 44; // bump spacing (overlapping circles read as a soft scalloped scoop)
+const SCOOPS = Math.ceil((Dimensions.get('window').width + 120) / SCOOP_STEP) + 1;
 const FOAM_SOLID_H = Math.round(GLASS_H * 0.3) - FOAM_TOP; // solid bottom sits at 30% of screen height
 const FOAM_BAND_H = FOAM_SOLID_H + FOAM_FADE_H;
 
@@ -102,14 +106,14 @@ function useTiltStyle() {
   return useAnimatedStyle(() => ({ transform: [{ rotate: `${cur.value}rad` }] }));
 }
 
-// The lager glass ground, rendered ONCE behind the whole app (see App.tsx) so it never moves
-// when a screen transitions — pages cross-fade over a fixed glass. Static amber liquid base, then
-// a tilt layer (cream foam head + carbonation + glass shine) that counter-rotates to gravity.
+// The cream-soda glass ground, rendered ONCE behind the whole app (see App.tsx) so it never moves
+// when a screen transitions — pages cross-fade over a fixed glass. Static melon-soda base, then a
+// tilt layer (ice-cream layer + carbonation + glass shine) that counter-rotates to gravity.
 export function BeerGround() {
   const tiltStyle = useTiltStyle();
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {/* static amber liquid base — always covers the screen, so a tilt never exposes a gap */}
+      {/* static melon-soda base — always covers the screen, so a tilt never exposes a gap */}
       <LinearGradient
         colors={[colors.beerTop, colors.beerBot]}
         start={{ x: 0.5, y: 0 }}
@@ -124,10 +128,14 @@ export function BeerGround() {
             <Bubble key={i} {...b} />
           ))}
         </View>
-        {/* foam head — oversized (starts above/beyond the edges) so tilt keeps the top covered */}
+        {/* ice cream — oversized (starts above/beyond the edges) so tilt keeps the top covered */}
         <View style={styles.foam}>
           <View style={styles.foamSolid} />
-          <LinearGradient colors={[colors.foam, 'rgba(253,247,230,0)']} style={styles.foamFade} />
+          <View style={styles.scoopRow}>
+            {Array.from({ length: SCOOPS }, (_, i) => (
+              <View key={i} style={[styles.scoop, { left: i * SCOOP_STEP }]} />
+            ))}
+          </View>
         </View>
         {/* diagonal glass shine */}
         <LinearGradient
@@ -176,4 +184,13 @@ const styles = StyleSheet.create({
   foam: { position: 'absolute', top: FOAM_TOP, left: -60, right: -60, height: FOAM_BAND_H },
   foamSolid: { height: FOAM_SOLID_H, backgroundColor: colors.foam },
   foamFade: { height: FOAM_FADE_H },
+  scoopRow: { position: 'absolute', top: FOAM_SOLID_H - SCOOP_D / 2, left: 0, right: 0, height: SCOOP_D },
+  scoop: {
+    position: 'absolute',
+    top: 0,
+    width: SCOOP_D,
+    height: SCOOP_D,
+    borderRadius: SCOOP_D / 2,
+    backgroundColor: colors.foam,
+  },
 });

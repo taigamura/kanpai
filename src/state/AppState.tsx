@@ -3,7 +3,7 @@ import { KEYS, loadJSON, saveJSON } from './storage';
 import { DEFAULT_PENALTIES } from '@/data/penalties';
 import { submitTopic } from '@/services/topics';
 
-// Single app-wide store: age gate, shared player roster, custom 罰ゲーム, ads entitlement.
+// Single app-wide store: shared player roster, custom 罰ゲーム, ads entitlement.
 // Deliberately tiny — everything is on-device convenience state.
 
 // A durable named player and how many times they've lost. Opt-in: when the group registers
@@ -13,8 +13,6 @@ export type Player = { name: string; losses: number };
 
 type AppStateShape = {
   ready: boolean;
-  ageAccepted: boolean;
-  acceptAge: () => void;
 
   roster: string[];
   setRoster: (names: string[]) => void;
@@ -42,7 +40,6 @@ const Ctx = createContext<AppStateShape | null>(null);
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
-  const [ageAccepted, setAgeAccepted] = useState(false);
   const [roster, setRosterState] = useState<string[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [customPenalties, setCustomPenalties] = useState<string[]>([]);
@@ -51,15 +48,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const [age, r, pl, cp, ct, ads] = await Promise.all([
-        loadJSON<boolean>(KEYS.ageAccepted, false),
+      const [r, pl, cp, ct, ads] = await Promise.all([
         loadJSON<string[]>(KEYS.roster, []),
         loadJSON<Player[]>(KEYS.players, []),
         loadJSON<string[]>(KEYS.customPenalties, []),
         loadJSON<string[]>(KEYS.customTopics, []),
         loadJSON<boolean>(KEYS.adsRemoved, false),
       ]);
-      setAgeAccepted(age);
       setRosterState(r);
       setPlayers(pl);
       setCustomPenalties(cp);
@@ -67,11 +62,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setAdsRemovedState(ads);
       setReady(true);
     })();
-  }, []);
-
-  const acceptAge = useCallback(() => {
-    setAgeAccepted(true);
-    void saveJSON(KEYS.ageAccepted, true);
   }, []);
 
   const setRoster = useCallback((names: string[]) => {
@@ -167,8 +157,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     <Ctx.Provider
       value={{
         ready,
-        ageAccepted,
-        acceptAge,
         roster,
         setRoster,
         players,

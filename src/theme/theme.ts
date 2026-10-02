@@ -1,34 +1,35 @@
-// カンパイ！ theme — 生ビール Lager beer-glass palette (locked 2026-08-28).
-// The whole app reads as the inside of a lager glass: cream foam head across the top,
-// amber liquid ground, rising carbonation, dark roasted-malt ink type.
-// Mirror of docs/lager-tilt.html + docs/beer-glass-ui.html concept 1 (c1); keep in sync.
+// カンパイ！ theme — メロンクリームソーダ palette (2026-10-02, replaces the 2026-08-28 lager glass).
+// The whole app reads as the inside of a melon cream-soda glass: a vanilla ice-cream layer across
+// the top, fizzy melon-green soda below, rising carbonation, deep bottle-green ink type, and a
+// cherry-red accent. Non-alcoholic by design (App Review 4.3(b) reframe — see docs/STATE.md).
+// Token names (beerTop/beerBot/foam) are kept so call sites don't churn: "foam" is the ice cream.
 export const colors = {
-  bg: '#E39A24',        // amber liquid (base ground)
-  bgElevated: '#FBF3E0', // opaque warm-cream surface (modals, inputs, chips)
-  card: 'rgba(255,255,255,0.17)', // frosted-glass panel floating on the beer
-  cardRaised: '#FDF7E6', // playing-card face (foam white)
-  cardBack: '#4A2A0A',   // playing-card back (dark roasted malt)
+  bg: '#3DBE6C',        // melon soda (base ground)
+  bgElevated: '#FFFAEE', // opaque vanilla surface (modals, inputs, chips)
+  card: 'rgba(255,255,255,0.20)', // frosted-glass panel floating on the soda
+  cardRaised: '#FFFDF6', // playing-card face (vanilla white)
+  cardBack: '#0E4D2C',   // playing-card back (deep bottle green)
 
-  beerTop: '#F4C64F',   // liquid gradient — top
-  beerBot: '#E39A24',   // liquid gradient — bottom
-  foam: '#FDF7E6',      // foam head cream
+  beerTop: '#9BE78F',   // soda gradient — top (lighter, near the ice cream)
+  beerBot: '#3DBE6C',   // soda gradient — bottom
+  foam: '#FFF8E6',      // vanilla ice-cream layer
 
-  primary: '#FF5D66',   // カンパイ！ red — the ！ and primary buttons
-  primaryDark: '#E24651',
-  accent: '#A85A0C',    // deep caramel malt — labels, pills, accent buttons on the light ground
-  accentBright: '#F7C64E', // bright beer gold — only on dark surfaces (card-back crown)
+  primary: '#F2404F',   // チェリー red — the ！ and primary buttons
+  primaryDark: '#C92A3A',
+  accent: '#0F6A3A',    // deep bottle green — labels, pills, accent buttons on the light ground
+  accentBright: '#A8EE8F', // bright melon — only on dark surfaces (card-back crown)
 
-  text: '#3C1F05',      // roasted-malt ink (primary type)
-  textDim: '#5F3E17',   // dim ink
-  cream: '#FCF5EA',     // light foreground on colored buttons (red / caramel)
+  text: '#0B3320',      // deep green ink (primary type)
+  textDim: '#1F4D33',   // dim ink
+  cream: '#FFFAEE',     // light foreground on colored buttons (red / green)
 
-  danger: '#E23B44',    // loser / hearts red (deepened for the light ground)
-  success: '#12805A',   // confirmations (deepened for the light ground)
+  danger: '#D7263D',    // loser / hearts red
+  success: '#0B5E3A',   // confirmations
   overlay: 'rgba(0,0,0,0.5)',
-  line: 'rgba(60,31,5,0.16)',           // ink hairline on panels / cards
-  accentLine: 'rgba(168,90,12,0.45)',   // caramel pill / badge outline
-  glowRed: 'rgba(255,93,102,0.10)',     // retained token (unused by the beer-glass ground)
-  glowGold: 'rgba(247,198,78,0.16)',
+  line: 'rgba(11,51,32,0.16)',          // ink hairline on panels / cards
+  accentLine: 'rgba(15,106,58,0.45)',   // green pill / badge outline
+  glowRed: 'rgba(242,64,79,0.10)',      // retained token (unused by the soda-glass ground)
+  glowGold: 'rgba(168,238,143,0.16)',
 };
 
 export const spacing = {
