@@ -1,157 +1,112 @@
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, ViewStyle, Animated, Easing, Dimensions } from 'react-native';
-import ReAnimated, {
-  useAnimatedSensor,
-  SensorType,
+import React, { useEffect } from 'react';
+import { View, StyleSheet, ViewStyle, Dimensions } from 'react-native';
+import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useFrameCallback,
+  withRepeat,
+  withTiming,
+  withDelay,
+  Easing,
+  interpolate,
 } from 'react-native-reanimated';
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/theme/theme';
 
-const RISE = Math.round(Dimensions.get('window').height * 0.92);
+const { width: W, height: H } = Dimensions.get('window');
 
-// Ice-cream-to-soda ratio = 3:7 — the vanilla ice-cream layer fills the top 30% of the glass, melon
-// soda the bottom 70%. (Identifiers still say foam/beer from the original lager theme.) The band is
-// oversized above the screen edge (FOAM_TOP) so the counter-rotating tilt never exposes a gap; its
-// solid bottom lands exactly on the 30% line, then a scalloped scoop edge hangs into the soda.
-const GLASS_H = Dimensions.get('window').height;
-const FOAM_TOP = -50; // overscan above the top edge (kept for tilt coverage)
-const FOAM_FADE_H = 34; // blend zone below the solid foam
-const SCOOP_D = 56; // diameter of each scoop bump on the ice cream's bottom edge
-const SCOOP_STEP = 44; // bump spacing (overlapping circles read as a soft scalloped scoop)
-const SCOOPS = Math.ceil((Dimensions.get('window').width + 120) / SCOOP_STEP) + 1;
-const FOAM_SOLID_H = Math.round(GLASS_H * 0.3) - FOAM_TOP; // solid bottom sits at 30% of screen height
-const FOAM_BAND_H = FOAM_SOLID_H + FOAM_FADE_H;
+// Speech bubbles printed in two riso inks, drifting behind every screen. Positions are fractions
+// of the window; each bubble wanders a few dozen points and back on its own long, eased loop
+// (24–40s), so the ground feels alive without ever drawing the eye. Static per render (no random)
+// so nothing reflows across navigation. Reanimated's default ReduceMotion.System freezes them for
+// users with Reduce Motion on.
+type BubbleSpec = {
+  x: number; // left, as a fraction of window width
+  y: number; // top, as a fraction of window height
+  w: number; // width, as a fraction of window width
+  color: string;
+  alpha: number;
+  tail: 'left' | 'right';
+  dx: number; // drift distance (pt)
+  dy: number;
+  turn: number; // drift rotation (deg)
+  ms: number; // one-way drift duration
+  delay: number;
+};
+const BUBBLES: BubbleSpec[] = [
+  { x: 0.62, y: -0.05, w: 0.5, color: colors.yellow, alpha: 0.55, tail: 'left', dx: -16, dy: 12, turn: -3, ms: 31000, delay: 0 },
+  { x: -0.22, y: 0.42, w: 0.78, color: colors.blue, alpha: 0.16, tail: 'right', dx: 22, dy: -18, turn: 3, ms: 36000, delay: 4000 },
+  { x: 0.55, y: 0.6, w: 0.66, color: colors.yellow, alpha: 0.5, tail: 'left', dx: -20, dy: -14, turn: -2, ms: 27000, delay: 2000 },
+  { x: 0.02, y: 0.84, w: 0.42, color: colors.blue, alpha: 0.14, tail: 'right', dx: 14, dy: -10, turn: 4, ms: 40000, delay: 7000 },
+];
 
-// Carbonation: a fixed set of bubbles rising from the bottom of the glass to the foam.
-// Positions/sizes are static (not random per render) so nothing reflows across nav.
-const BUBBLES = [
-  { left: '10%', size: 6, delay: 0, duration: 6400 },
-  { left: '22%', size: 4, delay: 2200, duration: 5200 },
-  { left: '33%', size: 7, delay: 900, duration: 7000 },
-  { left: '45%', size: 3, delay: 3200, duration: 4800 },
-  { left: '55%', size: 5, delay: 1500, duration: 6000 },
-  { left: '66%', size: 4, delay: 3800, duration: 5400 },
-  { left: '77%', size: 6, delay: 600, duration: 6800 },
-  { left: '88%', size: 3, delay: 2600, duration: 5000 },
-] as const;
-
-// A single rising bubble: loops translateY (bottom → top) + a fade in/out, forever.
-function Bubble({ left, size, delay, duration }: (typeof BUBBLES)[number]) {
-  const t = useRef(new Animated.Value(0)).current;
+function SpeechBubble({ x, y, w, color, alpha, tail, dx, dy, turn, ms, delay }: BubbleSpec) {
+  const bw = W * w;
+  const bh = bw * 0.72;
+  const t = useSharedValue(0);
   useEffect(() => {
-    const anim = Animated.loop(
-      Animated.timing(t, {
-        toValue: 1,
-        duration,
-        delay,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
+    t.value = withDelay(
+      delay,
+      withRepeat(withTiming(1, { duration: ms, easing: Easing.inOut(Easing.sin) }), -1, true),
     );
-    anim.start();
-    return () => anim.stop();
-  }, [t, duration, delay]);
-
-  const translateY = t.interpolate({ inputRange: [0, 1], outputRange: [0, -RISE] });
-  const opacity = t.interpolate({
-    inputRange: [0, 0.12, 0.8, 1],
-    outputRange: [0, 0.8, 0.55, 0],
-  });
-
+  }, [t, ms, delay]);
+  const drift = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: interpolate(t.value, [0, 1], [0, dx]) },
+      { translateY: interpolate(t.value, [0, 1], [0, dy]) },
+      { rotate: `${interpolate(t.value, [0, 1], [0, turn])}deg` },
+    ],
+  }));
+  const tailSize = bw * 0.26;
   return (
+    // Opacity on the wrapper so ellipse + tail composite as ONE shape (no darker overlap seam).
     <Animated.View
       pointerEvents="none"
-      style={[
-        styles.bubble,
-        { left, width: size, height: size, borderRadius: size / 2, opacity, transform: [{ translateY }] },
-      ]}
-    />
+      style={[styles.bubble, { left: W * x, top: H * y, width: bw, height: bh + tailSize * 0.5, opacity: alpha }, drift]}
+    >
+      {/* ellipse: a circle squashed vertically (percentage radii aren't elliptical everywhere) */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: (bh - bw) / 2,
+          width: bw,
+          height: bw,
+          borderRadius: bw / 2,
+          backgroundColor: color,
+          transform: [{ scaleY: bh / bw }],
+        }}
+      />
+      {/* tail: a rotated rounded square tucked under the ellipse's lower edge */}
+      <View
+        style={{
+          position: 'absolute',
+          top: bh - tailSize * 0.85,
+          [tail === 'left' ? 'left' : 'right']: bw * 0.2,
+          width: tailSize,
+          height: tailSize,
+          borderRadius: tailSize * 0.18,
+          backgroundColor: color,
+          transform: [{ rotate: tail === 'left' ? '30deg' : '-30deg' }, { skewX: tail === 'left' ? '20deg' : '-20deg' }],
+        }}
+      />
+    </Animated.View>
   );
 }
 
-// The beer surface stays level with gravity as the phone tilts. Rather than tracking the sensor
-// 1:1 (which felt twitchy and glassy), we drive the angle through an underdamped spring on the
-// UI thread: the liquid LAGS the phone, sloshes a touch past level, then settles — like a real
-// glass. A slow idle sway keeps it looking wet even when the phone is dead level. Capped so it
-// never dumps. No sensor (simulator/web) → only the gentle idle sway plays.
-const TILT_CAP = 0.12; // radians (~7°) — deliberately small so it reads as liquid, not a gimbal
-const STIFFNESS = 70; // spring constant: lower = heavier / laggier
-const DAMPING = 9; // < 2·√STIFFNESS (~16.7) → underdamped, so it slosh-overshoots once and settles
-const IDLE_AMP = 0.012; // ~0.7° idle sway amplitude
-function useTiltStyle() {
-  const sensor = useAnimatedSensor(SensorType.ROTATION, { interval: 20 });
-  const cur = useSharedValue(0);
-  const vel = useSharedValue(0);
-  const clock = useSharedValue(0);
-
-  useFrameCallback((frame) => {
-    'worklet';
-    const dt = Math.min((frame.timeSincePreviousFrame ?? 16) / 1000, 0.05);
-    clock.value += dt;
-    const roll = sensor.sensor.value.roll;
-    const level = Math.max(-TILT_CAP, Math.min(TILT_CAP, -roll));
-    // idle sway only fades in when the phone is essentially level, so it never fights a real tilt
-    const idle = Math.abs(level) < 0.015 ? Math.sin(clock.value * 0.9) * IDLE_AMP : 0;
-    const target = level + idle;
-    // spring integration: a = k·(target − x) − c·v
-    const accel = (target - cur.value) * STIFFNESS - vel.value * DAMPING;
-    vel.value += accel * dt;
-    cur.value += vel.value * dt;
-  }, true);
-
-  return useAnimatedStyle(() => ({ transform: [{ rotate: `${cur.value}rad` }] }));
-}
-
-// The cream-soda glass ground, rendered ONCE behind the whole app (see App.tsx) so it never moves
-// when a screen transitions — pages cross-fade over a fixed glass. Static melon-soda base, then a
-// tilt layer (ice-cream layer + carbonation + glass shine) that counter-rotates to gravity.
-export function BeerGround() {
-  const tiltStyle = useTiltStyle();
+// The riso-paper ground, rendered ONCE behind the whole app (see App.tsx) so it never moves when a
+// screen transitions — pages cross-fade over a fixed ground while the bubbles keep drifting.
+export function ChatterGround() {
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {/* static melon-soda base — always covers the screen, so a tilt never exposes a gap */}
-      <LinearGradient
-        colors={[colors.beerTop, colors.beerBot]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      {/* tilt layer: foam + bubbles + shine stay level with gravity as the phone rolls */}
-      <ReAnimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, tiltStyle]}>
-        {/* carbonation rising from the base */}
-        <View style={StyleSheet.absoluteFill}>
-          {BUBBLES.map((b, i) => (
-            <Bubble key={i} {...b} />
-          ))}
-        </View>
-        {/* ice cream — oversized (starts above/beyond the edges) so tilt keeps the top covered */}
-        <View style={styles.foam}>
-          <View style={styles.foamSolid} />
-          <View style={styles.scoopRow}>
-            {Array.from({ length: SCOOPS }, (_, i) => (
-              <View key={i} style={[styles.scoop, { left: i * SCOOP_STEP }]} />
-            ))}
-          </View>
-        </View>
-        {/* diagonal glass shine */}
-        <LinearGradient
-          colors={['transparent', 'rgba(255,255,255,0.12)', 'transparent']}
-          locations={[0.34, 0.42, 0.52]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </ReAnimated.View>
+    <View style={[StyleSheet.absoluteFill, styles.ground]} pointerEvents="none">
+      {BUBBLES.map((b, i) => (
+        <SpeechBubble key={i} {...b} />
+      ))}
     </View>
   );
 }
 
-// Per-screen wrapper. Transparent — it sits on top of the persistent BeerGround so navigating
-// only cross-fades the content, never the glass.
+// Per-screen wrapper. Transparent — it sits on top of the persistent ChatterGround so navigating
+// only cross-fades the content, never the ground.
 export function Screen({
   children,
   edges = ['top', 'bottom'],
@@ -170,27 +125,6 @@ export function Screen({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: 'transparent' },
-  bubble: {
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-  },
-  // Foam head doubles as the app's top "header" band: the cream must fully contain each screen's
-  // title + subtitle (home logotype, game titles) before it fades into the beer. Oversized negative
-  // insets keep the top covered under the counter-rotating tilt; FOAM_TOP anchors it above the edge.
-  // Solid cream reaches the 30% line (bottom = FOAM_TOP + FOAM_SOLID_H) then fades over FOAM_FADE_H,
-  // so the logotype + subtitle sit on foam even with a device status-bar inset. The 3:7 foam:beer
-  // ratio is set by the FOAM_* constants at the top of the file, not here.
-  foam: { position: 'absolute', top: FOAM_TOP, left: -60, right: -60, height: FOAM_BAND_H },
-  foamSolid: { height: FOAM_SOLID_H, backgroundColor: colors.foam },
-  foamFade: { height: FOAM_FADE_H },
-  scoopRow: { position: 'absolute', top: FOAM_SOLID_H - SCOOP_D / 2, left: 0, right: 0, height: SCOOP_D },
-  scoop: {
-    position: 'absolute',
-    top: 0,
-    width: SCOOP_D,
-    height: SCOOP_D,
-    borderRadius: SCOOP_D / 2,
-    backgroundColor: colors.foam,
-  },
+  ground: { backgroundColor: colors.bg, overflow: 'hidden' },
+  bubble: { position: 'absolute', mixBlendMode: 'multiply' },
 });

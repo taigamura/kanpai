@@ -116,7 +116,7 @@ export function Button(
   const { title, kind = 'primary', icon, onPress, style, disabled, ...rest } = props;
   const bg =
     kind === 'primary' ? colors.primary : kind === 'accent' ? colors.accent : 'transparent';
-  // Colored buttons (red/caramel) carry cream type; the ghost button is ink on the beer.
+  // Colored buttons (red/caramel) carry cream type; the ghost button is ink on the paper.
   const fg = kind === 'ghost' ? colors.text : colors.cream;
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -153,7 +153,7 @@ export function Button(
 }
 
 // RuleCard — the "labeled tab" style (chosen from the 10-option board) for the short rules shown
-// before a game starts: a cream card lifted off the beer, with a caramel pill tab straddling the top
+// before a game starts: a light card lifted off the paper, with a caramel pill tab straddling the top
 // edge that names the box (default 「ルール」, e.g.「はじめる前に」for KingsCup). Geometry mirrors
 // docs/rulecard-mockups.html #04. The tab pokes 13px above the card, so `marginTop` reserves room.
 export function RuleCard({
@@ -198,10 +198,11 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 18,
     gap: spacing.sm,
-    shadowColor: '#000',
-    shadowOpacity: 0.16,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 8 },
+    // misregistered riso offset (hard yellow shadow) instead of a soft drop shadow
+    shadowColor: colors.yellow,
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 4, height: 4 },
     elevation: 4,
   },
   ruleTabWrap: {

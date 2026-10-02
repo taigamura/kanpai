@@ -51,7 +51,7 @@ export function HomeScreen() {
     <Screen edges={['top']}>
       <Animated.View entering={FadeIn.duration(500)} style={styles.header}>
         <View>
-          <T display size={font.title}>
+          <T display size={font.title} style={styles.logo}>
             {copy.brand.name}
           </T>
           <T dim size={font.small} style={styles.headerSub}>
@@ -184,6 +184,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: spacing.lg,
   },
+  // Riso logotype: blue ink with a misregistered yellow offset (matches LoadingScreen).
+  logo: {
+    color: colors.blue,
+    textShadowColor: colors.yellow,
+    textShadowOffset: { width: 3, height: 2 },
+    textShadowRadius: 0,
+  },
   headerSub: { marginTop: spacing.xs },
   grid: { padding: spacing.md, gap: spacing.md },
   tile: {
@@ -197,6 +204,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    // misregistered riso offset: a hard yellow shadow, no blur
+    shadowColor: colors.yellow,
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 3, height: 3 },
   },
   tileMain: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   tileText: { flex: 1 },

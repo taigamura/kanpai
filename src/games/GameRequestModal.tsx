@@ -9,7 +9,7 @@ import { submitGameRequest } from '@/services/requests';
 import { copy } from '@/content/copy';
 
 // "Add more games" suggestion box, opened from the home screen. Free-text: the player types the
-// game they wish カンパイ！ had; it's sent to the backend (best-effort) and logged for the
+// game they wish ワイワイ！ had; it's sent to the backend (best-effort) and logged for the
 // developer. On send we thank the user immediately — it's a suggestion box, not a transaction.
 export function GameRequestModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const [text, setText] = useState('');

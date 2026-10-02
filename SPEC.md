@@ -17,9 +17,11 @@ made deliberately; the "Why" lines exist so future-me doesn't relitigate them.
 > encourage users to drink"). The app is now a **general party-game collection with NO drinking**:
 > no 飲む mechanic anywhere (キングスカップ → **キングカード**: each K adds a 「キングの罰」, the 4th-K
 > drawer does them all), no age gate / alcohol EULA, no alcohol お題, rating re-answered (no 17+).
-> Visual identity moved from the lager glass to a **メロンクリームソーダ** glass (green soda + vanilla
-> ice-cream scoop band, cherry-red accent) with a new icon. Original games (意思疎通 / 英語禁止 /
-> 匿名アンケート) lead the home list and the store listing. Listing: **カンパイ！パーティーゲーム集**,
+> **Renamed カンパイ！ → ワイワイ！** (listing: ワイワイ！パーティーゲーム集), since カンパイ = "cheers". Visual identity:
+> **risograph speech bubbles** (pink paper, blue + yellow bubbles drifting slowly behind every screen,
+> navy ink, misregistered yellow offsets) with a new two-bubble 「!?」 icon. (A cream-soda pass came
+> first and was dropped as still too drink-like.) Original games (意思疎通 / 英語禁止 /
+> 匿名アンケート) lead the home list and the store listing. Listing: **ワイワイ！パーティーゲーム集**,
 > no 飲み会/宅飲み anywhere in metadata. Shared お題 gained Guideline-1.2 moderation (NG filter,
 > report, author block, posting rules). The "drinking-bundle pond" thesis in §1 is retired; the
 > wedge is now breadth + original conversation games + honest 買い切り pricing. Details:
@@ -143,7 +145,7 @@ content-heavy, moderation-prone anchor) is deferred to v2.
 ## 9. Language / branding
 
 - **Japanese only.** No i18n framework (matches the JP-native wedge).
-- **Name:** カンパイ！  **Subtitle:** スマホ1台、みんなで盛り上がる (listing: カンパイ！パーティーゲーム集; was 飲み会・宅飲み… until the 2026-10-02 reframe)
+- **Name:** カンパイ！  **Subtitle:** スマホ1台、みんなで盛り上がる (listing: ワイワイ！パーティーゲーム集; app renamed from カンパイ！ and was 飲み会・宅飲み… until the 2026-10-02 reframe)
   - ✅ Name verified on JP App Store (2026-08-26): **no drinking-game named カンパイ exists.**
     Only near-match is "カンパイ! - 飲酒量記録" (a tiny 2-rating Health & Fitness drink-*tracker*,
     different genre); the rest are 乾杯-kanji water-reminder / wedding-speech / shop apps.

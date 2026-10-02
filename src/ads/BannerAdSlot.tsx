@@ -3,8 +3,8 @@
 // float over the UI. Guarded exactly like interstitials: absent native module / web / tests
 // no-op, owners (adsRemoved) see nothing, and a no-fill collapses the bar so no empty gap shows.
 //
-// Sizing: fixed 320×50 standard banner, centered, on a foam-cream bar with an ink hairline so it
-// reads as part of the lager theme rather than a white slab.
+// Sizing: fixed 320×50 standard banner, centered, on a light-paper bar with an ink hairline so it
+// reads as part of the riso theme rather than a white slab.
 import React, { useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +20,7 @@ try {
 }
 
 // Real AdMob BANNER unit id (create one in AdMob under the same app as the interstitial:
-// AdMob → Apps → カンパイ！ → Ad units → Add → Banner). EMPTY until you paste it here — release
+// AdMob → Apps → ワイワイ！ → Ad units → Add → Banner). EMPTY until you paste it here — release
 // then renders NO banner rather than shipping a TEST id to production (an AdMob policy violation).
 // Dev builds always use Google's TEST banner id, so the placement is visible while developing.
 const REAL_BANNER: Record<string, string> = {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   bar: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.foam,
+    backgroundColor: colors.bgElevated,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.line,
   },
