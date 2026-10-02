@@ -10,6 +10,11 @@ in this file that mentions 17+, the age gate, the lager theme, or キングス�
 historical.
 
 ## 4.3(b) reframe (2026-10-02)
+- **Resubmission build:** commit `5455755` (PR #14), ipa `build-1790947989885.ipa`, EAS submission
+  `f265d30b-6ac9-4980-89e0-81a2ee7990ca` → **build 17**, processed VALID and **attached to version 1.0
+  via the ASC API**. Listing name/subtitle/keywords/description/promo text, review notes, age rating
+  (alcohol None, UGC yes → ASC shows 4+), and the 6 screenshots (APP_IPHONE_65 set, 6.7″ files) were
+  all pushed via the ASC API. **Not yet done (UI-only):** Resolution Center reply + "Submit for Review".
 - **No drinking anywhere.** キングスカップ → **キングカード** (K = add a 「キングの罰」; the 4th-K drawer
   does them all; A = 「せーの」 pose game). Alcohol お題 replaced (山手線: お菓子の名前, ファミレスの
   メニュー; アンケート: ゲームに強そう; 意思疎通: 大人っぽい食べ物). Tagline: みんなで遊べるパーティーゲーム集.
