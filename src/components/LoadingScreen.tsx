@@ -1,53 +1,47 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  withDelay,
+  withSpring,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '@/theme/theme';
-import { BeerGround } from './Screen';
+import { ChatterGround } from './Screen';
 import { copy } from '@/content/copy';
 
-const { height: H } = Dimensions.get('window');
-
-// Boot screen: the glass fills. We render the REAL home glass (BeerGround) underneath and drain
-// a cream foam cover upward off the top, so the beer + foam head + carbonation revealed at the
-// end are exactly what the home screen shows — the pour resolves seamlessly into home instead of
-// cutting to a different-looking glass.
+// Boot screen: the REAL home ground (ChatterGround) with the ワイワイ！ logotype popping in like a
+// shout, then the tagline fading up. Because the ground is the same one home renders, boot resolves
+// into home in place with no background cut.
 //
 // `showLogo` is false only during the very first frames before the app fonts finish loading, so
-// the カンパイ！ logotype never renders in a fallback system face that doesn't match the app.
+// the logotype never renders in a fallback system face that doesn't match the app.
 export function LoadingScreen({ showLogo = true }: { showLogo?: boolean }) {
-  const fill = useSharedValue(0);
+  const pop = useSharedValue(0);
+  const sub = useSharedValue(0);
   useEffect(() => {
-    fill.value = withTiming(1, { duration: 1700, easing: Easing.bezier(0.4, 0.15, 0.2, 1) });
-  }, [fill]);
+    if (!showLogo) return;
+    pop.value = withSpring(1, { damping: 9, stiffness: 140 });
+    sub.value = withDelay(350, withTiming(1, { duration: 500 }));
+  }, [showLogo, pop, sub]);
 
-  // The cream cover shrinks from full height to 0; its bottom edge is the rising beer surface.
-  const coverStyle = useAnimatedStyle(() => ({ height: (1 - fill.value) * H }));
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: Math.min(1, pop.value * 1.5),
+    transform: [{ scale: 0.6 + 0.4 * pop.value }, { rotate: `${(1 - pop.value) * -6}deg` }],
+  }));
+  const subStyle = useAnimatedStyle(() => ({
+    opacity: sub.value,
+    transform: [{ translateY: (1 - sub.value) * 8 }],
+  }));
 
   return (
     <View style={styles.root}>
-      {/* the actual home glass — this is the end state of the pour */}
-      <BeerGround />
-
-      {/* cream foam cover, receding upward to reveal the beer rising from the bottom */}
-      <Animated.View style={[styles.cover, coverStyle]}>
-        <LinearGradient
-          colors={['#FFFEF9', '#FFF8E6', '#FBEFD2']}
-          style={StyleSheet.absoluteFill}
-        />
-        {/* foam line riding the surface at the cover's bottom edge */}
-        <View style={styles.surface} />
-      </Animated.View>
-
+      <ChatterGround />
       {showLogo && (
         <View style={styles.center} pointerEvents="none">
-          <Animated.Text style={styles.logo}>{copy.brand.name}</Animated.Text>
-          <Animated.Text style={styles.sub}>{copy.brand.tagline}</Animated.Text>
+          <Animated.Text style={[styles.logo, logoStyle]}>{copy.brand.name}</Animated.Text>
+          <Animated.Text style={[styles.sub, subStyle]}>{copy.brand.tagline}</Animated.Text>
         </View>
       )}
     </View>
@@ -56,17 +50,6 @@ export function LoadingScreen({ showLogo = true }: { showLogo?: boolean }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg, overflow: 'hidden' },
-  cover: { position: 'absolute', top: 0, left: 0, right: 0, overflow: 'hidden' },
-  // Foam line riding the surface: anchored just past the cover's bottom edge so only a thin band
-  // shows (and it clips away cleanly as the cover drains to zero at the end of the pour).
-  surface: {
-    position: 'absolute',
-    bottom: -6,
-    left: -20,
-    right: -20,
-    height: 12,
-    backgroundColor: colors.foam,
-  },
   center: {
     position: 'absolute',
     top: 0,
@@ -77,7 +60,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  // Single ink logotype — the boot ！ and the home ！ read identically (no red flash on load).
-  logo: { fontFamily: fonts.display, fontSize: 40, color: colors.text },
+  // Same riso treatment as the home logotype: blue ink with a misregistered yellow offset.
+  logo: {
+    fontFamily: fonts.display,
+    fontSize: 44,
+    color: colors.blue,
+    textShadowColor: colors.yellow,
+    textShadowOffset: { width: 3, height: 2 },
+    textShadowRadius: 0,
+  },
   sub: { fontFamily: fonts.body, fontSize: 11, letterSpacing: 2, color: colors.textDim },
 });

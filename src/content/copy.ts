@@ -1,4 +1,4 @@
-// Single source of truth for every user-facing UI string in カンパイ！.
+// Single source of truth for every user-facing UI string in ワイワイ！.
 //
 // The actual text lives in `content/copy.json` at the repo root — edit that file and the change
 // is mirrored everywhere the string is used (reload / Fast Refresh picks it up; a production build

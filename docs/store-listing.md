@@ -1,6 +1,6 @@
-# カンパイ！ — App Store Connect listing copy (v1.0.0 resubmission, JP / ja)
+# ワイワイ！ (formerly カンパイ！) — App Store Connect listing copy (v1.0.0 resubmission, JP / ja)
 
-_Last updated 2026-10-02 (4.3(b) reframe: party-game app, no drinking). Paste these into App Store
+_Last updated 2026-10-02 (4.3(b) reframe: party-game app, no drinking; renamed カンパイ！ → ワイワイ！). Paste these into App Store
 Connect → your app → the Japanese (ja) localization. All copy is Japanese-only (SPEC §9) and
 contains no em dashes (public-facing). **Do not use 飲み会 / 宅飲み / 飲み / お酒 / 乾杯 (as drinking)
 anywhere in the listing, keywords included.** Screenshots: `store-assets/appstore_6.9` and
@@ -13,7 +13,7 @@ Bundle id `app.kanpai.mvp` · ASC Apple ID `6805814337` · min iOS 16.4 · Suppo
 
 ## App Name (最大30文字)
 ```
-カンパイ！パーティーゲーム集
+ワイワイ！パーティーゲーム集
 ```
 
 ## Subtitle / サブタイトル (最大30文字)
@@ -34,7 +34,7 @@ _Excludes trademarked game names (カタカナーシ / ito など) and all drink
 
 ## Description / 概要 (最大4000文字)
 ```
-カンパイ！は、スマホ1台をみんなで回して遊べる、日本語のパーティーゲーム集です。友だちとの集まり、家族のだんらん、旅行の夜、イベントの余興に。アプリを開いてすぐスタートでき、通信もログインも不要です。
+ワイワイ！は、スマホ1台をみんなで回して遊べる、日本語のパーティーゲーム集です。友だちとの集まり、家族のだんらん、旅行の夜、イベントの余興に。アプリを開いてすぐスタートでき、通信もログインも不要です。
 
 ■ オリジナルの会話ゲーム
 ・意思疎通：こっそり配られた1〜100の数字を、お題に沿った言葉で表現。みんなで相談して小さい順に並べ、ぴったり並べば全員成功
@@ -60,7 +60,7 @@ _Excludes trademarked game names (カタカナーシ / ito など) and all drink
 
 ## What's New / このバージョンの新機能 (v1.0.0)
 ```
-カンパイ！を公開しました。スマホ1台で遊べるパーティーゲームを全8種収録しています。
+ワイワイ！を公開しました。スマホ1台で遊べるパーティーゲームを全8種収録しています。
 
 ・オリジナルの会話ゲーム「意思疎通」「英語禁止」「匿名アンケート」
 ・定番の山手線ゲーム、キングカード、ハイ＆ロー、ロシアンルーレット、チンチロ
@@ -112,8 +112,9 @@ drinking, and we have reworked the app's concept rather than its wording:
    rule is replaced with a dare stack (renamed キングカード), and alcohol-themed prompts are gone.
 2. The 20+ age gate and alcohol disclaimers are removed, and the age rating questionnaire is
    re-answered with no alcohol references.
-3. The visual identity changed from a beer glass to a non-alcoholic melon cream soda, with a new
-   app icon, name (カンパイ！パーティーゲーム集), subtitle, description, and screenshots.
+3. The app is renamed from カンパイ ("cheers") to ワイワイ！パーティーゲーム集 (the sound of a lively group
+   talking), and the beer-glass visual identity is replaced by a risograph speech-bubble design, with
+   a new app icon, subtitle, description, and screenshots.
 4. The app now leads with its original conversation games (意思疎通: describe a secret number in
    words and line up in order; 英語禁止: describe loanwords using Japanese only; 匿名アンケート:
    anonymous pass-the-phone voting) and a community topic pool for 山手線ゲーム, where users add

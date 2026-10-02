@@ -1,7 +1,7 @@
 {
-  "_readme": "カンパイ！ — all in-app UI text lives here. Edit a value and it is mirrored everywhere that string is shown (reload the app / Fast Refresh picks it up). Placeholders like {n}, {name}, {names}, {i}, {total}, {title} are filled in at runtime — keep them intact. Game CONTENT lists (山手線 themes, アンケート questions, roster, penalties) live in src/data/*.ts, not here. Do not translate card glyphs (A/J/Q/K, ♠♥♦♣) or math symbols (＋ − ✕).",
+  "_readme": "ワイワイ！ (formerly カンパイ！) — all in-app UI text lives here. Edit a value and it is mirrored everywhere that string is shown (reload the app / Fast Refresh picks it up). Placeholders like {n}, {name}, {names}, {i}, {total}, {title} are filled in at runtime — keep them intact. Game CONTENT lists (山手線 themes, アンケート questions, roster, penalties) live in src/data/*.ts, not here. Do not translate card glyphs (A/J/Q/K, ♠♥♦♣) or math symbols (＋ − ✕).",
   "brand": {
-    "name": "カンパイ！",
+    "name": "ワイワイ！",
     "tagline": "みんなで遊べるパーティーゲーム集"
   },
   "common": {

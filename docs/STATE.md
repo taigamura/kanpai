@@ -21,10 +21,17 @@ historical.
 - **Age gate removed** (`AgeGateScreen` deleted, `ageAccepted` gone from AppState/storage; banner now
   shows as soon as boot ends). Terms page (`docs/terms.html`) rewritten: no alcohol, 罰ゲーム safety,
   UGC rules + 24h report handling.
-- **Theme: メロンクリームソーダ** (`src/theme/theme.ts`): green soda gradient, vanilla ice-cream band
-  with a scalloped scoop edge (`src/components/Screen.tsx`), cherry-red primary, bottle-green accent.
-  Token names `beerTop/beerBot/foam` kept to avoid churn. New icon: `assets/icon.svg` →
-  `node scripts/generate-icon.mjs` (now renders from the SVG). Splash bg `#FFF8E6`.
+- **Renamed カンパイ！ → ワイワイ！** (display name in app.json + copy.brand.name; listing
+  「ワイワイ！パーティーゲーム集」; terms page). Bundle id stays `app.kanpai.mvp`, repo/EAS slug stay `kanpai`.
+- **Theme: risograph speech bubbles** (`src/theme/theme.ts`): pink paper `#FFE3E8`, riso blue
+  `#2E5BD8` + yellow `#FFD23F`, navy ink, fluorescent-pink primary. `ChatterGround`
+  (`src/components/Screen.tsx`) replaces the glass: 4 big speech bubbles (View ellipse + tail,
+  multiply blend, group opacity) each drifting a few dozen pt on a 27–40s eased loop (Reduce Motion
+  freezes them). No tilt sensor anymore. Home tiles + RuleCard get a hard yellow offset shadow
+  ("misregistration"); logotype is blue with a yellow offset. Boot = logo pop-in over the same
+  ground (`LoadingScreen.tsx`). Icon: two overlapping riso bubbles with 「!?」 (`assets/icon.svg`;
+  overlap drawn manually since librsvg ignores mix-blend-mode). Splash bg `#FFE3E8`.
+  (A melon cream-soda theme shipped in build 17 first; it was dropped as still too drink-like.)
 - **Home order** leads with the original games: 意思疎通, 英語禁止, 匿名アンケート, then 山手線,
   キングカード, ハイ&ロー, ロシアンルーレット, チンチロ (`src/data/games.ts`).
 - **UGC moderation (Guideline 1.2)** on shared お題: posting rules accepted before first share
@@ -37,7 +44,7 @@ historical.
 - **Supabase free tier pauses after inactivity** — it was paused on 2026-10-02 (DNS didn't even
   resolve) and the user resumed it. A paused project = empty community list in the app, and no
   moderation UI for a reviewer to see. Keep it awake around review time.
-- **Store assets:** new 6 panels × 6.9″/6.7″ in `store-assets/appstore_*` (cream-soda canvas;
+- **Store assets:** new 6 panels × 6.9″/6.7″ in `store-assets/appstore_*` (riso pink canvas;
   captured from dev-web at 440×956@3x with seeded players + mocked community お題). The Instagram
   set in `store-assets/instagram` is still the OLD beer-themed art (not regenerated).
 - **ASC (manual):** paste name/subtitle/keywords/description/review notes from

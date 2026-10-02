@@ -21,7 +21,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: unknown, info: unknown) {
     // Console only for now; wire a remote reporter (Sentry/Crashlytics) here at ship time.
-    console.error('[カンパイ] uncaught error', error, info);
+    console.error('[ワイワイ] uncaught error', error, info);
   }
 
   reset = () => this.setState({ hasError: false });

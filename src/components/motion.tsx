@@ -24,7 +24,7 @@ export const PopIn = new Keyframe({
   100: { opacity: 1, transform: [{ scale: 1 }], easing: Easing.out(Easing.quad) },
 }).duration(200);
 
-// Shared motion primitives for カンパイ！. All spring/timing values live here so the whole
+// Shared motion primitives for ワイワイ！. All spring/timing values live here so the whole
 // app moves with one consistent feel: quick, springy, a little playful (party energy),
 // never sluggish. Built on Reanimated 4 (worklets plugin + New Arch already wired).
 

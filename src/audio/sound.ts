@@ -1,4 +1,4 @@
-// Sound layer for カンパイ！. Guarded exactly like ads/iap: if the native `expo-audio`
+// Sound layer for ワイワイ！. Guarded exactly like ads/iap: if the native `expo-audio`
 // module is absent (Expo Go, web, unit tests) every call is a safe no-op, so screens can call
 // these freely without feature-detecting themselves.
 //

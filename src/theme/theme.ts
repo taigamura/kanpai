@@ -1,35 +1,33 @@
-// カンパイ！ theme — メロンクリームソーダ palette (2026-10-02, replaces the 2026-08-28 lager glass).
-// The whole app reads as the inside of a melon cream-soda glass: a vanilla ice-cream layer across
-// the top, fizzy melon-green soda below, rising carbonation, deep bottle-green ink type, and a
-// cherry-red accent. Non-alcoholic by design (App Review 4.3(b) reframe — see docs/STATE.md).
-// Token names (beerTop/beerBot/foam) are kept so call sites don't churn: "foam" is the ice cream.
+// ワイワイ！ theme — risograph paper (2026-10-02; replaces the lager glass, then the cream soda).
+// The app reads as a two-ink riso print: pink paper ground, big speech bubbles in riso blue and
+// sunshine yellow drifting slowly behind everything (src/components/Screen.tsx → ChatterGround),
+// deep navy ink type, and white cards with a misregistered yellow offset.
 export const colors = {
-  bg: '#3DBE6C',        // melon soda (base ground)
-  bgElevated: '#FFFAEE', // opaque vanilla surface (modals, inputs, chips)
-  card: 'rgba(255,255,255,0.20)', // frosted-glass panel floating on the soda
-  cardRaised: '#FFFDF6', // playing-card face (vanilla white)
-  cardBack: '#0E4D2C',   // playing-card back (deep bottle green)
+  bg: '#FFE3E8',        // pink riso paper (base ground)
+  bgElevated: '#FFF6F8', // opaque light-paper surface (modals, inputs, chips, banner bar)
+  card: '#FFFFFF',       // white card on the paper
+  cardRaised: '#FFFFFF', // playing-card face
+  cardBack: '#2E5BD8',   // playing-card back (riso blue)
 
-  beerTop: '#9BE78F',   // soda gradient — top (lighter, near the ice cream)
-  beerBot: '#3DBE6C',   // soda gradient — bottom
-  foam: '#FFF8E6',      // vanilla ice-cream layer
+  blue: '#2E5BD8',      // riso ink 1 — speech bubbles, logo
+  yellow: '#FFD23F',    // riso ink 2 — speech bubbles, misregistered offsets
 
-  primary: '#F2404F',   // チェリー red — the ！ and primary buttons
-  primaryDark: '#C92A3A',
-  accent: '#0F6A3A',    // deep bottle green — labels, pills, accent buttons on the light ground
-  accentBright: '#A8EE8F', // bright melon — only on dark surfaces (card-back crown)
+  primary: '#F0436A',   // fluorescent riso pink — primary buttons
+  primaryDark: '#C92D52',
+  accent: '#2E5BD8',    // riso blue — labels, pills, accent buttons on the paper
+  accentBright: '#FFD23F', // yellow — only on dark/blue surfaces (card-back crown, trophy)
 
-  text: '#0B3320',      // deep green ink (primary type)
-  textDim: '#1F4D33',   // dim ink
-  cream: '#FFFAEE',     // light foreground on colored buttons (red / green)
+  text: '#18203D',      // navy ink (primary type)
+  textDim: '#4B5275',   // dim ink
+  cream: '#FFFFFF',     // light foreground on colored buttons
 
-  danger: '#D7263D',    // loser / hearts red
-  success: '#0B5E3A',   // confirmations
-  overlay: 'rgba(0,0,0,0.5)',
-  line: 'rgba(11,51,32,0.16)',          // ink hairline on panels / cards
-  accentLine: 'rgba(15,106,58,0.45)',   // green pill / badge outline
-  glowRed: 'rgba(242,64,79,0.10)',      // retained token (unused by the soda-glass ground)
-  glowGold: 'rgba(168,238,143,0.16)',
+  danger: '#E0314F',    // loser / hearts red
+  success: '#1F8A5B',   // confirmations
+  overlay: 'rgba(24,32,61,0.5)',
+  line: 'rgba(24,32,61,0.14)',          // ink hairline on panels / cards
+  accentLine: 'rgba(46,91,216,0.45)',   // blue pill / badge outline
+  glowRed: 'rgba(240,67,106,0.10)',     // retained token (unused)
+  glowGold: 'rgba(255,210,63,0.16)',
 };
 
 export const spacing = {

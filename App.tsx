@@ -22,7 +22,7 @@ import { RosterScreen } from '@/screens/RosterScreen';
 import { PlayersScreen } from '@/screens/PlayersScreen';
 import { GameHost } from '@/games/GameHost';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { BeerGround } from '@/components/Screen';
+import { ChatterGround } from '@/components/Screen';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { StudioOverlay } from '@/studio/StudioOverlay';
 import { initAds } from '@/ads/ads';
@@ -85,8 +85,8 @@ function Router() {
     }
   })();
 
-  // The beer glass (BeerGround) is fixed behind every screen, so navigating only cross-fades the
-  // content — pages feel like they resolve in place on the same glass, no sliding background.
+  // The riso ground (ChatterGround) is fixed behind every screen, so navigating only cross-fades the
+  // content — pages feel like they resolve in place on the same paper, no sliding background.
   const key = route.name + ('id' in route ? route.id : 'next' in route ? route.next : '');
   return (
     <GestureDetector gesture={swipeBack}>
@@ -134,7 +134,7 @@ function AppBody() {
     ZenKakuGothicNew_700Bold,
     ZenKakuGothicNew_900Black,
   });
-  // Hold the pour for at least its full run so the boot animation is always seen, even when
+  // Hold the boot logo for at least its full run so the boot animation is always seen, even when
   // fonts resolve instantly from the bundle.
   const [minSplash, setMinSplash] = useState(false);
   useEffect(() => {
@@ -143,21 +143,21 @@ function AppBody() {
   }, []);
 
   // Mount the full provider tree from the FIRST frame — not after the splash gate — so AppState's
-  // AsyncStorage hydration runs *during* the pour, and a single BeerGround + single LoadingScreen
-  // span the whole boot. The Gate (below, inside the providers) is what holds the pour; it waits on
+  // AsyncStorage hydration runs *during* the boot logo, and a single ChatterGround + single LoadingScreen
+  // span the whole boot. The Gate (below, inside the providers) is what holds the boot; it waits on
   // fonts + the min-splash timer + hydration together, then drains straight into Home over the
-  // already-mounted glass. This removes the old loading→home flash, which came from a second
-  // LoadingScreen (pour reset to 0) and a BeerGround remount at the splash→app handoff.
+  // already-mounted ground. This removes the old loading→home flash, which came from a second
+  // LoadingScreen (animation reset to 0) and a ChatterGround remount at the splash→app handoff.
   const splashHeld = !fontsLoaded || !minSplash;
   return (
-    // Amber root as the ultimate fallback ground behind the fixed beer glass.
+    // Paper-pink root as the ultimate fallback behind the fixed ground.
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <AppStateProvider>
           <NavProvider>
             <StatusBar style="dark" />
-            {/* the lager glass, rendered once and fixed — every screen cross-fades over it */}
-            <BeerGround />
+            {/* the riso-paper ground, rendered once and fixed — every screen cross-fades over it */}
+            <ChatterGround />
             <ErrorBoundary>
               <Shell splashHeld={splashHeld} showLogo={fontsLoaded} />
             </ErrorBoundary>
@@ -174,10 +174,10 @@ function AppBody() {
 // own height UNDER the content (it never floats over the UI or hides a button). Lives INSIDE the
 // provider tree so it can wait on AppState hydration (`ready`) alongside fonts + the min-splash
 // timer, and read `adsRemoved`. One LoadingScreen instance spans the entire boot and
-// drains into Home in place, over the persistent BeerGround, so there is no reset pour and no glass
+// resolves into Home in place, over the persistent ChatterGround, so there is no reset animation and no ground
 // remount between loading and home. `showLogo` is false only in the first frames before app fonts
 // resolve, so the logotype never renders in a fallback system face. The banner shows only once the
-// user is past boot — never over the pour.
+// user is past boot — never over the boot logo.
 function Shell({ splashHeld, showLogo }: { splashHeld: boolean; showLogo: boolean }) {
   const { ready } = useAppState();
   const booting = splashHeld || !ready;
