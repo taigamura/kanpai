@@ -10,7 +10,13 @@ in this file that mentions 17+, the age gate, the lager theme, or キングス�
 historical.
 
 ## 4.3(b) reframe (2026-10-02)
-- **Resubmission build:** commit `5455755` (PR #14), ipa `build-1790947989885.ipa`, EAS submission
+- **Current resubmission build (ワイワイ！): build 19** — commit `b1d417b` (PR #16), ipa
+  `build-1790956573698.ipa`, EAS submission `97500465-e8db-44f4-9f94-505453853e83`, processed VALID and
+  **attached to version 1.0** (replaces build 17). Build 18 was consumed by a failed attempt
+  (`xcodebuild -showBuildSettings` timed out while another project was building on the Mac; retried with
+  `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120`). ASC name is now 「ワイワイ！パーティーゲーム集」 with the riso
+  screenshots. Still UI-only: Supabase migration, Resolution Center reply, Submit for Review.
+- **Earlier (superseded) build 17:** commit `5455755` (PR #14), ipa `build-1790947989885.ipa`, EAS submission
   `f265d30b-6ac9-4980-89e0-81a2ee7990ca` → **build 17**, processed VALID and **attached to version 1.0
   via the ASC API**. Listing name/subtitle/keywords/description/promo text, review notes, age rating
   (alcohol None, UGC yes → ASC shows 4+), and the 6 screenshots (APP_IPHONE_65 set, 6.7″ files) were
