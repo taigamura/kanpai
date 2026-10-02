@@ -37,7 +37,7 @@ export function LoadingScreen({ showLogo = true }: { showLogo?: boolean }) {
       {/* cream foam cover, receding upward to reveal the beer rising from the bottom */}
       <Animated.View style={[styles.cover, coverStyle]}>
         <LinearGradient
-          colors={['#FFFDF8', '#FBF2DD', '#F6E8CB']}
+          colors={['#FFFEF9', '#FFF8E6', '#FBEFD2']}
           style={StyleSheet.absoluteFill}
         />
         {/* foam line riding the surface at the cover's bottom edge */}

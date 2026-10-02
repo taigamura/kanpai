@@ -9,10 +9,10 @@ import { FlipIn, Pulse } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { copy, fmt } from '@/content/copy';
 
-// キングスカップ: draw from a real 52-card deck (no repeats until reshuffled). Each rank
-// triggers a rule. THE CENTER CUP: a Kが出るたび、引いた人は自分の飲みものを中央のコップに
-// 少し注ぐ。4枚目（最後）のKを引いた人が、その中央のコップを飲みほす。
-// Because it needs a physical center cup, the game opens with a one-page setup check.
+// キングカード: draw from a real 52-card deck (no repeats until reshuffled). Each rank
+// triggers a rule. THE KING'S STACK: Kが出るたび、引いた人が「キングの罰」を1つ考えて発表する。
+// 4枚目（最後）のKを引いた人が、たまったキングの罰を全部やる。
+// The K rule is the one thing to know up front, so the game opens with a one-page rule check.
 
 // Rank → rule text lives in the central copy document (content/copy.json).
 const RULES = copy.kingscup.rules;
@@ -46,10 +46,10 @@ export function KingsCupGame() {
   const rule = rank ? ruleFor(rank) : null;
   const isKing = rank === 13;
   const isFourthKing = isKing && kings === 4;
-  // Three Kings are out → exactly one is still in the deck. Whoever draws it drinks the cup.
+  // Three Kings are out → exactly one is still in the deck. Whoever draws it does every キングの罰.
   const oneKingLeft = kings === 3;
 
-  // The round ends the moment the 4th K is drawn (that player drinks the center cup).
+  // The round ends the moment the 4th K is drawn (that player does the whole stack).
   const restart = () => {
     setDeck(freshDeck());
     setKings(0);
@@ -72,12 +72,12 @@ export function KingsCupGame() {
     setCard(c);
   };
 
-  // One-page setup check: this game needs a physical center cup.
+  // One-page rule check: the K rule is the only non-obvious one.
   if (!started) {
     return (
       <GameFrame title={copy.kingscup.title}>
         <View style={styles.setup}>
-          <Icon name="beer" size={60} color={colors.accent} />
+          <Icon name="crown" size={60} color={colors.accent} />
           <RuleCard label={copy.kingscup.setupLabel} style={styles.rulesBox}>
             <T style={styles.setupLead}>
               {copy.kingscup.setupLead}
@@ -126,7 +126,7 @@ export function KingsCupGame() {
               <T size={font.heading} black style={{ textAlign: 'center' }}>
                 {copy.kingscup.fourthKingBody}
               </T>
-              <Icon name="beer" size={48} color={colors.accent} />
+              <Icon name="crown" size={48} color={colors.accent} />
             </>
           ) : isKing ? (
             <>

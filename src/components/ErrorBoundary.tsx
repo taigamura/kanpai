@@ -30,7 +30,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (!this.state.hasError) return this.props.children;
     return (
       <View style={styles.root}>
-        <Icon name="beer" size={60} color={colors.accent} />
+        <Icon name="party" size={60} color={colors.accent} />
         <T size={font.heading} black style={styles.title}>
           {copy.errorBoundary.title}
         </T>

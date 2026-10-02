@@ -1,7 +1,7 @@
 // 匿名アンケート（押したの誰だ風）: "誰が一番◯◯?" everyone votes secretly, reveal tally.
 // v1 = clean / fun only, NO 下ネタ (that arrives with 王様ゲーム in v2).
 export const ANKETO_QUESTIONS: string[] = [
-  '誰が一番お酒に強そう？',
+  '誰が一番ゲームに強そう？',
   '誰が一番モテそう？',
   '誰が一番遅刻しそう？',
   '誰が一番お金持ちになりそう？',

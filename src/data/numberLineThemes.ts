@@ -40,7 +40,7 @@ export const NUMBERLINE_THEMES: NumberLineTheme[] = [
   { theme: '眠くなる時間', low: '全然眠くない', high: '爆睡' },
   { theme: 'テンションが下がること', low: '平気', high: 'どん底' },
   { theme: '辛い食べ物', low: '辛くない', high: '激辛' },
-  { theme: '大人っぽい飲み物', low: '子どもっぽい', high: '超大人' },
+  { theme: '大人っぽい食べ物', low: '子どもっぽい', high: '超大人' },
   { theme: '売れてる商品', low: '不人気', high: '大ヒット' },
   { theme: '朝が弱そうな仕事', low: '朝に強い', high: '朝が地獄' },
   { theme: '記念日に行きたい場所', low: '普段づかい', high: '特別な日' },

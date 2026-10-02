@@ -1,4 +1,5 @@
-// v1 game registry. Anchor = 山手線ゲーム. All offline, single-phone, pass-around.
+// v1 game registry. All offline, single-phone, pass-around. Home-list ORDER is deliberate
+// (2026-10-02 4.3(b) reframe): the original conversation games lead, the classics follow.
 import type { IconName } from '@/components/Icon';
 import { copy } from '@/content/copy';
 
@@ -29,6 +30,48 @@ export type GameDef = {
 
 export const GAMES: GameDef[] = [
   {
+    id: 'numberline',
+    title: copy.numberline.title,
+    subtitle: '数字を言葉にして、小さい順に並ぶ',
+    icon: 'game-numberline',
+    needsRoster: true,
+    minPlayers: 3,
+    status: 'playable',
+    rules: [
+      '各自こっそり1〜100の数字が配られます。お題に沿って、その数字の大きさを表す言葉で表現。',
+      '全員で相談して小さい順に並べ、答え合わせ。',
+      '本当の順番から一番ズレていた人が 罰ゲーム。ぴったり並べば全員成功。',
+    ],
+  },
+  {
+    id: 'katakana',
+    title: copy.katakana.title,
+    subtitle: 'カタカナ語をカタカナ・英語ぬきで説明',
+    icon: 'game-katakana',
+    needsRoster: true,
+    minPlayers: 3,
+    status: 'playable',
+    rules: [
+      '出題者だけがカタカナのお題を見て、カタカナ語と英語を使わず日本語だけで説明します。',
+      '制限時間内に誰かが当てたら、出題者と当てた人の両方に得点。',
+      '目標点に最初に到達した人の勝ち。最下位の人が 罰ゲーム。',
+    ],
+  },
+  {
+    id: 'anketo',
+    title: copy.anketo.title,
+    subtitle: '「誰が一番◯◯？」をこっそり投票',
+    icon: 'game-anketo',
+    needsRoster: true,
+    minPlayers: 3,
+    status: 'playable',
+    rules: [
+      'お題にスマホを回して、1人ずつこっそり投票します。',
+      '全員の投票が終わると集計を発表。',
+      '最多得票の人が 罰ゲーム。',
+    ],
+  },
+  {
     id: 'yamanote',
     title: copy.yamanote.title,
     subtitle: 'お題に沿って順番に答える定番',
@@ -39,6 +82,34 @@ export const GAMES: GameDef[] = [
     rules: [
       'お題を1つ引き、テンポよく順番に答えていきます。',
       '詰まる・被る・リズムを外したら負け。',
+      '負けた人は 罰ゲーム。',
+    ],
+  },
+  {
+    id: 'kingscup',
+    title: copy.kingscup.title,
+    subtitle: 'カードごとにルールが発動',
+    icon: 'game-kingscup',
+    needsRoster: false,
+    minPlayers: 2,
+    status: 'playable',
+    rules: [
+      '山札から1枚引き、出た数字のルールに従います。',
+      'K（キング）を引いた人は「キングの罰」を1つ考えて発表します。',
+      '4枚目のKを引いた人が、たまったキングの罰を全部やります。',
+    ],
+  },
+  {
+    id: 'highlow',
+    title: copy.highlow.title,
+    subtitle: '次のカードは上か下か',
+    icon: 'game-highlow',
+    needsRoster: false,
+    minPlayers: 1,
+    status: 'playable',
+    rules: [
+      '表示されたカードより、次が上（ハイ）か下（ロー）かを予想。',
+      '当たれば次の人へ、外れたら負け。',
       '負けた人は 罰ゲーム。',
     ],
   },
@@ -57,20 +128,6 @@ export const GAMES: GameDef[] = [
     ],
   },
   {
-    id: 'highlow',
-    title: copy.highlow.title,
-    subtitle: '次のカードは上か下か',
-    icon: 'game-highlow',
-    needsRoster: false,
-    minPlayers: 1,
-    status: 'playable',
-    rules: [
-      '表示されたカードより、次が上（ハイ）か下（ロー）かを予想。',
-      '当たれば次の人へ、外れたら負け。',
-      '負けた人は 罰ゲーム。',
-    ],
-  },
-  {
     id: 'chinchiro',
     title: copy.chinchiro.title,
     subtitle: 'サイコロ3つで勝負',
@@ -82,62 +139,6 @@ export const GAMES: GameDef[] = [
       '順番に3つのサイコロを振り、出た役で勝負します。',
       'シゴロ（4-5-6）やゾロ目は強い役、ヒフミ（1-2-3）や目なしは弱い役。',
       '一番弱い役の人が 罰ゲーム。',
-    ],
-  },
-  {
-    id: 'kingscup',
-    title: copy.kingscup.title,
-    subtitle: 'カードごとにルールが発動',
-    icon: 'game-kingscup',
-    needsRoster: false,
-    minPlayers: 2,
-    status: 'playable',
-    rules: [
-      '中央に空のコップを1つ用意します。山札から1枚引き、出た数字のルールに従います。',
-      'K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。',
-      '4枚目のKを引いた人が中央のコップを飲みほします。',
-    ],
-  },
-  {
-    id: 'anketo',
-    title: copy.anketo.title,
-    subtitle: '「誰が一番◯◯？」をこっそり投票',
-    icon: 'game-anketo',
-    needsRoster: true,
-    minPlayers: 3,
-    status: 'playable',
-    rules: [
-      'お題にスマホを回して、1人ずつこっそり投票します。',
-      '全員の投票が終わると集計を発表。',
-      '最多得票の人が 罰ゲーム。',
-    ],
-  },
-  {
-    id: 'katakana',
-    title: copy.katakana.title,
-    subtitle: 'カタカナ語をカタカナ・英語ぬきで説明',
-    icon: 'game-katakana',
-    needsRoster: true,
-    minPlayers: 3,
-    status: 'playable',
-    rules: [
-      '出題者だけがカタカナのお題を見て、カタカナ語と英語を使わず日本語だけで説明します。',
-      '制限時間内に誰かが当てたら、出題者と当てた人の両方に得点。',
-      '目標点に最初に到達した人の勝ち。最下位の人が 罰ゲーム。',
-    ],
-  },
-  {
-    id: 'numberline',
-    title: copy.numberline.title,
-    subtitle: '数字を言葉にして、小さい順に並ぶ',
-    icon: 'game-numberline',
-    needsRoster: true,
-    minPlayers: 3,
-    status: 'playable',
-    rules: [
-      '各自こっそり1〜100の数字が配られます。お題に沿って、その数字の大きさを表す言葉で表現。',
-      '全員で相談して小さい順に並べ、答え合わせ。',
-      '本当の順番から一番ズレていた人が 罰ゲーム。ぴったり並べば全員成功。',
     ],
   },
 ];

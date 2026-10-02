@@ -1,8 +1,13 @@
 # カンパイ！ Build Roadmap
 
 > **Taking over a session?** Read **[docs/STATE.md](./STATE.md)** first — it has the current
-> status (live on TestFlight), all ids/config, the ship pipeline, the Xcode-26 build fix, and
-> what's left before public launch.
+> status (**v1.0.0 SUBMITTED FOR REVIEW, 2026-09-01**), all ids/config, the ship pipeline, the
+> Xcode-26 build fix, and what's left (mostly: await review; likely-1.2 UGC risk).
+>
+> **2026-10-02: v1.0 build 16 REJECTED (4.3(b) drinking-game spam).** Reframed to a no-drinking
+> party-game app (cream-soda theme, キングカード, no age gate, UGC moderation) and resubmitted.
+> Historical phases below still describe drinking mechanics (飲む, center cup, age gate); those are
+> GONE as of the reframe. See SPEC.md's reframe note + docs/STATE.md.
 
 
 ## Phase 0 — Scaffold ✅ (this commit)
@@ -41,8 +46,8 @@
 ## Phase 2.5 — Roster expansion ✅ (2026-08-30)
 - ✅ **英語禁止** + **意思疎通** added → 8 games. Both pass-around,
   roster-based point games; loser does 罰ゲーム (shared PenaltyReveal). Its loser algorithm is
-  unit-tested (`src/games/numberLineScore.ts`). RosterScreen now respects per-game `minPlayers`. Built,
-  `tsc`/`jest` green, web bundles clean; NOT yet device-tested on TestFlight.
+  unit-tested (`src/games/numberLineScore.ts`). RosterScreen now respects per-game `minPlayers`.
+  `tsc`/`jest` green; **SHIPPED** in `b1ce033` (#12) and carried into the 2026-09-01 review submission.
 
 ## Phase 3 — Monetization + telemetry
 - ✅ AdMob wired (`react-native-google-mobile-ads`): interstitial only between games
@@ -60,14 +65,11 @@
 - ✅ ¥300 remove-ads IAP wired (`react-native-iap`, src/iap/iap.ts): purchase + restore in
   Settings; entitlement persisted via AppState/AsyncStorage. Dev-only unlock when native
   module absent.
-- ⚠️ NOT yet runtime-verified — needs a dev/EAS build + accounts. Before launch:
-  - iOS ad ids are all real now: app.json `iosAppId`, interstitial unit in src/ads/ads.ts, and the
-    banner unit in src/ads/BannerAdSlot.tsx (`REAL_BANNER.ios`). Only Android units remain unfilled
-    (Android not yet a ship target).
-  - App Store Connect: create NON-CONSUMABLE IAP `app.kanpai.mvp.removeads`, price ¥300;
-    activate Paid Apps agreement; test with a sandbox account.
-  - Verify react-native-iap call signatures against the installed major version.
-  - Confirm AdMob privacy manifest / SKAdNetwork + App Privacy answers.
+- ✅ **ASC monetization set up for the 2026-09-01 submission:** IAP `app.kanpai.mvp.removeads`
+  created @ ¥300 + attached to 1.0.0, Paid Apps agreement active, App Privacy published (AdMob
+  Device ID/Product Interaction tracking + Crash/Performance diagnostics, per `docs/app-privacy.md`).
+  iOS ad ids all real (only Android units unfilled — not a ship target). Still worth a device
+  smoke-test of a real ¥300 buy + restore once the build is out of review.
 - ✅ In-app crash net: src/components/ErrorBoundary.tsx catches render/runtime errors and
   shows a friendly JP recovery screen instead of a blank crash (wired in App.tsx). This is
   NOT a remote reporter — wire Sentry/Crashlytics at the console.error hook at ship time.
@@ -79,7 +81,10 @@
   No longer the generated placeholder. `scripts/generate-icon.mjs` / `npm run icon` are retained
   but unused — the shipped icon is the designed one.
 - ✅ Name verified available (see SPEC §9). Listing title: カンパイ！飲み会・宅飲みパーティーゲーム.
-- App Store: 17+ rating, alcohol reference; JP screenshots; keyword subtitle.
+- ✅ App Store listing submitted (2026-09-01): **17+** rating, **scatter-style JP screenshots**
+  (6.9″/6.7″, real Dela Gothic/Zen fonts) + a 3-panel IG panorama in `store-assets/`, copy from
+  `docs/store-listing.md`. App is now **iPhone-only** (`supportsTablet:false`, `cf68ee7`) so no iPad
+  screenshots are required.
 - ✅ Terms/EULA + privacy policy page authored: docs/terms.html (利用規約・免責事項・
   プライバシーポリシー, incl. AdMob/ATT disclosures). Still MANUAL: host it publicly and
   replace the example.com links in AgeGateScreen + SettingsScreen with the real URL; fill the

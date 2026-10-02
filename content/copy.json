@@ -2,7 +2,7 @@
   "_readme": "カンパイ！ — all in-app UI text lives here. Edit a value and it is mirrored everywhere that string is shown (reload the app / Fast Refresh picks it up). Placeholders like {n}, {name}, {names}, {i}, {total}, {title} are filled in at runtime — keep them intact. Game CONTENT lists (山手線 themes, アンケート questions, roster, penalties) live in src/data/*.ts, not here. Do not translate card glyphs (A/J/Q/K, ♠♥♦♣) or math symbols (＋ − ✕).",
   "brand": {
     "name": "カンパイ！",
-    "tagline": "飲み会・宅飲み・パーティーゲーム集"
+    "tagline": "みんなで遊べるパーティーゲーム集"
   },
   "common": {
     "back": "← 戻る",
@@ -10,12 +10,6 @@
     "add": "追加",
     "again": "もう一回",
     "cross": "✕"
-  },
-  "ageGate": {
-    "question": "あなたは\n20歳以上ですか？",
-    "terms": "本アプリはお酒を伴う遊びを含みます。飲酒は20歳になってから。飲む・飲まないは常に自由で、アプリが飲酒を強制することはありません。飲酒は自己責任・適量を守り、体調とよく相談してください。一気飲みは絶対にやめましょう。本アプリの利用によって生じたいかなる結果についても、開発者は責任を負いません。",
-    "confirm": "はい（20歳以上）",
-    "readTerms": "利用規約を読む"
   },
   "home": {
     "rulesLabel": "遊び方",
@@ -48,7 +42,7 @@
     "buyPriceFallback": "¥300",
     "restore": "購入を復元",
     "legalLink": "利用規約・免責事項",
-    "legalNote": "飲酒は20歳から・自己責任・適量を。一気飲みはやめましょう。",
+    "legalNote": "お問い合わせ・不適切なお題の通報：taigamura.dev@gmail.com",
     "alertCannotBuyTitle": "購入できません",
     "alertCannotBuyBody": "この端末では購入を利用できません。",
     "alertUnavailableTitle": "現在購入できません",
@@ -152,16 +146,16 @@
     "roleMenashi": "目なし（ションベン）"
   },
   "kingscup": {
-    "title": "キングスカップ",
+    "title": "キングカード",
     "setupLabel": "はじめる前に",
-    "setupLead": "中央に空のコップを1つ用意してください。",
-    "setupRule1": "・K（キング）を引いた人は、自分の飲みものを中央のコップに少し注ぎます。",
-    "setupRule2": "・4枚目（最後）のKを引いた人が、その中央のコップを飲みほします。",
-    "setupStart": "コップを用意した・はじめる",
-    "lastKingWarning": "最後のK 残り1枚！引いた人がコップを飲みほす",
+    "setupLead": "カードを1枚ずつ引いて、出た数字のルールに従います。K（キング）だけ特別ルール！",
+    "setupRule1": "・K（キング）を引いた人は「キングの罰」を1つ考えて発表します。",
+    "setupRule2": "・4枚目（最後）のKを引いた人が、それまでのキングの罰を全部やります。",
+    "setupStart": "はじめる",
+    "lastKingWarning": "最後のK 残り1枚！引いた人がキングの罰を全部やる",
     "fourthKingTitle": "最後のK！",
-    "fourthKingBody": "中央のコップはあなたが飲みほします。",
-    "kingBody": "中央のコップに、自分の飲みものを少し注ごう。",
+    "fourthKingBody": "これまでのキングの罰を、あなたが全部やります！",
+    "kingBody": "キングの罰を1つ考えて発表しよう。最後のKを引いた人が全部やる！",
     "drawPrompt": "カードを引いて、出た役のルールに従おう。",
     "remaining": "残り {n} 枚",
     "kingCount": "K {n}/4",
@@ -170,7 +164,7 @@
     "nextCard": "次のカード",
     "drawCard": "カードを引く",
     "rules": {
-      "1": { "name": "A・ウォーターフォール", "rule": "全員で飲み始め、右隣が止めるまで" },
+      "1": { "name": "A・せーの", "rule": "「せーの」で全員が同じポーズ。遅れた人が 罰ゲーム" },
       "2": { "name": "2・You", "rule": "誰か1人を指名。その人が 罰ゲーム" },
       "3": { "name": "3・Me", "rule": "自分が 罰ゲーム" },
       "4": { "name": "4・床", "rule": "最後に床を触った人が 罰ゲーム" },
@@ -182,7 +176,7 @@
       "10": { "name": "10・テーマ", "rule": "カテゴリを1つ決めて順番に。詰まったら負け" },
       "11": { "name": "J・ルール", "rule": "好きなルールを1つ追加できる" },
       "12": { "name": "Q・質問", "rule": "質問し合う。答えたら負け" },
-      "13": { "name": "K・キング", "rule": "自分の飲みものを中央のコップに少し注ぐ" }
+      "13": { "name": "K・キング", "rule": "キングの罰を1つ追加" }
     }
   },
   "anketo": {
@@ -268,7 +262,21 @@
     "communityTopics": "みんなのお題",
     "comingSoon": "共有・投票は近日公開。いま追加したお題は、この端末のゲームに登場します。",
     "empty": "まだお題がありません。最初の投稿者になろう！",
-    "close": "閉じる"
+    "close": "閉じる",
+    "moreA11y": "{text} を通報・ブロック",
+    "moderateBody": "不適切なお題を見つけたら通報してください。通報・ブロックしたお題はすぐに非表示になります。",
+    "report": "通報する",
+    "block": "この投稿者をブロック",
+    "cancel": "キャンセル",
+    "reportedTitle": "通報しました",
+    "reportedBody": "ご協力ありがとうございます。このお題は非表示になりました。内容を確認し、24時間以内に対応します。",
+    "blockedTitle": "ブロックしました",
+    "blockedBody": "この投稿者のお題は今後表示されません。",
+    "rulesTitle": "お題の投稿ルール",
+    "rulesBody": "追加したお題は「みんなのお題」として他のユーザーにも表示されます。誹謗中傷・差別・性的な内容・個人情報・宣伝などの不適切な投稿は禁止です。違反した投稿は予告なく削除され、投稿者は利用を制限されることがあります。",
+    "rulesAgree": "同意して投稿",
+    "ngTitle": "このお題は投稿できません",
+    "ngBody": "不適切な言葉が含まれている可能性があります。別の言葉で試してください。"
   },
   "request": {
     "thanksTitle": "ありがとう！",

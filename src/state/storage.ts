@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Thin typed wrapper around AsyncStorage. All persistence is local/on-device.
 export const KEYS = {
-  ageAccepted: 'kanpai.ageAccepted.v1',
   roster: 'kanpai.roster.v1',
   players: 'kanpai.players.v1', // durable named players + per-player 負け (loss) counts
   customPenalties: 'kanpai.customPenalties.v1',
@@ -10,6 +9,8 @@ export const KEYS = {
   customTopics: 'kanpai.customTopics.v1', // user-added 山手線 お題 (also shared when sync is on)
   installId: 'kanpai.installId.v1', // anonymous per-install id for shared topics + votes
   topicVotes: 'kanpai.topicVotes.v1', // お題 this install has upvoted (dedupes votes)
+  hiddenTopics: 'kanpai.hiddenTopics.v1', // community お題 this install reported / hid / blocked
+  ugcAgreed: 'kanpai.ugcAgreed.v1', // accepted the お題 posting rules (shown before first share)
 } as const;
 
 export async function loadJSON<T>(key: string, fallback: T): Promise<T> {
