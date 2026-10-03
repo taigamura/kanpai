@@ -1,5 +1,5 @@
 ---
-description: Restore カンパイ！ project context — read SPEC.md and docs/ROADMAP.md, then summarize state.
+description: Restore ワイワイ！ (repo kanpai) project context — read SPEC.md and docs/ROADMAP.md, then summarize state.
 ---
 
 Read `SPEC.md` and `docs/ROADMAP.md` in this repo (they are the source of truth for every
