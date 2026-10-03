@@ -37,3 +37,4 @@ npm-debug.*
 
 # Playwright MCP scratch (captures, console logs)
 .playwright-mcp/
+__pycache__/
