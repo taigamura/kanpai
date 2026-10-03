@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-10-02 (4.3(b) rejection → no-drinking cream-soda reframe + UGC moderation). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-10-03 (ワイワイ！ rename, build 19 attached, Supabase moderation live; awaiting Resolution Center reply + Submit for Review). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -8,6 +8,26 @@ mode, submission `7806a648-a907-4b97-ad11-da91a0ed138c`). The app was **reframed
 resubmitted for the same app record (Apple ID 6805814337) — see "4.3(b) reframe" below. Everything
 in this file that mentions 17+, the age gate, the lager theme, or キングスカップ's center cup is
 historical.
+
+## TL;DR
+<!-- The SessionStart hook (.claude/hooks/session-start.sh) prints THIS section into every new
+     session. Keep it current and short: what the app is now, where review stands, what's next. -->
+- **App:** ワイワイ！ (renamed from カンパイ！ on 2026-10-02), an offline pass-one-phone JP party-game
+  bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
+  visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
+- **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
+- **Review status:** version 1.0 in App Store Connect has **build 19** attached, new listing
+  「ワイワイ！パーティーゲーム集」, riso screenshots, age rating re-answered (no alcohol, UGC yes).
+  **Remaining (user, ASC web UI):** reply in the Resolution Center (draft at the end of
+  `docs/store-listing.md`) → **Submit for Review**. Then wait on Apple.
+- **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03):
+  `list_topics`, `report_topic`, `block_topic_author`, NG filter, author ids hidden from anon.
+  Free tier pauses when idle; keep it awake around review.
+- **Ship:** say "ship it" (`/ship-ios`). ASC metadata/screenshots can be pushed via the ASC API
+  (see "ASC API" under Ship pipeline). Build-number gaps are normal (failed builds consume one).
+- **Not done:** Instagram assets in `store-assets/instagram` are still the old beer art.
+- **IP note:** 英語禁止 / 意思疎通 are mechanically カタカナーシ / ito but renamed, with original
+  word/theme lists. Never reference those names in UI or ASC metadata.
 
 ## 4.3(b) reframe (2026-10-02)
 - **Current resubmission build (ワイワイ！): build 19** — commit `b1d417b` (PR #16), ipa
@@ -58,26 +78,6 @@ historical.
   replace screenshots, select the new build, then reply in the Resolution Center with the drafted
   reply and resubmit.
 
-## TL;DR
-**v1.0.0 is SUBMITTED FOR REVIEW** (first public submission) — waiting on Apple. The submitted build
-is the iPhone-only `cf68ee7` above, with: the `app.kanpai.mvp.removeads` **¥300** IAP attached, **App
-Privacy published** (AdMob Device ID/Product Interaction = tracking Yes; Crash/Performance =
-App Functionality; shared-お題 User Content + install-id User ID = not tracking), **17+** age rating,
-and the **scatter-style store screenshots**. Nothing built-but-unshipped. The ship pipeline works end
-to end; say **"ship it"** to build + submit a new build.
-- **Store assets** were replaced this session (committed `d45c784`) with a **scatter-style** set: App
-  Store 6 screenshots × 6.9″/6.7″ + a 3-panel Instagram panorama, rendered from real device screens
-  in the app's real fonts (**Dela Gothic One** headlines, **Zen Kaku Gothic New** body — embedded as
-  data URIs so they match the in-app カンパイ！ logotype). Files in `store-assets/`.
-- **⚠️ Watch for a Guideline 1.2 (UGC) rejection.** The shared 山手線 お題 feature ships **live**
-  (`src/services/topicsConfig.ts` populated) with no report/hide/block, so user-submitted text is
-  distributed to others with no moderation. If Apple bounces it, add a minimal report/hide to the
-  community お題 list (`src/games/TopicsModal.tsx`) and re-ship. (Kept-live was the user's call.)
-- **IP note (2026-09-01):** the 英語禁止 / 意思疎通 modes are mechanically カタカナーシ / ito, but
-  renamed (no trademark use) and built on original word/theme lists (spot-checked: no verbatim
-  overlap). Game rules aren't copyrightable in JP/US; low legal risk. Don't reference those names in
-  UI or ASC metadata.
-
 ## Identifiers (all already committed in-repo)
 - **Repo:** github.com/taigamura/kanpai (PUBLIC), branch `main`.
 - **EAS project:** `@taigamura/kanpai`, projectId `ea0d603a-8163-42b9-a1b4-0e93e41d95b5` (app.json).
@@ -101,10 +101,17 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **TestFlight/ASC builds:** the newest is the **iPhone-only build submitted for review 2026-09-01**
-  (commit `cf68ee7`, EAS submission `4888b816-f077-47ca-ad5c-7eddb237f7e3`, ipa
-  `build-1788192472381.ipa`). Prior: `b1ce033`/#12 (8 games + scatter store assets),
-  `b6b0582`/`c9443b50` (banner + preload). Test the newest.
+- **Newest build:** **19** (ワイワイ！, commit `b1d417b`, attached to version 1.0). See the reframe section
+  for the build 17 → 19 history.
+- **Slow Mac / parallel builds:** if fastlane dies on `xcodebuild -showBuildSettings timed out`, rerun
+  with `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 FASTLANE_XCODEBUILD_SETTINGS_RETRIES=3` prepended
+  (happens when another project is building on the Mac at the same time).
+- **ASC API:** `scripts/asc.py` (shared key, ids for version 1.0 / ja listing / screenshot set /
+  review notes). Name, subtitle, keywords, description, review notes, age rating, screenshots, and
+  build attachment can all be pushed from WSL. Resolution Center replies + Submit for Review are UI-only.
+- **Store screenshots:** captured from dev-web with Playwright at 440×956@3x (seeded players, mocked
+  community お題), then framed into panels. Metro on WSL often misses file edits: restart
+  `npx expo start --web --clear` before capturing.
 
 ## Critical gotchas — DO NOT LOSE
 1. **Xcode 26.3 build fix (shipped):** expo-modules-jsi@57.0.5 annotates `RuntimeScheduler` constructors with
