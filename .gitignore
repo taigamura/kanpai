@@ -38,3 +38,7 @@ npm-debug.*
 # Playwright MCP scratch (captures, console logs)
 .playwright-mcp/
 __pycache__/
+
+# Local-only: Ralph loop state, stale store-assets export (store-assets/ is committed)
+.ralph/
+store-assets.zip
