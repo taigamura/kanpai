@@ -16,12 +16,12 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Review status (2026-10-20):** build 19 **REJECTED 2026-10-15 under 2.1(b)**: the reviewer got
-  「現在購入できません」 (StoreKit resolved no product). Remove Ads IAP is READY_TO_SUBMIT (detached
-  from the submission); Paid Apps Agreement unverified. Fixes (IAP retry + diagnostics, web debug
-  pass, mockups moved out of docs/) are in the working tree, **uncommitted**. Next: user confirms
-  Paid Apps Agreement + restores Supabase → "ship it" (build 20) → attach build 20 + Remove Ads to
-  1.0 → sandbox-test the purchase → send reply #2 (end of `docs/store-listing.md`) → Submit.
+- **Review status (2026-10-21):** build 19 **REJECTED 2026-10-15 under 2.1(b)**: the reviewer got
+  「現在購入できません」 (StoreKit resolved no product). Fixes (IAP retry + diagnostics, web debug
+  pass, mockups moved out of docs/) merged as `9e5f57c` (PR #19). Paid Apps Agreement confirmed
+  **Active** and Supabase restored (2026-10-21). **Build 20 uploaded to ASC 2026-10-21** (EAS
+  submission `e05daa30`). Next (user, ASC UI): attach build 20 + Remove Ads to 1.0 → sandbox-test
+  the purchase in TestFlight → send reply #2 (end of `docs/store-listing.md`) → Submit.
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; project was paused again on 2026-10-16):
   `list_topics`, `report_topic`, `block_topic_author`, NG filter, author ids hidden from anon.
   Free tier pauses when idle; keep it awake around review.
@@ -103,8 +103,8 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **Newest build:** **19** (ワイワイ！, commit `b1d417b`, attached to version 1.0). See the reframe section
-  for the build 17 → 19 history.
+- **Newest build:** **20** (2026-10-21, commit `9e5f57c`, submission `e05daa30`; not yet attached to
+  1.0). Build 19 (`b1d417b`) was the rejected one. See the reframe section for the build 17 → 19 history.
 - **Slow Mac / parallel builds:** if fastlane dies on `xcodebuild -showBuildSettings timed out`, rerun
   with `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 FASTLANE_XCODEBUILD_SETTINGS_RETRIES=3` prepended
   (happens when another project is building on the Mac at the same time).
