@@ -547,7 +547,7 @@ export function mountStudio(): () => void {
 
   function copyForClaude() {
     const diff = tokenDiff();
-    const lines: string[] = ['# カンパイ！ UI Studio — apply these changes', ''];
+    const lines: string[] = ['# ワイワイ！ UI Studio — apply these changes', ''];
     if (Object.keys(diff).length) {
       lines.push('## Token changes (src/theme/theme.ts)');
       (['font', 'spacing', 'radius', 'colors'] as const).forEach((grp) => {
@@ -608,7 +608,7 @@ export function mountStudio(): () => void {
     panel.innerHTML = '';
     const applyBtn = el('button', { class: 'kstudio-apply', text: 'Applied', onclick: apply });
     const head = el('div', { class: 'kstudio-head' }, [
-      el('div', { class: 'kstudio-title', text: '🎛 カンパイ！ UI Studio' }),
+      el('div', { class: 'kstudio-title', text: '🎛 ワイワイ！ UI Studio' }),
       applyBtn,
       el('button', { class: 'kstudio-x', text: '×', onclick: () => togglePanel(false) }),
     ]);

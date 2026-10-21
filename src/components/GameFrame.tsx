@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { spacing, font } from '@/theme/theme';
 import { T } from './ui';
 import { Screen } from './Screen';
@@ -22,7 +22,17 @@ export function GameFrame({ title, children }: { title: string; children: React.
         </T>
         <View style={{ width: 48 }} />
       </View>
-      <View style={styles.body}>{children}</View>
+      {/* Scrollable body: result screens (8 seats, scoreboard + loser chips + buttons) can be taller
+          than a small iPhone. A plain centered View overflowed both up over the header and down off
+          screen, hiding the 戻る / もう一回 buttons. flexGrow keeps short phases vertically centered. */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {children}
+      </ScrollView>
     </Screen>
   );
 }
@@ -35,5 +45,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  body: { flex: 1, padding: spacing.lg, justifyContent: 'center' },
+  scroll: { flex: 1 },
+  body: { flexGrow: 1, padding: spacing.lg, justifyContent: 'center' },
 });

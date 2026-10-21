@@ -82,16 +82,29 @@ async function rememberHidden(text: string): Promise<void> {
   if (!arr.includes(text)) await saveJSON(KEYS.hiddenTopics, [...arr, text]);
 }
 
+// fetch with a hard timeout, so a stalled connection (paused free-tier project, captive Wi-Fi)
+// can't leave the お題 modal spinning forever.
+const FETCH_TIMEOUT_MS = 8000;
+async function fetchWithTimeout(url: string, init: RequestInit = {}): Promise<Response> {
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const id = ctrl ? setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS) : null;
+  try {
+    return await fetch(url, ctrl ? { ...init, signal: ctrl.signal } : init);
+  } finally {
+    if (id) clearTimeout(id);
+  }
+}
+
 async function fetchRanked(): Promise<CommunityTopic[] | null> {
   try {
     const installId = await getInstallId();
-    const res = await fetch(`${restBase()}/rpc/list_topics`, {
+    const res = await fetchWithTimeout(`${restBase()}/rpc/list_topics`, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({ p_install: installId }),
     });
     if (res.ok) return (await res.json()) as CommunityTopic[];
-    const legacy = await fetch(
+    const legacy = await fetchWithTimeout(
       `${restBase()}/topics?select=text,votes&order=votes.desc,created_at.desc&limit=100`,
       { headers: headers() }
     );
@@ -102,11 +115,12 @@ async function fetchRanked(): Promise<CommunityTopic[] | null> {
 }
 
 // Fetch the community お題 ranked by votes (top first), minus anything this install hid or that
-// trips the NG-word filter. [] when disabled or on any failure.
-export async function fetchCommunityTopics(): Promise<CommunityTopic[]> {
+// trips the NG-word filter. [] when disabled; null when the backend couldn't be reached (offline,
+// paused project), so the UI can say so instead of showing a misleading "no お題 yet".
+export async function fetchCommunityTopics(): Promise<CommunityTopic[] | null> {
   if (!syncEnabled()) return [];
   const [data, hidden] = await Promise.all([fetchRanked(), loadHiddenSet()]);
-  if (!Array.isArray(data)) return [];
+  if (!Array.isArray(data)) return null;
   return data.filter((c) => !hidden.has(c.text) && !containsNgWord(c.text));
 }
 

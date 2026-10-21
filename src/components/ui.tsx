@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Text,
   TextProps,
@@ -52,6 +52,48 @@ export function T(
         style,
       ]}
     />
+  );
+}
+
+// Big display title that never orphans a single character onto its own line (「…さんの番/号」).
+// The text is split into unbreakable chunks at spaces and after 「・」 (so 「{name} さんの勝ち！」
+// breaks only between the name and the suffix, or between joined names), and the font shrinks
+// until the widest chunk fits the measured width. Chunks wrap as whole units, centered.
+// Width is estimated per glyph (full-width ≈ 1em, ASCII ≈ 0.7em) since RN web has no
+// adjustsFontSizeToFit; hidden until the first layout so it never flashes at the wrong size.
+const glyphUnits = (s: string) =>
+  [...s].reduce((sum, ch) => sum + (ch.charCodeAt(0) < 0x2000 ? 0.7 : 1.02), 0);
+
+export function TitleText({
+  children,
+  size = font.title,
+  minSize = font.heading,
+  style,
+}: {
+  children: string;
+  size?: number;
+  minSize?: number;
+  style?: TextProps['style'];
+}) {
+  const [width, setWidth] = useState(0);
+  const chunks = children.replace(/・/g, '・ ').split(/\s+/).filter(Boolean);
+  const widest = Math.max(1, ...chunks.map(glyphUnits));
+  const fit = width ? Math.floor((width - 4) / widest) : size;
+  const fontSize = Math.max(minSize, Math.min(size, fit));
+  return (
+    <View
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={[
+        styles.titleWrap,
+        { columnGap: fontSize * 0.3, opacity: width ? 1 : 0 },
+      ]}
+    >
+      {chunks.map((c, i) => (
+        <T key={i} display size={fontSize} style={[{ textAlign: 'center' }, style]}>
+          {c}
+        </T>
+      ))}
+    </View>
   );
 }
 
@@ -155,7 +197,7 @@ export function Button(
 // RuleCard — the "labeled tab" style (chosen from the 10-option board) for the short rules shown
 // before a game starts: a light card lifted off the paper, with a caramel pill tab straddling the top
 // edge that names the box (default 「ルール」, e.g.「はじめる前に」for KingsCup). Geometry mirrors
-// docs/rulecard-mockups.html #04. The tab pokes 13px above the card, so `marginTop` reserves room.
+// design/mockups/rulecard-mockups.html #04. The tab pokes 13px above the card, so `marginTop` reserves room.
 export function RuleCard({
   children,
   label = copy.ui.ruleCardLabel,
@@ -180,6 +222,12 @@ export function RuleCard({
 }
 
 const styles = StyleSheet.create({
+  titleWrap: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
   card: {
     backgroundColor: colors.card,
     borderRadius: radius.md,

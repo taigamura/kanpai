@@ -17,3 +17,6 @@ export async function purchaseRemoveAds(): Promise<PurchaseResult> {
 export async function restorePurchases(): Promise<boolean> {
   return false;
 }
+export function iapDiagnostics(): string {
+  return 'module=false (web)';
+}

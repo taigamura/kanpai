@@ -40,6 +40,7 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
   const [community, setCommunity] = useState<CommunityTopic[]>([]);
   const [voted, setVoted] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const shared = syncEnabled();
 
@@ -55,7 +56,8 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
     (async () => {
       const [list, votes] = await Promise.all([fetchCommunityTopics(), loadVotedSet()]);
       if (!alive) return;
-      setCommunity(list);
+      setLoadFailed(list == null);
+      setCommunity(list ?? []);
       setVoted(votes);
       setLoading(false);
     })();
@@ -184,6 +186,10 @@ export function TopicsModal({ visible, onClose }: { visible: boolean; onClose: (
                 </T>
               ) : loading ? (
                 <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.md }} />
+              ) : loadFailed ? (
+                <T dim size={font.small} style={styles.note}>
+                  {copy.topics.loadFailed}
+                </T>
               ) : community.length === 0 ? (
                 <T dim size={font.small} style={styles.note}>
                   {copy.topics.empty}
@@ -235,10 +241,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: spacing.lg,
   },
-  wrap: { width: '100%', maxWidth: 460 },
+  // The height cap lives on the wrapper (a % of the full-screen backdrop). On the card it resolved
+  // against the card's own auto-height wrapper, so the card always shrank and squeezed the
+  // community list ScrollView to ~0px on web. The card then shrinks to fit the cap.
+  wrap: { width: '100%', maxWidth: 460, maxHeight: '86%' },
   card: {
     width: '100%',
-    maxHeight: '86%',
+    flexShrink: 1,
     backgroundColor: colors.bgElevated,
     borderWidth: 1,
     borderColor: colors.line,

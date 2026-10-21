@@ -16,11 +16,13 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Review status:** version 1.0 in App Store Connect has **build 19** attached, new listing
-  「ワイワイ！パーティーゲーム集」, riso screenshots, age rating re-answered (no alcohol, UGC yes).
-  **Remaining (user, ASC web UI):** reply in the Resolution Center (draft at the end of
-  `docs/store-listing.md`) → **Submit for Review**. Then wait on Apple.
-- **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03):
+- **Review status (2026-10-20):** build 19 **REJECTED 2026-10-15 under 2.1(b)**: the reviewer got
+  「現在購入できません」 (StoreKit resolved no product). Remove Ads IAP is READY_TO_SUBMIT (detached
+  from the submission); Paid Apps Agreement unverified. Fixes (IAP retry + diagnostics, web debug
+  pass, mockups moved out of docs/) are in the working tree, **uncommitted**. Next: user confirms
+  Paid Apps Agreement + restores Supabase → "ship it" (build 20) → attach build 20 + Remove Ads to
+  1.0 → sandbox-test the purchase → send reply #2 (end of `docs/store-listing.md`) → Submit.
+- **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; project was paused again on 2026-10-16):
   `list_topics`, `report_topic`, `block_topic_author`, NG filter, author ids hidden from anon.
   Free tier pauses when idle; keep it awake around review.
 - **Ship:** say "ship it" (`/ship-ios`). ASC metadata/screenshots can be pushed via the ASC API
@@ -148,7 +150,7 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **20歳以上 age gate kept** (app still references alcohol → 17+ rating + gate stay).
 
 ## Refinement pass — BUILT (2026-08-28, from TestFlight feedback)
-Mocked in `docs/refine-mockups.html` (signed off), then wired in:
+Mocked in `design/mockups/refine-mockups.html` (signed off), then wired in:
 1. **Tilt = liquid, not twitchy.** `Screen.tsx useTiltStyle` now drives the angle through an
    underdamped spring on a `useFrameCallback` loop (STIFFNESS 70 / DAMPING 9 → one slosh-overshoot
    then settle), cap dropped to ~7° (`TILT_CAP` 0.12 rad), plus a slow idle sway so it reads wet at
@@ -172,7 +174,7 @@ Verified: `tsc --noEmit` clean, `jest` 5/5. Not yet runtime-tested on device —
 ## UI pop pass — SHIPPED (2026-08-29, PR #5 `ed5cf3f`, TestFlight build 4) — from TF feedback
 Four small consistency/legibility fixes. `tsc` clean + jest 5/5. Shipped to TestFlight
 (EAS submission `81f49a21-604a-4dd6-986b-3c694dff9e17`); not yet device-verified. Party-direction
-mockups in `docs/party-mockups.html` (home shelf w/ per-game color, big お題 headline, full-bleed
+mockups in `design/mockups/party-mockups.html` (home shelf w/ per-game color, big お題 headline, full-bleed
 罰ゲーム flood) — a direction to react to, not yet built into the app.
 1. **Uniform black ！.** `LoadingScreen` bang was `colors.primary` (red) while the home logotype's ！
    is ink — boot now uses `colors.text` so the two match (no red flash on load).
@@ -371,14 +373,14 @@ From the latest feedback. Verified `tsc` clean + `jest` 5/5; not yet runtime-tes
   Whole app now reads as the inside of a lager glass: amber liquid ground + cream foam head across
   the top + rising carbonation + diagonal glass shine (`src/components/Screen.tsx`), dark roasted-malt
   ink type on frosted-glass panels. Palette flipped in `src/theme/theme.ts` (mirror of
-  `docs/lager-tilt.html` / `docs/beer-glass-ui.html` concept 1). StatusBar → `dark` for the light foam top.
+  `design/mockups/lager-tilt.html` / `docs/beer-glass-ui.html` concept 1). StatusBar → `dark` for the light foam top.
   - Decoupled tokens added: `cardBack` (dark card back), `accentBright` (gold crown on dark), `cream`
     (button foreground), `beerTop/beerBot/foam`. `accent` is now deep caramel (legible dark-on-light).
   - **Foam:beer ratio = 3:7 (2026-08-29).** The cream foam head now fills the top 30% of the glass,
     amber liquid the bottom 70%, driven by `FOAM_*` constants at the top of `src/components/Screen.tsx`
     (proportional to screen height, not fixed px). Change the `0.3` there to re-tune the ratio.
 - **Tilt layer NOT built** (deferred): the live foam/bubble-stays-level-on-tilt gimmick from
-  `docs/lager-tilt.html` needs `expo-sensors` (DeviceMotion) = a new native module + rebuild. The static
+  `design/mockups/lager-tilt.html` needs `expo-sensors` (DeviceMotion) = a new native module + rebuild. The static
   beer-glass ground ships the Lager look now; add tilt as a follow-up if desired before store screenshots.
 - Other locked tweaks this session: **山手線 timer removed** (verbal game, no countdown); **per-game
   responsible-drinking caution removed from GameFrame footer** (age-gate + Settings legal notices kept).

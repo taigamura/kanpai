@@ -43,7 +43,14 @@ export function PlayersScreen() {
         <Pressable onPress={nav.home} hitSlop={12}>
           <T bold>{copy.common.back}</T>
         </Pressable>
-        <T display size={font.heading}>
+        {/* Long title: keep it on one line between 戻る and the spacer on small iPhones. */}
+        <T
+          display
+          size={font.heading}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          style={{ flexShrink: 1, textAlign: 'center', marginHorizontal: spacing.sm }}
+        >
           {copy.players.title}
         </T>
         <View style={{ width: 48 }} />
@@ -131,6 +138,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg, marginTop: spacing.sm },
   input: {
     flex: 1,
+    minWidth: 0, // let the field shrink so the 追加 button never overflows (web)
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.line,
