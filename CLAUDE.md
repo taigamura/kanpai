@@ -5,9 +5,15 @@ iPhone-only, bundle id `app.kanpai.mvp`. Renamed from カンパイ！ on 2026-10
 
 ## Where the state lives
 A SessionStart hook (`.claude/hooks/session-start.sh`) prints `docs/STATE.md` → `## TL;DR` plus
-recent git into every session. For full context run `/catchup` (reads `docs/STATE.md`, `SPEC.md`,
-`docs/ROADMAP.md`; STATE wins when they disagree). After meaningful work or a ship, run `/handoff`
-so the TL;DR stays true.
+recent git into every session, so a fresh session starts where the last one stopped. For full
+context read `docs/STATE.md`, `SPEC.md`, `docs/ROADMAP.md` (STATE wins when they disagree).
+
+**Keep the TL;DR current yourself; don't wait for `/handoff`.** In the same turn that review
+status, the newest build, a blocker, or the next step changes (ship, submit, rejection, the user
+reporting an ASC/TestFlight result), edit the TL;DR, update its `_Last updated_` line, and commit
+it straight to `main` (`Update STATE: <what changed>`). Also update the "Resume here" list in the
+vault page `/mnt/c/Users/Dorakou/Documents/Obsidian Vault/wiki/projects/ワイワイ！ — App Store Review Fixes (2026-10).md`. `/handoff` is only for
+a full reconcile of all three docs.
 
 ## Hard rules
 - **No drinking content, ever**: no 飲む mechanics, alcohol お題, beer/glass visuals, or

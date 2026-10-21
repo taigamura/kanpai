@@ -11,18 +11,21 @@ historical.
 
 ## TL;DR
 <!-- The SessionStart hook (.claude/hooks/session-start.sh) prints THIS section into every new
-     session. Keep it current and short: what the app is now, where review stands, what's next. -->
+     session. Claude edits it in the same turn whenever review status, the newest build, or the next
+     step changes (no /handoff needed). Keep it short: what the app is now, where review stands, next. -->
 - **App:** ワイワイ！ (renamed from カンパイ！ on 2026-10-02), an offline pass-one-phone JP party-game
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Review status (2026-10-21):** build 19 **REJECTED 2026-10-15 under 2.1(b)**: the reviewer got
-  「現在購入できません」 (StoreKit resolved no product). Fixes (IAP retry + diagnostics, web debug
-  pass, mockups moved out of docs/) merged as `9e5f57c` (PR #19). Paid Apps Agreement confirmed
-  **Active** and Supabase restored (2026-10-21). **Build 20 uploaded to ASC 2026-10-21** (EAS
-  submission `e05daa30`). Next (user, ASC UI): attach build 20 + Remove Ads to 1.0 → sandbox-test
-  the purchase in TestFlight → send reply #2 (end of `docs/store-listing.md`) → Submit.
-- **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; project was paused again on 2026-10-16):
+- **Review status (2026-10-21): v1.0 build 20 SUBMITTED FOR REVIEW 2026-10-21** with the Remove Ads
+  IAP (`app.kanpai.mvp.removeads`, ¥300) attached and Resolution Center reply #2 sent. This answers
+  the 2.1(b) rejection of build 19 (2026-10-15, 「現在購入できません」). Fix = IAP retry + diagnostics
+  (`9e5f57c`, PR #19); Paid Apps Agreement Active; sandbox purchase verified on TestFlight.
+  **Next:** wait for review (keep Supabase awake). If approved: release → one real ¥300 purchase →
+  link the AdMob app to the App Store listing. If rejected: read the reviewer message, fix, "ship it".
+- **Ads:** wiring OK (build 20 hidden 広告診断 panel shows NO_FILL = new AdMob account, pre-launch).
+  `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
+- **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
   `list_topics`, `report_topic`, `block_topic_author`, NG filter, author ids hidden from anon.
   Free tier pauses when idle; keep it awake around review.
 - **Ship:** say "ship it" (`/ship-ios`). ASC metadata/screenshots can be pushed via the ASC API
