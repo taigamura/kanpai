@@ -39,7 +39,7 @@ session; everything else is manual in the ASC web UI.
 - [ ] **A reviewable build exists.** A build must be processed in ASC → TestFlight. The
       current shipped build is code-identical to `main`. Only ship a new one if code changed
       (see Phase 4).
-- [ ] **(Recommended) `app-ads.txt` published.** Put it at `taigamura.github.io/app-ads.txt`
+- [x] **(Recommended) `app-ads.txt` published** (2026-10-21, repo `taigamura/taigamura.github.io`). Put it at `taigamura.github.io/app-ads.txt`
       (the USER-pages root, NOT `/kanpai/`) so AdMob can fill once live. Not a submission
       blocker, but blocks ad revenue after launch.
 - [ ] **(If not done) Supabase schema.** Run `supabase/schema.sql` in the Supabase SQL editor

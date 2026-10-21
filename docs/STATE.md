@@ -251,8 +251,8 @@ ageAccepted`; real iOS units in RELEASE). So the cause is environment/account-si
    `b6b0582` (2026-08-30). Confirm the installed TestFlight build number first.
 2. **Brand-new AdMob account + app not yet public = ~zero fill (expected).** Real units serve little
    or nothing until the app is LIVE on the App Store and the **AdMob app is linked** to that listing,
-   **`app-ads.txt` is published** (MISSING — must be at `taigamura.github.io/app-ads.txt`, the
-   USER-pages root, not `/kanpai/`), and AdMob payments/tax are complete. New units also no-fill for
+   **`app-ads.txt` is published** (DONE 2026-10-21: repo `taigamura/taigamura.github.io` serves
+   `taigamura.github.io/app-ads.txt`; build 20 diagnostics showed NO_FILL, i.e. wiring OK), and AdMob payments/tax are complete. New units also no-fill for
    hours–48h. A **dev build uses Google TEST ids (always fill)** — use it to prove the wiring.
 3. **Interstitial needs ≥3 game opens/session** (first 2 ad-free, resets on cold start). Banner has
    no such gate, so a missing banner points at #1/#2.
@@ -416,8 +416,8 @@ All the v1.0.0 submission gates below are **done**; the app is in Apple's review
    **App Privacy published** (per `docs/app-privacy.md` + AdMob Crash/Performance diagnostics).
 4. **Submitted for Review** ✅ (iPhone-only build `cf68ee7`).
 5. Ship a fresh build after any code change: **"ship it"**.
-- **After review:** if approved → release + verify a real ¥300 purchase; publish `app-ads.txt` at
-  `taigamura.github.io/app-ads.txt` (user-pages root) for AdMob fill. If rejected, most likely
+- **After review:** if approved → release + verify a real ¥300 purchase; link the AdMob app to the
+  App Store listing (`app-ads.txt` is already live at `taigamura.github.io/app-ads.txt`). If rejected, most likely
   **Guideline 1.2 (UGC)** — add report/hide to `TopicsModal` and re-ship (see TL;DR).
 
 ## UI Studio — browser slider + comment tool for UI finetuning (BUILT 2026-08-29)
