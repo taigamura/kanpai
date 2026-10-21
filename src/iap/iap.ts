@@ -44,20 +44,44 @@ export type PurchaseResult = 'owned' | 'cancelled' | 'unavailable';
  * native purchase sheet show a blank "[?]" app name and a placeholder price.)
  */
 export async function fetchRemoveAdsProduct(): Promise<RemoveAdsProduct | null> {
-  if (!(await ensureConnected())) return null;
-  try {
-    const products =
-      (await IAP.fetchProducts?.({ skus: [REMOVE_ADS_SKU], type: 'in-app' })) ?? [];
-    const p = products.find((x: any) => x?.id === REMOVE_ADS_SKU || x?.productId === REMOVE_ADS_SKU);
-    if (!p) return null;
-    // v16 exposes the formatted price as displayPrice; older/adjacent shapes use localizedPrice.
-    const price: string =
-      p.displayPrice ?? p.localizedPrice ?? p.price ?? '';
-    const title: string = p.title ?? p.displayName ?? '';
-    return { price, title };
-  } catch {
-    return null;
+  // StoreKit can come back empty or throw on the first call right after launch (cold sandbox,
+  // slow network on the review device), so retry a few times and rebuild the connection between
+  // attempts before declaring the product unavailable.
+  for (let attempt = 0; attempt < FETCH_RETRY_DELAYS_MS.length; attempt++) {
+    if (FETCH_RETRY_DELAYS_MS[attempt] > 0) await sleep(FETCH_RETRY_DELAYS_MS[attempt]);
+    if (!(await ensureConnected())) continue;
+    try {
+      const products =
+        (await IAP.fetchProducts?.({ skus: [REMOVE_ADS_SKU], type: 'in-app' })) ?? [];
+      const p = products.find(
+        (x: any) => x?.id === REMOVE_ADS_SKU || x?.productId === REMOVE_ADS_SKU
+      );
+      if (!p) {
+        lastError = `fetchProducts returned ${products.length} item(s), none matching`;
+        continue;
+      }
+      lastError = null;
+      // v16 exposes the formatted price as displayPrice; older/adjacent shapes use localizedPrice.
+      const price: string = p.displayPrice ?? p.localizedPrice ?? p.price ?? '';
+      const title: string = p.title ?? p.displayName ?? '';
+      return { price, title };
+    } catch (e: any) {
+      lastError = `fetchProducts threw: ${e?.code ?? ''} ${e?.message ?? e}`;
+      // A dropped StoreKit connection surfaces as a throw here; reconnect on the next attempt.
+      connected = false;
+    }
   }
+  return null;
+}
+
+const FETCH_RETRY_DELAYS_MS = [0, 800, 2000];
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Last StoreKit failure, surfaced in the hidden Settings diagnostic so a TestFlight tester can see
+// why the product didn't resolve (release builds silence console logs).
+let lastError: string | null = null;
+export function iapDiagnostics(): string {
+  return `module=${!!IAP} connected=${connected} lastError=${lastError ?? 'none'}`;
 }
 
 // v16 wants a single long-lived connection (not init/end per call).
@@ -66,10 +90,12 @@ async function ensureConnected(): Promise<boolean> {
   if (!IAP) return false;
   if (connected) return true;
   try {
-    await IAP.initConnection?.();
-    connected = true;
-    return true;
-  } catch {
+    // initConnection resolves false (rather than throwing) when StoreKit can't be reached.
+    connected = (await IAP.initConnection?.()) !== false;
+    if (!connected) lastError = 'initConnection returned false';
+    return connected;
+  } catch (e: any) {
+    lastError = `initConnection threw: ${e?.code ?? ''} ${e?.message ?? e}`;
     return false;
   }
 }
@@ -118,7 +144,10 @@ export async function purchaseRemoveAds(): Promise<PurchaseResult> {
       }
       settle(true);
     });
-    errSub = IAP.purchaseErrorListener?.(() => settle(false));
+    errSub = IAP.purchaseErrorListener?.((err: any) => {
+      if (err?.code !== 'user-cancelled') lastError = `purchase error: ${err?.code ?? ''} ${err?.message ?? ''}`;
+      settle(false);
+    });
 
     Promise.resolve(
       IAP.requestPurchase?.({

@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button, RuleCard } from '@/components/ui';
+import { T, Button, RuleCard, TitleText } from '@/components/ui';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { ANKETO_QUESTIONS } from '@/data/anketoQuestions';
 import { useAppState } from '@/state/AppState';
@@ -32,11 +32,14 @@ export function AnketoGame() {
   const voter = roster[voterIndex];
 
   const tally = useMemo(() => {
-    const entries = Object.entries(votes).sort((a, b) => b[1] - a[1]);
+    // Everyone appears in the results, including 0 票 players; sort is stable so ties keep roster order.
+    const entries = roster
+      .map((name): [string, number] => [name, votes[name] ?? 0])
+      .sort((a, b) => b[1] - a[1]);
     const top = entries.length ? entries[0][1] : 0;
     const winners = entries.filter(([, n]) => n === top && top > 0).map(([name]) => name);
     return { entries, winners, top };
-  }, [votes]);
+  }, [roster, votes]);
 
   const start = () => {
     setVotes({});
@@ -83,9 +86,7 @@ export function AnketoGame() {
       {phase === 'handoff' && (
         <View style={styles.center}>
           <Icon name="pass-phone" size={64} color={colors.accent} />
-          <T size={font.title} display style={styles.q}>
-            {fmt(copy.anketo.handoffTo, { name: voter })}
-          </T>
+          <TitleText>{fmt(copy.anketo.handoffTo, { name: voter })}</TitleText>
           <T dim style={styles.help}>
             {fmt(copy.anketo.handoffNote, { name: voter })}
           </T>

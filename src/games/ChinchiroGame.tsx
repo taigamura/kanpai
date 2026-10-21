@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon, IconName } from '@/components/Icon';
-import { T, Button, RuleCard } from '@/components/ui';
+import { T, Button, RuleCard, TitleText } from '@/components/ui';
 import { TumbleDie, PressableScale, Pulse, enterItem, enterPop } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { PenaltyReveal } from './PenaltyReveal';
@@ -61,13 +61,12 @@ export function ChinchiroGame() {
   // Stop the spinner if the screen unmounts mid-roll.
   useEffect(() => clearSpin, []);
 
-  const loserSeat = useMemo(() => {
-    if (rolls.length !== players) return -1;
-    let lo = 0;
-    rolls.forEach((r, i) => {
-      if (r.score < rolls[lo].score) lo = i;
-    });
-    return lo;
+  // Every seat tied for the weakest roll loses (two 目なし = both do the 罰ゲーム). Picking only the
+  // first one silently punished whoever happened to roll earlier.
+  const loserSeats = useMemo(() => {
+    if (rolls.length !== players || rolls.length === 0) return [] as number[];
+    const low = Math.min(...rolls.map((r) => r.score));
+    return rolls.map((r, i) => (r.score === low ? i : -1)).filter((i) => i >= 0);
   }, [rolls, players]);
 
   const startGame = () => {
@@ -158,9 +157,7 @@ export function ChinchiroGame() {
       {phase === 'handoff' && (
         <View style={styles.center}>
           <Icon name="dice" size={52} color={colors.text} />
-          <T size={font.title} display>
-            {seatLabel(seat)}
-          </T>
+          <TitleText>{seatLabel(seat)}</TitleText>
           <T dim style={styles.help}>
             {hasRoster
               ? fmt(copy.chinchiro.handoffNoteName, { name: seatLabel(seat) })
@@ -227,25 +224,28 @@ export function ChinchiroGame() {
               <Animated.View
                 key={i}
                 entering={enterItem(i)}
-                style={[styles.resultRow, i === loserSeat && { borderColor: colors.danger, borderWidth: 1 }]}
+                style={[styles.resultRow, loserSeats.includes(i) && { borderColor: colors.danger, borderWidth: 1 }]}
               >
-                <T>{seatLabel(i)}</T>
+                <T style={styles.resultName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+                  {seatLabel(i)}
+                </T>
                 <View style={styles.diceRowSmall}>
                   {r.dice.map((v, j) => (
                     <Icon key={j} name={`die-${v}` as IconName} size={22} color={tint(r.kind)} />
                   ))}
                 </View>
-                <T bold style={{ color: tint(r.kind) }}>
-                  {r.label}
+                <T bold size={font.small} style={[styles.resultLabel, { color: tint(r.kind) }]}>
+                  {/* Stack the reading under the 役 (目なし / （ションベン）) so it never wraps mid-word. */}
+                  {r.label.replace('（', '\n（')}
                 </T>
               </Animated.View>
             ))}
           </View>
           <PenaltyReveal
             loserLabel={
-              hasRoster
-                ? fmt(copy.chinchiro.loserLabelName, { name: seatLabel(loserSeat) })
-                : fmt(copy.chinchiro.loserLabel, { n: loserSeat + 1 })
+              hasRoster || loserSeats.length > 1
+                ? fmt(copy.chinchiro.loserLabelName, { name: loserSeats.map(seatLabel).join('・') })
+                : fmt(copy.chinchiro.loserLabel, { n: (loserSeats[0] ?? 0) + 1 })
             }
           />
           <Button title={copy.chinchiro.again} kind="ghost" onPress={() => setPhase('setup')} />
@@ -260,6 +260,8 @@ const styles = StyleSheet.create({
   help: { textAlign: 'center', lineHeight: 22 },
   diceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   diceRowSmall: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  resultName: { flex: 1, minWidth: 84 },
+  resultLabel: { flexShrink: 0, textAlign: 'right' },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
   stepBtn: {
     width: 56,

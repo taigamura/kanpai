@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button, RuleCard } from '@/components/ui';
+import { T, Button, RuleCard, TitleText } from '@/components/ui';
 import { enterBoom } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { KATAKANA_WORDS } from '@/data/katakanaWords';
@@ -173,9 +173,7 @@ export function KatakanaGame() {
       {phase === 'handoff' && (
         <View style={styles.center}>
           <Icon name="pass-phone" size={64} color={colors.accent} />
-          <T size={font.title} display style={styles.q}>
-            {fmt(copy.katakana.handoffTo, { name: describer })}
-          </T>
+          <TitleText>{fmt(copy.katakana.handoffTo, { name: describer })}</TitleText>
           <T dim style={styles.help}>
             {fmt(copy.katakana.handoffNote, { name: describer })}
           </T>
@@ -271,9 +269,9 @@ export function KatakanaGame() {
           <T dim size={font.small}>
             {copy.katakana.winnerTitle}
           </T>
-          <T display size={font.title} style={{ color: colors.accent, textAlign: 'center' }}>
+          <TitleText style={{ color: colors.accent }}>
             {fmt(copy.katakana.winnerLabel, { name: winners.join('・') })}
-          </T>
+          </TitleText>
           <Scoreboard rows={sorted} target={target} />
           <PenaltyReveal loserLabel={fmt(copy.katakana.loserLabel, { names: losers.join('・') })} />
           <Button title={copy.katakana.again} kind="ghost" onPress={() => setPhase('config')} />
@@ -328,12 +326,13 @@ function Scoreboard({ rows, target }: { rows: { name: string; score: number }[];
       <T dim size={font.small} style={{ textAlign: 'center' }}>
         {copy.katakana.scoreTitle}（{fmt(copy.katakana.toWin, { n: target })}）
       </T>
-      {rows.map((r, i) => (
+      {rows.map((r) => (
         <View key={r.name} style={styles.boardRow}>
           <View style={styles.boardName}>
-            {/* Fixed-width slot so the leader's star never indents their name past the others. */}
+            {/* Fixed-width slot so the leader's star never indents their name past the others.
+                Every player tied for the lead gets the star (rows arrive sorted desc). */}
             <View style={styles.starSlot}>
-              {i === 0 && r.score > 0 ? (
+              {r.score > 0 && r.score === rows[0].score ? (
                 <Icon name="star" size={16} color={colors.accentBright} />
               ) : null}
             </View>

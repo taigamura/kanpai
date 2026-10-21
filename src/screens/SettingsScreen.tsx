@@ -5,7 +5,13 @@ import { T, Button, Card } from '@/components/ui';
 import { Screen } from '@/components/Screen';
 import { useAppState } from '@/state/AppState';
 import { useNav } from '@/navigation/Nav';
-import { purchaseRemoveAds, restorePurchases, iapAvailable, fetchRemoveAdsProduct } from '@/iap/iap';
+import {
+  purchaseRemoveAds,
+  restorePurchases,
+  iapAvailable,
+  fetchRemoveAdsProduct,
+  iapDiagnostics,
+} from '@/iap/iap';
 import { debugTryInterstitial } from '@/ads/ads';
 import { subscribeAdStatus, type AdStatus } from '@/ads/adStatus';
 import { copy, fmt } from '@/content/copy';
@@ -182,7 +188,9 @@ export function SettingsScreen() {
         {/* Legal */}
         <Card>
           <Pressable onPress={() => void Linking.openURL('https://taigamura.github.io/kanpai/terms.html')}>
-            <T black>{copy.settings.legalLink}</T>
+            <T black numberOfLines={1} adjustsFontSizeToFit>
+              {copy.settings.legalLink}
+            </T>
           </Pressable>
           <T dim size={font.small} style={{ marginTop: spacing.sm }}>
             {copy.settings.legalNote}
@@ -205,6 +213,7 @@ export function SettingsScreen() {
               <DebugRow label="インタースティシャル" value={ad?.interstitial ?? '—'} />
               <DebugRow label="バナー" value={ad?.banner ?? '—'} />
               <DebugRow label="ゲーム開封カウント" value={`${ad?.opens ?? 0} / 3`} />
+              <DebugRow label="課金 (StoreKit)" value={`${iapDiagnostics()} price=${price ?? 'none'}`} />
             </View>
             <Button
               title="インタースティシャルを試す"
@@ -243,6 +252,7 @@ const styles = StyleSheet.create({
   debugRow: { flexDirection: 'row', justifyContent: 'space-between', gap: spacing.md },
   input: {
     flex: 1,
+    minWidth: 0, // let the field shrink so the 追加 button never overflows (web)
     backgroundColor: colors.bgElevated,
     borderWidth: 1,
     borderColor: colors.line,

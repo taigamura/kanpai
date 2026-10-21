@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import Animated from 'react-native-reanimated';
 import { GameFrame } from '@/components/GameFrame';
 import { Icon } from '@/components/Icon';
-import { T, Button, RuleCard } from '@/components/ui';
+import { T, Button, RuleCard, TitleText } from '@/components/ui';
 import { enterBoom, enterPop } from '@/components/motion';
 import { spacing, font, colors, radius } from '@/theme/theme';
 import { NUMBERLINE_THEMES } from '@/data/numberLineThemes';
@@ -95,9 +95,7 @@ export function NumberLineGame() {
       {phase === 'deal' && (
         <View style={styles.center}>
           <Icon name="pass-phone" size={64} color={colors.accent} />
-          <T size={font.title} display style={styles.q}>
-            {fmt(copy.numberline.dealHandoffTo, { name: dealee })}
-          </T>
+          <TitleText>{fmt(copy.numberline.dealHandoffTo, { name: dealee })}</TitleText>
           <T dim style={styles.help}>
             {fmt(copy.numberline.dealHandoffNote, { name: dealee })}
           </T>
@@ -127,7 +125,7 @@ export function NumberLineGame() {
           <T display size={font.title} style={styles.q}>
             {theme.theme}
           </T>
-          <RuleCard label={copy.numberline.themeLabel}>
+          <RuleCard>
             <View style={{ gap: spacing.xs }}>
               <T style={{ textAlign: 'center' }}>{fmt(copy.numberline.scaleLow, { low: theme.low })}</T>
               <T style={{ textAlign: 'center' }}>{fmt(copy.numberline.scaleHigh, { high: theme.high })}</T>
@@ -193,7 +191,7 @@ export function NumberLineGame() {
               const isLoser = r.name === outcome.loser;
               return (
                 <View key={r.name} style={[styles.resultRow, isLoser && styles.resultRowLose]}>
-                  <T dim size={font.small}>
+                  <T dim size={font.small} style={isLoser && { color: colors.cream }}>
                     {r.guessPos + 1}
                   </T>
                   <T bold style={{ flex: 1, color: isLoser ? colors.cream : colors.text }}>

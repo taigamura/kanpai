@@ -123,3 +123,24 @@ drinking, and we have reworked the app's concept rather than its wording:
 The app is now a single-phone party-game collection for friends and family gatherings. We would
 appreciate it if you could review the new build. Thank you.
 ```
+
+## Resolution Center reply #2 (2.1(b) In-App Purchase, review 2026-10-15, build 19)
+Before sending: confirm Business → Agreements shows the **Paid Apps Agreement = Active** (accept any
+pending updated terms), add 「Remove Ads」 (`app.kanpai.mvp.removeads`) to version 1.0's
+"In-App Purchases and Subscriptions" section, and select the new build.
+```
+Hello App Review team,
+
+Thank you for testing the In-App Purchase. We found and fixed the cause:
+
+1. The non-consumable "Remove Ads" (app.kanpai.mvp.removeads, ¥300) had been detached from the
+   submission after the previous rejection. It is now attached to version 1.0 and submitted
+   together with the new build, and the Paid Apps Agreement is active.
+2. The new build retries the StoreKit product request and reconnects to the store if the first
+   request fails, instead of showing "現在購入できません" right away.
+
+To test: Home → 設定 (gear icon) → 「広告を非表示」 → 「¥300で広告を消す」. 「購入を復元」 restores it.
+We have verified the purchase in the sandbox with a sandbox tester account.
+
+Thank you for your review.
+```

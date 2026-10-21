@@ -56,7 +56,7 @@ export const font = {
   small: 12, // captions, labels, vote counts
 };
 
-// Typefaces (loaded in App.tsx via @expo-google-fonts). Mirror of design-mockups.html:
+// Typefaces (loaded in App.tsx via @expo-google-fonts). Mirror of design/mockups/design-mockups.html:
 // Dela Gothic One = festival-signage display; Zen Kaku Gothic New = clean gothic body.
 // Values fall back to system fonts until useFonts resolves.
 export const fonts = {

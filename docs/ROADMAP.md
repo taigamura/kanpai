@@ -18,7 +18,7 @@
 - Safeguards wired: 飲む-or-罰ゲーム, responsible-drinking notice, age gate + EULA link.
 
 ## Phase 1 — Design alignment ✅ DONE
-- ✅ Mockups of every v1 screen (12 screens) for sign-off: docs/design-mockups.html.
+- ✅ Mockups of every v1 screen (12 screens) for sign-off: design/mockups/design-mockups.html.
   Signed off 2026-08-26.
 - ✅ Scaffold restyled to match: Dela Gothic One display + Zen Kaku Gothic New body
   fonts loaded via @expo-google-fonts (App.tsx useFonts gate). New shared primitives in

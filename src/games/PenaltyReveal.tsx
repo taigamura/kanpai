@@ -3,7 +3,7 @@ import { View, Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Animated from 'react-native-reanimated';
 import { enterBoom, enterPop } from '@/components/motion';
-import { T, Button, Pill } from '@/components/ui';
+import { T, Button, Pill, TitleText } from '@/components/ui';
 import { spacing, colors, font, radius } from '@/theme/theme';
 import { useAppState } from '@/state/AppState';
 import { copy } from '@/content/copy';
@@ -40,10 +40,10 @@ export function PenaltyReveal({ loserLabel }: { loserLabel: string }) {
 
   return (
     <View style={{ alignItems: 'center', gap: spacing.md, marginTop: spacing.lg }}>
-      <Animated.View entering={enterBoom()}>
-        <T display size={font.heading} style={{ color: colors.danger, textAlign: 'center' }}>
+      <Animated.View entering={enterBoom()} style={{ alignSelf: 'stretch' }}>
+        <TitleText size={font.heading} minSize={font.small} style={{ color: colors.danger }}>
           {loserLabel}
-        </T>
+        </TitleText>
       </Animated.View>
 
       {hasPlayers && (

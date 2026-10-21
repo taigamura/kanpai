@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm, paddingHorizontal: spacing.lg, marginTop: spacing.sm },
   input: {
     flex: 1,
+    minWidth: 0, // let the field shrink so the 追加 button never overflows (web)
     backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.line,
