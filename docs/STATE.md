@@ -22,6 +22,8 @@ historical.
   `APPROVED`. Earlier: 4.3(b) rejection of build 16, 2.1(b) rejection of build 19 (fixed in `9e5f57c`).
   **Next:** confirm listing on the JP App Store → one real ¥300 purchase → link the AdMob app to the
   App Store listing (fill should start after) → replace the old beer Instagram art.
+  **AdMob app-ads.txt verification fails** because the listing has no Marketing URL (locked on live 1.0,
+  ASC 409). Set `marketingUrl = https://taigamura.github.io/` in 1.0.1, then AdMob → Check for updates.
 - **Ads:** wiring OK (build 20 hidden 広告診断 panel shows NO_FILL = new AdMob account, pre-launch).
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
