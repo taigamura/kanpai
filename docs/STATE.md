@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-10-03 (ワイワイ！ rename, build 19 attached, Supabase moderation live; awaiting Resolution Center reply + Submit for Review). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-03 (v1.0 build 20 approved + live; IAP approved). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,12 +17,13 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Review status (2026-10-21): v1.0 build 20 SUBMITTED FOR REVIEW 2026-10-21** with the Remove Ads
-  IAP (`app.kanpai.mvp.removeads`, ¥300) attached and Resolution Center reply #2 sent. This answers
-  the 2.1(b) rejection of build 19 (2026-10-15, 「現在購入できません」). Fix = IAP retry + diagnostics
-  (`9e5f57c`, PR #19); Paid Apps Agreement Active; sandbox purchase verified on TestFlight.
-  **Next:** wait for review (keep Supabase awake). If approved: release → one real ¥300 purchase →
-  link the AdMob app to the App Store listing. If rejected: read the reviewer message, fix, "ship it".
+- **Review status (2026-11-03): v1.0 build 20 APPROVED and LIVE** (ASC `READY_FOR_DISTRIBUTION`,
+  releaseType AFTER_APPROVAL so it auto-released). Remove Ads IAP (`app.kanpai.mvp.removeads`, ¥300)
+  `APPROVED`. Earlier: 4.3(b) rejection of build 16, 2.1(b) rejection of build 19 (fixed in `9e5f57c`).
+  **Next:** confirm listing on the JP App Store → one real ¥300 purchase → link the AdMob app to the
+  App Store listing (fill should start after) → replace the old beer Instagram art.
+  **AdMob app-ads.txt verification fails** because the listing has no Marketing URL (locked on live 1.0,
+  ASC 409). Set `marketingUrl = https://taigamura.github.io/` in 1.0.1, then AdMob → Check for updates.
 - **Ads:** wiring OK (build 20 hidden 広告診断 panel shows NO_FILL = new AdMob account, pre-launch).
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
