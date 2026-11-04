@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-03 (1.0 live; 1.0.1 build 21 in review for AdMob Marketing URL). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-04 (1.0.1 live; AdMob verified). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,13 +17,11 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Review status (2026-11-03):** v1.0 build 20 **LIVE** (auto-released; Remove Ads IAP approved).
-  **v1.0.1 build 21 SUBMITTED FOR REVIEW 2026-11-03** (ASC version `880a7eaa-ba35-4cc8-a5e6-d6d1c2a7376a`,
-  reviewSubmission `cf165e34-c289-48b9-823b-65bc03c3baad`, EAS submission `7c4d3e55`, commit `9a36065`
-  PR #20). Only change: version bump + Marketing URL `https://taigamura.github.io/`, which AdMob needs
-  to verify app-ads.txt (the field is locked on a live version, ASC 409). Release = AFTER_APPROVAL.
-  **Next:** when 1.0.1 is live → AdMob → Apps → ワイワイ！ → app-ads.txt → "Check for updates".
-  Also: one real ¥300 purchase; replace the old beer Instagram art.
+- **Status (2026-11-04): v1.0.1 build 21 LIVE** (approved, auto-released; adds Marketing URL
+  `https://taigamura.github.io/`). Remove Ads IAP approved. **AdMob app Verified + Ready**
+  (app-ads.txt verification passed after 1.0.1). No review pending.
+  **Next:** check the 広告診断 panel on a store install for real fill (new accounts can take days) →
+  one real ¥300 purchase → replace the old beer Instagram art.
 - **Ads:** wiring OK (build 20 hidden 広告診断 panel shows NO_FILL = new AdMob account, pre-launch).
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
