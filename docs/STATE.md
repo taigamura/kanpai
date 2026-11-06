@@ -108,7 +108,6 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
 - **Newest build:** **23** (2026-11-06, v1.0.2, commit `5194753`, EAS submission `890c8c64`). Mac checkout: `npm ci` there after any dep change (local builds use the checkout's lockfile); a stray `fsevents` lockfile edit on the Mac is stashed, not a real change.
-  1.0). Build 19 (`b1d417b`) was the rejected one. See the reframe section for the build 17 → 19 history.
 - **Slow Mac / parallel builds:** if fastlane dies on `xcodebuild -showBuildSettings timed out`, rerun
   with `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 FASTLANE_XCODEBUILD_SETTINGS_RETRIES=3` prepended
   (happens when another project is building on the Mac at the same time).
