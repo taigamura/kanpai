@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-06 (released; 1 download; CLAUDE.md/asc.py ids refreshed). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-06 (1.0.2 build 23 submitted: Games category, keywords, review prompt). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,11 +17,13 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Status (2026-11-06): RELEASED.** v1.0.1 build 21 live on the JP App Store since 2026-11-04
-  (adds Marketing URL `https://taigamura.github.io/`). **1 download so far** (Taiga, 2026-11-06).
-  Remove Ads IAP approved. AdMob app Verified + Ready. No review pending.
-  **Next:** check the 広告診断 panel on a store install for real fill (new accounts can take days) →
-  one real ¥300 purchase → replace the old beer Instagram art → marketing/ASO for downloads.
+- **Status (2026-11-06): v1.0.1 build 21 LIVE** since 2026-11-04 (1 download). **v1.0.2 build 23
+  WAITING_FOR_REVIEW** (submitted 2026-11-06, reviewSubmission `82e219db`, PR #21): category
+  Entertainment → **Games (Board + Card)**, secondary Entertainment; keyword refresh (no dupes of
+  name/subtitle); in-app review prompt (`src/review/`, leaving a game after 3rd 90s+ session, 60-day
+  cooldown). Name + subtitle deliberately unchanged (user call). Build 22 consumed by an aborted run.
+  **Next:** after 1.0.2 is live, watch ASC Analytics impressions → 広告診断 fill on a store install →
+  one real ¥300 purchase → replace the old beer Instagram art.
 - **Ads:** wiring OK; pre-launch NO_FILL seen in build 20 広告診断 panel. Recheck on the live build.
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
@@ -105,7 +107,7 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **Newest build:** **20** (2026-10-21, commit `9e5f57c`, submission `e05daa30`; not yet attached to
+- **Newest build:** **23** (2026-11-06, v1.0.2, commit `5194753`, EAS submission `890c8c64`). Mac checkout: `npm ci` there after any dep change (local builds use the checkout's lockfile); a stray `fsevents` lockfile edit on the Mac is stashed, not a real change.
   1.0). Build 19 (`b1d417b`) was the rejected one. See the reframe section for the build 17 → 19 history.
 - **Slow Mac / parallel builds:** if fastlane dies on `xcodebuild -showBuildSettings timed out`, rerun
   with `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 FASTLANE_XCODEBUILD_SETTINGS_RETRIES=3` prepended
