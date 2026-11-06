@@ -28,9 +28,12 @@ Bundle id `app.kanpai.mvp` · ASC Apple ID `6805814337` · min iOS 16.4 · Suppo
 
 ## Keywords / キーワード (最大100文字, カンマ区切り・スペースなし)
 ```
-パーティーゲーム,みんなで,友達,家族,ゲーム集,山手線ゲーム,罰ゲーム,盛り上がる,会話ゲーム,パスゲーム,余興,レク,オフライン,大人数
+山手線ゲーム,罰ゲーム,会話ゲーム,トランプ,サイコロ,チンチロ,ハイアンドロー,ロシアンルーレット,爆弾,暇つぶし,大人数,修学旅行,余興,レク,オフライン,友達,家族,お題,アンケート,数字
 ```
-_Excludes trademarked game names (カタカナーシ / ito など) and all drinking terms._
+_v1.0.2 (2026-11-06): no word already in the name/subtitle (Apple indexes those; repeats waste chars). Only terms for games/features the app has. Excludes trademarked game names (カタカナーシ / ito など), games we don't have (人狼, ワードウルフ, 王様ゲーム), and all drinking terms._
+
+## Category (v1.0.2)
+Primary **ゲーム** (subcategories ボード + カード), secondary **エンターテインメント**. Was Entertainment only through 1.0.1.
 
 ## Description / 概要 (最大4000文字)
 ```
@@ -58,7 +61,13 @@ _Excludes trademarked game names (カタカナーシ / ito など) and all drink
 基本無料。広告を消したい方だけ、買い切りの「広告非表示」（¥300）をどうぞ。月額・年額のサブスクリプションは一切ありません。
 ```
 
-## What's New / このバージョンの新機能 (v1.0.0)
+## What's New / このバージョンの新機能 (v1.0.2)
+```
+・より見つけやすいよう、ストアの表示を改善しました
+・楽しんでいただけたら、ゲーム終了後にレビューをお願いすることがあります
+```
+
+## What's New (v1.0.0, historical)
 ```
 ワイワイ！を公開しました。スマホ1台で遊べるパーティーゲームを全8種収録しています。
 

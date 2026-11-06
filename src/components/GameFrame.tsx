@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { spacing, font } from '@/theme/theme';
 import { T } from './ui';
 import { Screen } from './Screen';
 import { useNav } from '@/navigation/Nav';
 import { copy } from '@/content/copy';
+import { recordGameSession } from '@/review/review';
 
 // Shared frame for every game screen: glow ground, a back button, a display-face title.
 export function GameFrame({ title, children }: { title: string; children: React.ReactNode }) {
   const nav = useNav();
+  const openedAt = useRef(Date.now());
+  const leave = () => {
+    void recordGameSession(Date.now() - openedAt.current);
+    nav.home();
+  };
   return (
     <Screen edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <Pressable onPress={nav.home} hitSlop={12}>
+        <Pressable onPress={leave} hitSlop={12}>
           <T size={font.body} bold>
             {copy.common.back}
           </T>
