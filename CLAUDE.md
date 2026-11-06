@@ -1,7 +1,8 @@
 # ワイワイ！ (repo: kanpai)
 
 Offline, pass-one-iPhone Japanese party-game bundle (8 games). Expo / React Native + TypeScript,
-iPhone-only, bundle id `app.kanpai.mvp`. Renamed from カンパイ！ on 2026-10-02.
+iPhone-only, bundle id `app.kanpai.mvp`, ASC Apple ID 6805814337. Renamed from カンパイ！ on 2026-10-02.
+**Live on the JP App Store** since 2026-11-04 (v1.0.1). Ads via AdMob (app verified), Remove Ads IAP ¥300.
 
 ## Where the state lives
 A SessionStart hook (`.claude/hooks/session-start.sh`) prints `docs/STATE.md` → `## TL;DR` plus
@@ -12,8 +13,8 @@ context read `docs/STATE.md`, `SPEC.md`, `docs/ROADMAP.md` (STATE wins when they
 status, the newest build, a blocker, or the next step changes (ship, submit, rejection, the user
 reporting an ASC/TestFlight result), edit the TL;DR, update its `_Last updated_` line, and commit
 it straight to `main` (`Update STATE: <what changed>`). Also update the "Resume here" list in the
-vault page `/mnt/c/Users/Dorakou/Documents/Obsidian Vault/wiki/projects/ワイワイ！ — App Store Review Fixes (2026-10).md`. `/handoff` is only for
-a full reconcile of all three docs.
+vault page `/mnt/c/Users/Dorakou/Documents/Obsidian Vault/wiki/projects/ワイワイ！ — App Store Review Fixes (2026-10).md`
+(the name is historical; it now tracks post-launch too). `/handoff` is only for a full reconcile of all three docs.
 
 ## Hard rules
 - **No drinking content, ever**: no 飲む mechanics, alcohol お題, beer/glass visuals, or
@@ -28,4 +29,9 @@ a full reconcile of all three docs.
 - Typecheck `npx tsc --noEmit` · tests `npx jest` · web preview `npm run web` (restart with
   `--clear` if Metro misses edits on WSL).
 - Ship: "ship it" → `/ship-ios` (config `.claude/ship.json`; builds on the Mac over SSH, submits from WSL).
-- App Store Connect API helper: `scripts/asc.py`.
+  `/ship-ios` only uploads the binary. For a store release: create the ASC version, bump `expo.version`
+  in `app.json` to match, ship, then attach the build + submit for review via the API.
+- App Store Connect API helper: `scripts/asc.py` (docstring has the version-release recipe, live-version
+  field locks, and current ids; ids change every version).
+- **Never leave the Marketing URL empty**: AdMob verifies `app-ads.txt` via it
+  (`https://taigamura.github.io/`), and it's locked once a version is live.

@@ -3,8 +3,8 @@
     "defaultBranch": "main",
     "workflow": "pr",
     "commitTrailers": [
-      "Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>",
-      "Claude-Session: https://claude.ai/code/session_01Stefbvo9fmQDMU9oEbqXdv"
+      "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "Claude-Session: https://claude.ai/code/session_01L4JTPaAuERVk4T6d7y8D1g"
     ]
   },
   "buildServer": {

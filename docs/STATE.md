@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-04 (1.0.1 live; AdMob verified). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-06 (released; 1 download; CLAUDE.md/asc.py ids refreshed). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,12 +17,12 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Status (2026-11-04): v1.0.1 build 21 LIVE** (approved, auto-released; adds Marketing URL
-  `https://taigamura.github.io/`). Remove Ads IAP approved. **AdMob app Verified + Ready**
-  (app-ads.txt verification passed after 1.0.1). No review pending.
+- **Status (2026-11-06): RELEASED.** v1.0.1 build 21 live on the JP App Store since 2026-11-04
+  (adds Marketing URL `https://taigamura.github.io/`). **1 download so far** (Taiga, 2026-11-06).
+  Remove Ads IAP approved. AdMob app Verified + Ready. No review pending.
   **Next:** check the 広告診断 panel on a store install for real fill (new accounts can take days) →
-  one real ¥300 purchase → replace the old beer Instagram art.
-- **Ads:** wiring OK (build 20 hidden 広告診断 panel shows NO_FILL = new AdMob account, pre-launch).
+  one real ¥300 purchase → replace the old beer Instagram art → marketing/ASO for downloads.
+- **Ads:** wiring OK; pre-launch NO_FILL seen in build 20 広告診断 panel. Recheck on the live build.
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
   `list_topics`, `report_topic`, `block_topic_author`, NG filter, author ids hidden from anon.
