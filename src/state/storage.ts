@@ -11,6 +11,7 @@ export const KEYS = {
   topicVotes: 'kanpai.topicVotes.v1', // お題 this install has upvoted (dedupes votes)
   hiddenTopics: 'kanpai.hiddenTopics.v1', // community お題 this install reported / hid / blocked
   ugcAgreed: 'kanpai.ugcAgreed.v1', // accepted the お題 posting rules (shown before first share)
+  review: 'kanpai.review.v1', // in-app review prompt: played-session count + last ask time
 } as const;
 
 export async function loadJSON<T>(key: string, fallback: T): Promise<T> {
