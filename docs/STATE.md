@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-06 (1.0.2 build 23 submitted: Games category, keywords, review prompt). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-14 (1.0.2 live; search-rank snapshot). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,12 +17,11 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Status (2026-11-06): v1.0.1 build 21 LIVE** since 2026-11-04 (1 download). **v1.0.2 build 23
-  WAITING_FOR_REVIEW** (submitted 2026-11-06, reviewSubmission `82e219db`, PR #21): category
-  Entertainment → **Games (Board + Card)**, secondary Entertainment; keyword refresh (no dupes of
-  name/subtitle); in-app review prompt (`src/review/`, leaving a game after 3rd 90s+ session, 60-day
-  cooldown). Name + subtitle deliberately unchanged (user call). Build 22 consumed by an aborted run.
-  **Next:** after 1.0.2 is live, watch ASC Analytics impressions → 広告診断 fill on a store install →
+- **Status (2026-11-14): v1.0.2 build 23 LIVE** (Games: Board + Card, new keywords, in-app review
+  prompt in `src/review/`). ~0 organic downloads. JP search snapshot 2026-11-14: パーティーゲーム not in
+  top 187, パーティーゲーム集 #15, own brand ワイワイ #28; competitors rank with keyword-stuffed names.
+  ASC API key lacks Sales/Analytics role (403), so downloads aren't scriptable yet.
+  **Next:** decide on a keyword-bearing name/subtitle (1.0.3) → 広告診断 fill on a store install →
   one real ¥300 purchase → replace the old beer Instagram art.
 - **Ads:** wiring OK; pre-launch NO_FILL seen in build 20 広告診断 panel. Recheck on the live build.
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
