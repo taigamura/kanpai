@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-14 (1.0.2 live; search-rank snapshot). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-16 (1.0.3 build 24 submitted: keyword-bearing name/subtitle). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,12 +17,13 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Status (2026-11-14): v1.0.2 build 23 LIVE** (Games: Board + Card, new keywords, in-app review
-  prompt in `src/review/`). ~0 organic downloads. JP search snapshot 2026-11-14: パーティーゲーム not in
-  top 187, パーティーゲーム集 #15, own brand ワイワイ #28; competitors rank with keyword-stuffed names.
+- **Status (2026-11-16): v1.0.2 build 23 LIVE; v1.0.3 build 24 WAITING_FOR_REVIEW** (reviewSubmission
+  `9b3843a0`, PR #22). 1.0.3 = store metadata only: name 「ワイワイ！罰ゲーム・大人数パーティーゲーム」,
+  subtitle 「スマホ1台で盛り上がる山手線ゲーム・爆弾ゲーム」, new keywords (from the 2026-11-14 ASO research in
+  `docs/store-listing.md`). Pre-change JP search: パーティーゲーム not in top 187, パーティーゲーム集 #15.
   ASC API key lacks Sales/Analytics role (403), so downloads aren't scriptable yet.
-  **Next:** decide on a keyword-bearing name/subtitle (1.0.3) → 広告診断 fill on a store install →
-  one real ¥300 purchase → replace the old beer Instagram art.
+  **Next:** once live, re-run the search-rank check (罰ゲーム, 大人数ゲーム, スマホ1台ゲーム) → get 5–10 ratings →
+  consider renaming the 意思疎通 / 匿名アンケート modes (existing apps use those names) → 広告診断 fill → ¥300 purchase.
 - **Ads:** wiring OK; pre-launch NO_FILL seen in build 20 広告診断 panel. Recheck on the live build.
   `app-ads.txt` live at `taigamura.github.io/app-ads.txt` (repo `taigamura/taigamura.github.io`).
 - **Backend:** Supabase UGC-moderation migration is **applied and verified** (2026-10-03; restored 2026-10-21 after a pause):
@@ -106,7 +107,7 @@ Config in `.claude/ship.json`. Flow: commit → push → **build on the Mac over
 - **Submit (from WSL):** `npx eas-cli@21.8.0 submit -p ios --profile production --path <ipa> --non-interactive`
 - **Credentials already minted** (distribution cert reused, provisioning profile created). The one-time
   keychain-unlock first build is DONE — future builds run unattended.
-- **Newest build:** **23** (2026-11-06, v1.0.2, commit `5194753`, EAS submission `890c8c64`). Mac checkout: `npm ci` there after any dep change (local builds use the checkout's lockfile); a stray `fsevents` lockfile edit on the Mac is stashed, not a real change.
+- **Newest build:** **24** (2026-11-16, v1.0.3, commit `78d9c90`, EAS submission `57eb223f`). Mac checkout: `npm ci` there after any dep change (local builds use the checkout's lockfile); a stray `fsevents` lockfile edit on the Mac is stashed, not a real change.
 - **Slow Mac / parallel builds:** if fastlane dies on `xcodebuild -showBuildSettings timed out`, rerun
   with `FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT=120 FASTLANE_XCODEBUILD_SETTINGS_RETRIES=3` prepended
   (happens when another project is building on the Mac at the same time).
