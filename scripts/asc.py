@@ -3,9 +3,9 @@
 Uses the shared ASC API key (FM2QG63KF9, .p8 at ~/.appstoreconnect/keys/ on WSL). Import it from
 a one-off script:  `import sys; sys.path.insert(0, 'scripts'); from asc import call, APP, VERSION`.
 
-Known ids (version 1.0.2, created 2026-11-06; 1.0.1 is live, ja locale). ASC mints NEW ids for every version
+Known ids (version 1.0.3, created 2026-11-16; 1.0.2 is live, ja locale). ASC mints NEW ids for every version
 (and a new editable appInfo), so re-fetch them after creating the next version and update this file:
-  VERSION      appStoreVersion 1.0.2
+  VERSION      appStoreVersion 1.0.3
   APP_INFO     appInfo (name/subtitle live on its ja appInfoLocalization)
   (category: PATCH /v1/appInfos/{APP_INFO} relationships primaryCategory/primarySubcategoryOne/Two/secondaryCategory, ids like GAMES, GAMES_BOARD)
   INFO_LOC     ja appInfoLocalization  -> PATCH name, subtitle (locked while only a live version exists)
@@ -34,12 +34,12 @@ KEY = open(os.path.expanduser(f'~/.appstoreconnect/keys/AuthKey_{KEY_ID}.p8')).r
 B = 'https://api.appstoreconnect.apple.com'
 
 APP = '6805814337'
-VERSION = 'db208e81-20b9-4712-a751-a8536fe870b9'
-APP_INFO = '48203ab8-25d4-4828-a402-6940360365fb'
-INFO_LOC = 'cf7472a8-fa35-4a3e-b5b4-96097ccaf495'
-VER_LOC = '08f1652d-f027-4895-9f2e-e831730f3a40'
-REVIEW = '816def43-a2cb-41eb-8fa8-873302049ac8'
-SHOT_SET = 'dc5f5cdf-5d18-4130-ba77-b23eab3fa628'
+VERSION = '769fe120-9223-40d3-a861-d08691b4e819'
+APP_INFO = '1fe25f26-fa5d-4973-8018-77cf4a977398'
+INFO_LOC = '02f70d6d-2ae7-4e9b-bd0f-25fa0e230bd5'
+VER_LOC = 'c5fc1947-f2a1-4fd0-936d-0d475ecdadaf'
+REVIEW = '9b6b0a37-76cb-41c3-8734-8cef17dc2290'
+SHOT_SET = '5c47dc8f-468b-48b1-8178-92f583cd7a1d'
 
 
 def tok():
