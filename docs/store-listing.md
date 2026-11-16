@@ -13,12 +13,13 @@ Bundle id `app.kanpai.mvp` · ASC Apple ID `6805814337` · min iOS 16.4 · Suppo
 
 ## App Name (最大30文字)
 ```
-ワイワイ！パーティーゲーム集
+ワイワイ！罰ゲーム・大人数パーティーゲーム
 ```
+_v1.0.3 (2026-11-16). Was 「ワイワイ！パーティーゲーム集」 through 1.0.2. Chosen from keyword research: 罰ゲーム and 大人数ゲーム have demand and weak top-10 competition; exact title terms let a 0-rating app rank._
 
 ## Subtitle / サブタイトル (最大30文字)
 ```
-スマホ1台、みんなで盛り上がる
+スマホ1台で盛り上がる山手線ゲーム・爆弾ゲーム
 ```
 
 ## Promotional Text / プロモーション用テキスト (最大170文字, いつでも変更可)
@@ -28,9 +29,9 @@ Bundle id `app.kanpai.mvp` · ASC Apple ID `6805814337` · min iOS 16.4 · Suppo
 
 ## Keywords / キーワード (最大100文字, カンマ区切り・スペースなし)
 ```
-山手線ゲーム,罰ゲーム,会話ゲーム,トランプ,サイコロ,チンチロ,ハイアンドロー,ロシアンルーレット,爆弾,暇つぶし,大人数,修学旅行,余興,レク,オフライン,友達,家族,お題,アンケート,数字
+盛り上がる,みんなで遊べる,友達,家族,複数人,オフライン,トランプ,サイコロ,チンチロ,ハイアンドロー,ロシアンルーレット,カタカナ禁止,お題,アンケート,会話,余興,レク,修学旅行,暇つぶし
 ```
-_v1.0.2 (2026-11-06): no word already in the name/subtitle (Apple indexes those; repeats waste chars). Only terms for games/features the app has. Excludes trademarked game names (カタカナーシ / ito など), games we don't have (人狼, ワードウルフ, 王様ゲーム), and all drinking terms._
+_v1.0.3 (2026-11-16) keywords; rule since v1.0.2: no word already in the name/subtitle (Apple indexes those; repeats waste chars). Only terms for games/features the app has. Excludes trademarked game names (カタカナーシ / ito など), games we don't have (人狼, ワードウルフ, 王様ゲーム), and all drinking terms (also 宴会/合コン: 4.3(b) risk)._
 
 ## Category (v1.0.2)
 Primary **ゲーム** (subcategories ボード + カード), secondary **エンターテインメント**. Was Entertainment only through 1.0.1.
@@ -61,7 +62,13 @@ Primary **ゲーム** (subcategories ボード + カード), secondary **エン�
 基本無料。広告を消したい方だけ、買い切りの「広告非表示」（¥300）をどうぞ。月額・年額のサブスクリプションは一切ありません。
 ```
 
-## What's New / このバージョンの新機能 (v1.0.2)
+## What's New / このバージョンの新機能 (v1.0.3)
+```
+・ストアの表示を改善しました
+・細かな改善
+```
+
+## What's New (v1.0.2)
 ```
 ・より見つけやすいよう、ストアの表示を改善しました
 ・楽しんでいただけたら、ゲーム終了後にレビューをお願いすることがあります
