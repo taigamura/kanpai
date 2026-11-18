@@ -1,6 +1,6 @@
 # カンパイ！ — Current State (session handoff)
 
-_Last updated 2026-11-16 (1.0.3 build 24 submitted: keyword-bearing name/subtitle). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
+_Last updated 2026-11-18 (1.0.3 live with keyword-bearing name/subtitle). Read this + `SPEC.md` + `docs/ROADMAP.md` to take over._
 
 **2026-10-02: v1.0 (build 16) was REJECTED under Guideline 4.3(b)** ("primarily a drinking game
 app… facilitates games that encourage users to drink"; reviewed on iPad Air 11″ M3 in iPhone-compat
@@ -17,8 +17,7 @@ historical.
   bundle, 8 games. **Hard rule: no drinking content anywhere** (code, copy, お題, store metadata,
   visuals), since v1.0 build 16 was rejected under Guideline 4.3(b) as a drinking-game app.
 - **Look:** risograph speech bubbles (pink paper, blue + yellow bubbles drifting slowly, navy ink).
-- **Status (2026-11-16): v1.0.2 build 23 LIVE; v1.0.3 build 24 WAITING_FOR_REVIEW** (reviewSubmission
-  `9b3843a0`, PR #22). 1.0.3 = store metadata only: name 「ワイワイ！罰ゲーム・大人数パーティーゲーム」,
+- **Status (2026-11-18): v1.0.3 build 24 LIVE** (reviewSubmission `9b3843a0`, PR #22; approved by 2026-11-18). 1.0.3 = store metadata only: name 「ワイワイ！罰ゲーム・大人数パーティーゲーム」,
   subtitle 「スマホ1台で盛り上がる山手線ゲーム・爆弾ゲーム」, new keywords (from the 2026-11-14 ASO research in
   `docs/store-listing.md`). Pre-change JP search: パーティーゲーム not in top 187, パーティーゲーム集 #15.
   ASC API key lacks Sales/Analytics role (403), so downloads aren't scriptable yet.
